@@ -1,0 +1,577 @@
+<!-- 【ダイアログ子】管理者メニュー -->
+<template id="tpl-menu-admin">
+    <div class="w-full flex flex-col bg-brand-0">
+        <button id="btn-admin-notice" 
+            class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">📢</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">システム通知一覧</span>
+        </button>
+        <button id="btn-admin-report" 
+            class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">🚫</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">通報情報の集計結果</span>
+        </button>
+        <button id="btn-admin-feedback" 
+            class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">💡</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">みんなの評価一覧</span>
+        </button>
+        <button id="btn-admin-user-mail" 
+            class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">✉️️</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">メール送信履歴一覧</span>
+        </button>
+        <button id="btn-admin-ban-users" 
+            class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">💀</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">BANユーザー一覧</span>
+        </button>
+        <button id="btn-admin-core-cfg" 
+            class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-red-100 active:bg-red-200 transition-colors text-red-600 bg-red-50">
+            <span class="col-span-1 kb-icon-emoji-lg">⚠️</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">アプリ基盤設定（重要）</span>
+        </button>
+    </div>
+</template>
+
+<!-- 【リスト子】管理者通知一覧用 -->
+<template id="tpl-admin-list-child-notice">
+    <div class="js-item-card flex items-stretch p-0 border-b _border-brand-1 _shadow-md bg-white cursor-pointer active:scale-[0.98] transition-transform overflow-hidden mb-3 relative">
+        <div class="flex-1 min-w-0 p-3 pl-4">
+            <div class="flex justify-between items-start mb-1">
+                <div class="js-date kb-date-tim-sm"></div>
+                <span class="js-badge-status text-[0.9rem] font-bold px-2 py-0.5 uppercase tracking-wider _shadow-md _border"></span>
+            </div>
+            <div class="text-[0.9rem] font-bold text-slate-900 truncate pr-2 mb-1 js-title"></div>
+            <div class="text-[0.9rem] text-slate-600 line-clamp-1 js-body "></div>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】管理者通知編集 -->
+<template id="tpl-admin-notice-edit">
+    <div class="w-full text-slate-900 space-y-4 pt-2 px-2">
+        <div>
+            <label class="block text-[0.9rem] font-bold mb-2 uppercase text-slate-600">通知種別</label>
+            <!-- select を廃止し、ボタングループと隠しフィールドに変更 -->
+            <div id="edit-notice-kind-group" class="flex gap-2"></div>
+            <input type="hidden" id="edit-notice-kind-val">
+        </div>
+        <div>
+            <div class="flex justify-between items-end mb-1"><label class="block text-[0.9rem] font-bold uppercase text-slate-600">タイトル</label><span class="text-[0.9rem] text-slate-600 font-bold"><span id="edit-notice-title-count">0</span>/30</span></div>
+            <input id="edit-notice-title" type="text" maxlength="30" class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white">
+        </div>
+        <div>
+            <div class="flex justify-between items-end mb-1">
+                <label class="block text-[0.9rem] font-bold uppercase text-slate-600">本文</label>
+                <span class="text-[0.9rem] text-slate-600 font-bold"><span id="edit-notice-body-count">0</span>/1000</span>
+            </div>
+            <textarea id="edit-notice-body" maxlength="1000" class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] h-[300px] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white resize-none"></textarea>
+        </div>
+        <div>
+            <label class="block text-[0.9rem] font-bold mb-1 uppercase text-slate-600">Link URL</label>
+            <input id="edit-notice-url" type="url" class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white text-blue-500" placeholder="https://...">
+        </div>
+        <div>
+            <label class="block text-[0.9rem] font-bold mb-1 uppercase text-slate-600">表示開始日</label>
+            <div class="flex items-center gap-2">
+                <input id="edit-notice-from" type="date" class="flex-1 border-2 border-brand-3 px-2 py-1 text-[1rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white">
+                <button id="btn-clear-notice-from" type="button" class="w-8 h-8 flex items-center justify-center bg-slate-200 rounded-full text-[0.9rem] active:scale-95">✕</button>
+            </div>
+        </div>
+        <div>
+            <label class="block text-[0.9rem] font-bold mb-1 uppercase text-slate-600">表示終了日</label>
+            <div class="flex items-center gap-2">
+                <input id="edit-notice-to" type="date" class="flex-1 border-2 border-brand-3 px-2 py-1 text-[1rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white">
+                <button id="btn-clear-notice-to" type="button" class="w-8 h-8 flex items-center justify-center bg-slate-200 rounded-full text-[0.9rem] active:scale-95">✕</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 【リスト子】管理者フィードバック一覧用 -->
+<template id="tpl-admin-list-child-feedback">
+    <button class="js-item-card w-full flex flex-col bg-white mb-3 py-2 border-b _border-brand-1 _shadow-md _p-4 _rounded-[1rem] ">
+        <div class="flex justify-between items-center mb-2">
+            <span class="js-date kb-date-tim-sm"></span>
+            <span class="js-score text-[0.9rem] text-yellow-500 tracking-widest  drop-"></span>
+        </div>
+        <div class="text-left text-[0.9rem] text-slate-900 break-words js-body line-clamp-1"></div>
+    </button>
+</template>
+
+<!-- 【リスト子】管理者通報集計一覧用 -->
+<template id="tpl-admin-list-child-report-summary">
+    <div class="relative bg-white border-b pb-3 flex flex-col gap-2 cursor-pointer active:bg-slate-50 mb-3 rounded-[1rem]">
+        <!-- ユーザーバッジ領域（JSで生成して流し込む） -->
+        <div class="js-user-wrapper mt-1"></div>
+        <!-- 右上：通報件数バッジ -->
+        <div class="absolute top-3 right-3 bg-red-500 text-white text-[0.9rem] font-bold px-2.5 py-1 rounded-full ">
+            <span class="js-report-count js-badge-count">0</span>
+        </div>
+        <!-- まとめタイトル -->
+        <div class="text-[1rem] font-bold text-slate-900 pr-10 line-clamp-1">
+            <span class="js-archive-title">タイトル</span>
+        </div>
+        <!-- 生存状態バッジ（Close状態の場合のみ表示） -->
+        <div class="flex gap-1 mt-1">
+            <span class="hidden bg-slate-800 text-white text-[0.9rem] px-2 py-0.5 rounded-full js-badge-deleted">DELETED</span>
+            <span class="hidden bg-slate-400 text-white text-[0.9rem] px-2 py-0.5 rounded-full js-badge-closed ">CLOSED</span>
+            <span class="hidden bg-brand-5   text-white text-[0.9rem] px-2 py-0.5 rounded-full js-badge-alive ">ALIVE</span>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】管理者通報詳細 -->
+<template id="tpl-admin-report-detail">
+    <div class="w-full flex flex-col gap-4 text-slate-900 p-2">
+        <!-- 対象情報 -->
+        <div class="flex flex-col gap-3 border-b  pb-4">
+            <!-- 対象まとめ -->
+            <div class="flex flex-col gap-1">
+                <span class="text-[0.9rem] text-slate-600">対象まとめ</span>
+                <button id="btn-admin-report-open-archive" class="h-10 w-full flex items-center justify-between p-3 bg-white rounded-full active:bg-slate-50 transition-colors text-left shadow-md">
+                    <div class="flex-1 min-w-0 pr-2">
+                        <div class="text-[1rem] font-bold text-slate-900 js-archive-title break-words line-clamp-1"></div>
+                    </div>
+                    <span class="text-[1rem] ml-2">🗺️</span>
+                </button>
+            </div>
+            <!-- 対象ユーザー -->
+            <div class="flex flex-col gap-1">
+                <span class="text-[0.9rem] text-slate-600">対象ユーザー</span>
+                <div id="view-report-target-user-wrapper" class="w-full"></div>
+            </div>
+            <!-- 管理者用アクションボタン -->
+            <div class="flex gap-3 mt-2">
+                <button id="btn-admin-report-close" class="flex-1 h-11 bg-slate-500 text-white text-[0.9rem] font-bold rounded-lg active:scale-95 transition-all">非公開化 (Close)</button>
+                <button id="btn-admin-report-private" class="flex-1 h-11 bg-slate-800 text-white text-[0.9rem] font-bold rounded-lg active:scale-95 transition-all">削除 (Delete)</button>
+            </div>
+        </div>
+        <!-- 通報理由リスト -->
+        <div class="flex flex-col gap-2">
+            <span class="text-[0.9rem] text-slate-600">寄せられた通報内容</span>
+            <div id="admin-report-detail-list" class="flex flex-col gap-2"></div>
+        </div>
+    </div>
+</template>
+
+<!-- 【リスト子】管理者通報詳細アイテム -->
+<template id="tpl-admin-list-child-report-item">
+    <div class="bg-white p-3 border  rounded-lg shadow-md border-l-4 border-l-red-400 cursor-pointer active:bg-slate-50 transition-colors">
+        <div class="flex justify-between items-baseline mb-1">
+            <span class="text-[0.9rem] text-slate-600">通報日時</span>
+            <span class="js-report-tim kb-date-tim-sm"></span>
+        </div>
+        <div class="text-[0.9rem] text-slate-900 break-words js-report-body line-clamp-2 mt-1"></div>
+    </div>
+</template>
+
+<!-- 【リスト子】管理者通報詳細アイテム -->
+<template id="tpl-admin-list-child-report-item">
+    <div class="bg-white p-3 border  shadow-md relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-400"></div>
+        <div class="pl-2">
+            <div class="flex justify-between items-center mb-1">
+                <div class="js-report-tim kb-date-tim-sm"></div>
+            </div>
+            <div class="text-[0.9rem] text-slate-900 break-words js-report-body line-clamp-1"></div>
+        </div>
+    </div>
+</template>
+
+<!-- 管理者用ユーザーメール一覧アイテム -->
+<template id="tpl-admin-list-child-user-mail">
+    <div class="js-item-card flex items-stretch p-0 border-b _border-brand-1 _shadow-md bg-white cursor-pointer active:scale-[0.98] transition-transform overflow-hidden mb-3 relative">
+        <div class="flex-1 min-w-0 p-3 pl-4">
+            <div class="flex justify-between items-start mb-1">
+                <div class="js-date kb-date-tim-sm"></div>
+            </div>
+            <div class="absolute top-0 right-2 text-[1.5rem] font-bold">
+                <span class="js-emoji kb-icon-emoji-lg mr-2"></span>
+            </div>
+            <!-- 宛先表示（Generator注入用コンテナ） -->
+            <div class="js-user-wrapper mt-2"></div>
+            <div class="text-[0.9rem] text-slate-600 line-clamp-1 js-body mt-2"></div>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】管理者：ユーザー個別通知送信 -->
+<template id="tpl-admin-send-user-notification">
+    <div class="w-full text-slate-900 space-y-6 pt-2 px-2 pb-4">
+        <div>
+            <label class="block font-bold text-slate-600 text-[0.9rem] mb-2">宛先ユーザー</label>
+            <div id="admin-send-target-user-wrapper"></div>
+        </div>
+        <div>
+            <label class="block font-bold text-slate-600 text-[0.9rem] mb-2">メッセージ種別</label>
+            <div id="admin-send-kind-group" class="flex gap-2"></div>
+            <input type="hidden" id="admin-send-emoji-val" value="1">
+        </div>
+        <div>
+            <div class="flex justify-between items-end mb-1">
+                <label class="block text-[0.9rem] font-bold text-slate-600">メッセージ本文</label>
+                <span class="text-[0.9rem] font-bold text-slate-600"><span id="admin-send-body-count">0</span>/500</span>
+            </div>
+            <textarea id="admin-send-body" maxlength="500" placeholder="ユーザーへのメッセージを入力してください" 
+                class="w-full border-2 border-brand-3 px-4 py-3 text-[1rem] h-[300px] focus:outline-none focus:border-brand-5 bg-white resize-none"></textarea>
+        </div>
+        <!-- 追加：直接HTML内にボタンを配置 -->
+        <div class="flex gap-3 mt-6">
+            <button id="btn-admin-send-cancel" type="button" class="flex-1 bg-slate-400 text-white font-bold text-[1rem] h-12 shadow-md uppercase active:scale-95 transition-transform">cancel</button>
+            <button id="btn-admin-send-submit" type="button" class="flex-1 bg-brand-5 text-white font-bold text-[1rem] h-12 shadow-md uppercase active:scale-95 transition-transform">send</button>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】管理者フィードバック詳細 -->
+<template id="tpl-admin-feedback-detail">
+    <div class="w-full flex flex-col gap-4 text-slate-900 p-2">
+        <!-- 投稿日時 -->
+        <div class="flex justify-between items-baseline border-b  pb-2">
+            <span class="text-[0.9rem] text-slate-600">投稿日時</span>
+            <span class="js-date kb-date-tim-sm"></span>
+        </div>
+        <!-- 評価スコア -->
+        <div class="flex justify-between items-baseline border-b  pb-2">
+            <span class="text-[0.9rem] text-slate-600">評価スコア</span>
+            <span class="js-score text-[1.5rem] text-yellow-500 tracking-widest"></span>
+        </div>
+        <!-- 投稿ユーザー -->
+        <div class="flex flex-col gap-1 border-b  pb-3">
+            <span class="text-[0.9rem] text-slate-600">投稿ユーザー</span>
+            <div id="view-feedback-user-wrapper" class="w-full"></div>
+        </div>
+        <!-- フィードバック内容 -->
+        <div class="flex flex-col gap-2">
+            <span class="text-[0.9rem] text-slate-600">フィードバック内容</span>
+            <div class="bg-slate-50 border  rounded-lg p-3 min-h-[150px]">
+                <div class="js-body text-[1rem] text-slate-900 leading-[1.8] whitespace-pre-wrap break-words"></div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】管理者：通報内容の全文詳細 -->
+<template id="tpl-admin-report-item-detail">
+    <div class="w-full flex flex-col gap-4 text-slate-900 p-2">
+        <div class="flex justify-between items-baseline border-b  pb-2">
+            <span class="text-[0.9rem] text-slate-600">通報日時</span>
+            <span class="js-report-tim kb-date-tim-sm"></span>
+        </div>
+        <div class="flex flex-col gap-1 border-b  pb-3">
+            <span class="text-[0.9rem] text-slate-600">通報者</span>
+            <div id="view-report-user-wrapper" class="w-full"></div>
+        </div>
+        <div class="flex flex-col gap-2">
+            <span class="text-[0.9rem] text-slate-600">通報内容</span>
+            <div class="bg-slate-50 border  rounded-lg p-3 min-h-[150px]">
+                <div class="text-[1rem] text-slate-900 leading-[1.8] whitespace-pre-wrap break-words js-report-body"></div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 【追加】管理者フィードバック：検索バー付きリスト外枠 -->
+<template id="tpl-admin-feedback-list-parent">
+    <div class="flex flex-col h-full w-full min-h-[200px] p-2">
+        <!-- 上部固定のスコアフィルタバー -->
+        <div class="sticky top-0 z-10 bg-brand-0 pb-3 flex flex-col gap-2">
+            <div class="text-[0.9rem] font-bold text-slate-600 uppercase tracking-widest pl-1">Filter by Score</div>
+            <div id="feedback-score-filter" class="flex justify-between bg-white">
+                <button data-score="0" class="js-score-btn flex-1 py-1.5 text-[0.9rem] font-bold rounded-lg transition-all">ALL</button>
+                <button data-score="1" class="js-score-btn flex-1 py-1.5 text-[0.9rem] font-bold rounded-lg transition-all">1</button>
+                <button data-score="2" class="js-score-btn flex-1 py-1.5 text-[0.9rem] font-bold rounded-lg transition-all">2</button>
+                <button data-score="3" class="js-score-btn flex-1 py-1.5 text-[0.9rem] font-bold rounded-lg transition-all">3</button>
+                <button data-score="4" class="js-score-btn flex-1 py-1.5 text-[0.9rem] font-bold rounded-lg transition-all">4</button>
+                <button data-score="5" class="js-score-btn flex-1 py-1.5 text-[0.9rem] font-bold rounded-lg transition-all">5</button>
+            </div>
+        </div>
+        <!-- リスト本体の挿入先 -->
+        <div id="feedback-list-container" class="flex-1 p-2"></div>
+    </div>
+</template>
+
+<!-- 【リスト子】自分の通報履歴アイテム -->
+<template id="tpl-list-child-my-report">
+    <div class="js-item-card bg-white p-3 mb-3 border-b _border-brand-1 _shadow-md cursor-pointer active:scale-[0.98] transition-transform">
+        <div class="flex justify-between items-center mb-1">
+            <span class="js-date kb-date-tim-sm"></span>
+            <div class="flex gap-1">
+                <span class="hidden bg-slate-800 text-white text-[0.9rem] px-2 py-0.5 rounded-full js-badge-deleted">DELETED</span>
+                <span class="hidden bg-slate-300 text-white text-[0.9rem] px-2 py-0.5 rounded-full js-badge-closed ">CLOSED</span>
+                <span class="hidden bg-brand-5   text-white text-[0.9rem] px-2 py-0.5 rounded-full js-badge-alive ">ALIVE</span>
+            </div>
+        </div>
+        <!-- 宛先表示をアイコン＋ニックネームに変更 -->
+        <div class="js-target-wrapper mt-1"></div>
+        <div class="text-[0.9rem] text-slate-600 line-clamp-1 mt-2">
+            <span class="js-body"></span>
+        </div>
+    </div>
+</template>
+
+<!-- ユーザ解析：外枠テンプレート -->
+<template id="tpl-user-click-stats">
+    <div class="w-full flex flex-col gap-5 text-slate-900 bg-white">
+        <!-- セクション：基本情報 -->
+        <div class="flex flex-col gap-1">
+            <label class="text-[0.9rem] font-bold text-slate-600">対象ユーザー</label>
+            <div class="js-user-badge-container py-1"></div>
+        </div>
+        <!-- セクション：通報ステータス -->
+        <div class="flex flex-col gap-1 border-t  pt-3">
+            <label class="text-[0.9rem] font-bold text-slate-600">アカウント通報数</label>
+            <div class="text-[1rem] font-bold text-red-500 px-4"><span class="js-report-count">0</span> 件</div>
+        </div>
+        <!-- セクション：統計データ -->
+        <div class="flex flex-col gap-4 border-t  pt-3">
+            <div>
+                <label class="text-[1rem] font-bold text-slate-600">🔒 非公開データ</label>
+                <div class="js-stats-pvt mt-1"></div>
+            </div>
+            <div>
+                <label class="text-[1rem] font-bold text-slate-600">◎ 公開用データ</label>
+                <div class="js-stats-pub mt-1"></div>
+            </div>
+        </div>
+        <!-- セクション：リンク解析 -->
+        <div class="flex flex-col gap-1 border-t  pt-3">
+            <label class="text-[1rem] font-bold text-slate-600">リンク解析</label>
+            <div class="js-click-container flex flex-col gap-3 mt-1"></div>
+        </div>
+        <!-- 管理者用アクション -->
+        <div id="admin-ban-control" class="hidden flex flex-col gap-2 mt-4 pt-4 border-t-2 border-red-100">
+            <button id="btn-admin-ban" class="w-full py-4 bg-red-50 text-red-600 font-bold border border-red-200 text-[1rem]">🚫 シャドウバンを実行</button>
+            <button id="btn-admin-unban" class="w-full py-4 bg-slate-100 text-slate-600 font-bold border  text-[1rem]">✅ 制限を解除</button>
+        </div>
+    </div>
+</template>
+
+<!-- ユーザ解析：数値項目テンプレート -->
+<template id="tpl-user-activity-summary">
+    <div class="flex flex-col gap-2 py-1 px-4">
+        <div class="flex justify-between items-baseline">
+            <span class="text-[0.9rem] text-slate-600">総まとめ数</span>
+            <span class="text-[1rem] font-bold"><span class="js-archive-count">0</span> 件</span>
+        </div>
+        <div class="flex justify-between items-baseline">
+            <span class="text-[0.9rem] text-slate-600">総地点メモ数</span>
+            <span class="text-[1rem] font-bold"><span class="js-memo-count">0</span> 件</span>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】システム設定（Core Config）編集 -->
+<template id="tpl-admin-core-config">
+    <div class="w-full text-slate-900 space-y-5 pt-2 px-2">
+        <div class="bg-red-50 border-l-4 border-red-500 p-3">
+            <p class="text-[0.9rem] text-red-700 font-bold">※システム基幹設定です。慎重に操作してください。</p>
+        </div>
+        <!-- アプリバージョン管理 -->
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-[0.9rem] font-bold text-slate-600 uppercase mb-1">Latest Version</label>
+                <input id="cfg-ver-latest" type="text" class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] rounded-lg focus:border-brand-5 outline-none font-bold">
+            </div>
+            <div>
+                <label class="block text-[0.9rem] font-bold text-slate-600 uppercase mb-1">Min Version</label>
+                <input id="cfg-ver-min" type="text" class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] rounded-lg focus:border-brand-5 outline-none font-bold">
+            </div>
+        </div>
+        <!-- メンテナンス設定 -->
+        <div class="space-y-3 pt-2 border-t ">
+            <div class="flex justify-between items-center">
+                <div>
+                    <span class="block text-[0.9rem] font-bold text-slate-900">Maintenance Mode</span>
+                    <span id="desc-MaintenanceMode" class="text-[0.9rem] text-slate-600 italic"></span>
+                </div>
+                <button id="btn-cfg-maint" class="w-14 h-8 rounded-full bg-slate-300 relative transition-colors shrink-0">
+                    <div class="js-dot absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all"></div>
+                </button>
+                <input type="hidden" id="val-cfg-maint" value="false">
+            </div>
+            <div>
+                <label class="block text-[0.9rem] font-bold text-slate-600 uppercase mb-1">Maintenance Message</label>
+                <textarea id="cfg-maint-msg" class="w-full border-2 border-brand-3 px-3 py-2 text-[0.9rem] h-24 rounded-lg focus:border-brand-5 outline-none resize-none "></textarea>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 【追加】管理者：ユーザー操作履歴リスト用（子） -->
+<template id="tpl-admin-list-child-history">
+    <button class="js-item-card w-full text-left p-4 border-b  active:bg-slate-50 flex flex-col gap-2 transition-colors outline-none">
+        <div class="flex justify-between items-baseline w-full">
+            <span class="js-date kb-date-tim-sm"></span>
+            <span class="js-action text-[0.9rem] font-bold text-brand-5 px-2 py-0.5 bg-brand-1 rounded uppercase tracking-wider"></span>
+        </div>
+        <div class="text-[1rem] font-bold text-slate-900 line-clamp-2 js-body w-full"></div>
+    </button>
+</template>
+
+<!-- 【修正】管理者：ユーザー操作履歴詳細 -->
+<template id="tpl-admin-user-history-detail">
+    <div class="w-full flex flex-col gap-4 text-slate-900 p-2">
+        <!-- 日時 -->
+        <div class="flex justify-between items-baseline border-b  pb-2">
+            <span class="text-[0.9rem] text-slate-600">発生日時</span>
+            <span class="js-tim text-[1rem] font-bold text-slate-900 italic"></span>
+        </div>
+        <!-- 操作種別 -->
+        <div class="flex justify-between items-baseline border-b  pb-2">
+            <span class="text-[0.9rem] text-slate-600">操作種別</span>
+            <span class="js-action text-[1rem] font-bold text-brand-5 uppercase tracking-wider"></span>
+        </div>
+        <!-- 本文 (メッセージ / 理由) -->
+        <div class="flex flex-col gap-2 border-b  pb-3">
+            <span class="text-[0.9rem] text-slate-600">メッセージ / 理由</span>
+            <div class="bg-slate-50 border  rounded-lg p-3 min-h-[80px]">
+                <div class="js-body text-[1rem] text-slate-900 leading-[1.8] whitespace-pre-wrap break-words"></div>
+            </div>
+        </div>
+        <!-- 操作詳細 (JSONテーブル) -->
+        <div class="flex flex-col gap-2 min-h-0">
+            <span class="text-[0.9rem] text-slate-600">操作詳細データ</span>
+            <div class="bg-white border  rounded-lg p-2 overflow-y-auto max-h-[300px] js-payload-container">
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 追加：管理者BANユーザー一覧用子テンプレート -->
+<template id="tpl-admin-list-child-ban-user">
+    <div class="relative bg-white pb-3 flex flex-col gap-2 mb-3 border-b _ _shadow-md _rounded-[1rem]">
+        <div class="flex justify-between items-center mb-1">
+            <span class="text-[0.9rem] font-bold text-slate-600">BAN日時</span>
+            <div class="js-date kb-date-tim-sm text-red-500"></div>
+        </div>
+        <div class="js-user-wrapper"></div>
+    </div>
+</template>
+
+<!-- 1. 基盤設定メニュー -->
+<template id="tpl-menu-admin-core">
+    <div class="w-full flex flex-col bg-brand-0">
+        <button id="btn-core-version" 
+            class="w-full h-16 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">📱</span>
+            <span class="col-span-1"></span>
+            <div class="col-span-8 text-left flex flex-col">
+                <span class="font-bold text-[1rem]">アプリバージョン管理</span>
+                <span id="sub-core-version" class="text-[0.8rem] text-slate-500 italic">最新: --- / 必須: ---</span>
+            </div>
+        </button>
+        <button id="btn-core-maint" 
+            class="w-full h-16 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">🚧</span>
+            <span class="col-span-1"></span>
+            <div class="col-span-8 text-left flex flex-col">
+                <span class="font-bold text-[1rem]">メンテナンス設定</span>
+                <span id="sub-core-maint" class="text-[0.8rem] font-bold italic">---</span>
+            </div>
+        </button>
+        <button id="btn-core-legal" 
+            class="w-full h-16 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">📜</span>
+            <span class="col-span-1"></span>
+            <div class="col-span-8 text-left">
+                <span class="font-bold text-[1rem]">利用規約の管理</span>
+            </div>
+        </button>
+    </div>
+</template>
+
+<!-- アプリバージョン管理 編集（シンプル合理化版） -->
+<template id="tpl-admin-core-version">
+    <div class="w-full text-slate-900 space-y-4 pt-4 px-2">
+        <!-- 最新バージョン (LATEST)：表示のみ -->
+        <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+            <label class="block text-[0.8rem] font-bold text-slate-500 uppercase tracking-wider">最新バージョン (LATEST)</label>
+            <div class="grid grid-cols-3 gap-3 opacity-80">
+                <div id="v-lat-0" class="h-14 bg-slate-100 rounded-xl border-2  flex items-center justify-center text-[1.5rem] font-black italic text-slate-400">0</div>
+                <div id="v-lat-1" class="h-14 bg-slate-100 rounded-xl border-2  flex items-center justify-center text-[1.5rem] font-black italic text-slate-400">0</div>
+                <div id="v-lat-2" class="h-14 bg-slate-100 rounded-xl border-2  flex items-center justify-center text-[1.5rem] font-black italic text-slate-400">0</div>
+            </div>
+            <p class="text-[0.7rem] text-right text-brand-5 font-bold italic">※プログラム定数(v<span class="js-app-ver"></span>)から自動取得</p>
+        </div>
+        <!-- アクション：最新を最低にコピー -->
+        <div class="flex justify-center -my-2 relative z-10">
+            <button id="btn-version-copy" class="h-10 px-6 bg-slate-800 text-white rounded-full font-bold text-[0.8rem] shadow-lg active:scale-95 transition-all flex items-center gap-2 border-2 border-white">
+                最新VerをMINにコピー 🔽
+            </button>
+        </div>
+        <!-- 必須バージョン (MIN) -->
+        <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+            <label class="block text-[0.8rem] font-bold text-slate-500 uppercase tracking-wider">必須バージョン (MIN)</label>
+            <div class="grid grid-cols-3 gap-3">
+                <!-- 桁ごとの操作：リセット or プラス -->
+                <div class="flex flex-col gap-2">
+                    <div id="v-min-0" class="h-14 bg-white rounded-xl border-2 border-brand-2 flex items-center justify-center text-[1.5rem] font-black italic">0</div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button data-idx="0" data-op="reset" class="js-v-min-btn h-8 bg-slate-100 rounded-md flex items-center justify-center font-bold text-slate-400 active:scale-90">R</button>
+                        <button data-idx="0" data-op="plus"  class="js-v-min-btn h-8 bg-brand-5 rounded-md flex items-center justify-center font-bold text-white shadow-sm active:scale-90">＋</button>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <div id="v-min-1" class="h-14 bg-white rounded-xl border-2 border-brand-2 flex items-center justify-center text-[1.5rem] font-black italic">0</div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button data-idx="1" data-op="reset" class="js-v-min-btn h-8 bg-slate-100 rounded-md flex items-center justify-center font-bold text-slate-400 active:scale-90">R</button>
+                        <button data-idx="1" data-op="plus"  class="js-v-min-btn h-8 bg-brand-5 rounded-md flex items-center justify-center font-bold text-white shadow-sm active:scale-90">＋</button>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <div id="v-min-2" class="h-14 bg-white rounded-xl border-2 border-brand-2 flex items-center justify-center text-[1.5rem] font-black italic">0</div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button data-idx="2" data-op="reset" class="js-v-min-btn h-8 bg-slate-100 rounded-md flex items-center justify-center font-bold text-slate-400 active:scale-90">R</button>
+                        <button data-idx="2" data-op="plus"  class="js-v-min-btn h-8 bg-brand-5 rounded-md flex items-center justify-center font-bold text-white shadow-sm active:scale-90">＋</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 3. メンテナンス編集 -->
+<template id="tpl-admin-core-maint">
+    <div class="w-full text-slate-900 space-y-6 pt-2 px-2">
+        <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-brand-2 shadow-sm">
+            <span class="font-bold text-[1rem]">メンテナンスモード</span>
+            <button id="btn-cfg-maint-toggle" class="w-16 h-8 rounded-full bg-slate-300 relative transition-colors shrink-0">
+                <div class="js-dot absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all"></div>
+            </button>
+            <input type="hidden" id="val-cfg-maint">
+        </div>
+        <div>
+            <label class="block text-[0.9rem] font-bold text-slate-600 mb-1">表示メッセージ</label>
+            <textarea id="cfg-maint-msg" 
+                class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] h-[200px] rounded-lg focus:border-brand-5 outline-none resize-none"></textarea>
+        </div>
+    </div>
+</template>
+
+<!-- アプリ基盤設定：長文エディタ（利用規約・プライバシーポリシー用） -->
+<template id="tpl-admin-core-editor">
+    <div class="w-full h-full flex flex-col gap-2 pt-2 px-1">
+        <div class="flex justify-between items-end mb-1">
+            <label id="js-editor-label" class="text-[0.8rem] font-bold text-slate-500 uppercase tracking-widest pl-1"></label>
+            <span class="text-[0.8rem] font-bold text-slate-400"><span id="js-editor-count">0</span>/5000</span>
+        </div>
+        <!-- flex-1 で残りの高さをすべて占有 -->
+        <textarea id="js-editor-input" 
+            class="flex-1 w-full border-2 border-brand-3 p-4 text-[0.95rem] leading-[1.7] rounded-2xl focus:border-brand-5 outline-none resize-none bg-white shadow-inner"
+            placeholder="内容を入力してください..."></textarea>
+    </div>
+</template>
+

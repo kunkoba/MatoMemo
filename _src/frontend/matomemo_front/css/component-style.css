@@ -1,0 +1,111 @@
+/* コンポーネント個別設定 */
+
+/* 地図画面レイアウト：並列伸縮のアニメーション */
+#ui-map-id, #ui-detail-id {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ローディング：ドット（アニメーション） */
+@keyframes dots {
+  0%   { content: ""; }
+  10%  { content: "."; }
+  20%  { content: ".."; }
+  30%  { content: "..."; }
+  40%  { content: "...."; }
+  50%  { content: "....."; }
+  60%  { content: "......"; }
+  70%  { content: "......."; }
+  80%  { content: "........"; }
+  90%  { content: "........."; }
+  100% { content: ""; }
+}
+.wait-dots::after {
+  content: "";
+  animation: dots 10s steps(1) infinite;
+}
+
+/* Leaflet の固定位置を解除 */
+.leaflet-top,
+.leaflet-bottom,
+.leaflet-left,
+.leaflet-right {
+    position: static !important;
+}
+/* ズームボタンを左中央へ */
+.leaflet-control-zoom {
+    position: absolute !important;
+    right: 16px; /* 右端からの距離 */
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 1000;
+    pointer-events: auto;
+    margin: 0 !important; /* Leaflet既定のマージンをリセット */
+    /* ボタンの順序を反転（標準は In, Out の順なので reverse で Out, In にする） */
+    display: flex !important;
+    flex-direction: column-reverse; 
+    gap: 2px; /* ボタン間の隙間（任意） */
+    border: none !important;
+    /* shadow-md */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)) !important;
+}
+/* 著作権表記は非表示 */
+.leaflet-control-attribution {
+    display: none !important;
+}
+/* ポップアップ */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    /* background: transparent !important; */
+    background-color: rgba(255, 255, 255, 0.8); /* 30% 透明 */ 
+    box-shadow: none !important;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.leaflet-popup-content{
+    display: flex !important;
+    justify-content: center !important;
+    width: 80vw !important;
+    max-width: 400px !important;
+    margin: 0;
+}
+
+/* 地図をグレースケールにするクラス */
+.map-grayscale .leaflet-tile-container {
+    filter: grayscale(100%) brightness(1.1) contrast(0.9);
+}
+
+
+/* リスト項目（アクティブ状態） */
+.list-item-active {
+    border-color: var(--brand-lvl3) !important;
+    background-color: var(--brand-lvl1);
+}
+.list-item:hover {
+    background-color: var(--brand-lvl2);
+}
+.list-item {
+    border: 1px solid transparent;
+    background-color: white;
+}
+
+/* 縦型レンジ入力の標準対応 */
+#ui-map-zoom-slider[orient="vertical"] {
+    appearance: slider-vertical; /* Firefox / Safari / Chrome用 */
+    width: 60px;
+    height: 100%;
+    transform: rotate(180deg);
+    cursor: pointer;
+}
+/* スライダーのつまみを少し大きく調整（モバイル配慮） */
+#ui-map-zoom-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    /* background: var(--brand-lvl5); */
+    background-color: white;
+    border: 2px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+

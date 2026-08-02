@@ -1,0 +1,586 @@
+<!-- トースト用 -->
+<template id="tpl-toast">
+    <div class="flex justify-center w-full">
+        <div class="flex items-center justify-center px-4 py-2 shadow-md w-full _max-w-[500px] _w-[90vw]
+            opacity-0 translate-y-2 transition-all duration-300 pointer-events-auto z-[9999]">
+            <span class="message text-[0.9rem] font-bold text-center w-full block"></span>
+        </div>
+    </div>
+</template>
+
+<!-- オフライン通知 -->
+<template id="tpl-offline">
+    <div class="fixed bottom-[200px] w-full left-1/2 -translate-x-1/2 z-[8000] pointer-events-none transition-all duration-1000 opacity-0 flex flex-col items-center">
+        <div class="bg-black/20 py-2 w-full flex flex-col items-center gap-4 text-white">
+            オフライン中...
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ親】フレーム -->
+<template id="tpl-dialog-frame">
+    <div class="absolute inset-0 z-[2000] pointer-events-none flex items-center justify-center bg-black/20">
+        <!-- 外枠：枠線や背景色のクラスを削除 -->
+        <div id="dialog-frame-bg" class="pointer-events-auto w-[90%] max-w-[500px] max-h-[70vh] flex flex-col overflow-hidden relative">
+            <!-- タイトルバー：背景色のクラスを削除 -->
+            <div id="dialog-title-bar" class="h-14 flex items-center justify-between border-b-2 shrink-0 px-4 relative z-[1000]">
+                <!-- タイトル文字：文字色のクラスを削除 -->
+                <div id="dialog-title" class="flex-1 flex items-center font-bold italic uppercase tracking-wider truncate pr-2"></div>
+                <div id="dialog-header-actions" class="flex items-center gap-6 shrink-0 mr-2">
+                    <!-- 閉じるボタン：既存維持（共通部品のため） -->
+                    <button id="dialog-btn-close-x" class="w-9 h-9 bg-white rounded-[1rem] shadow-md text-slate-600 flex items-center justify-center active:scale-95 text-[1rem] transition-transform">✕</button>
+                </div>
+            </div>
+            <!-- コンテンツエリア：基本の背景色が必要な場合はここもJSで指定 -->
+            <div id="dialog-content" class="flex-1 overflow-y-auto pr-2 flex flex-col m-4 relative"></div>
+            <!-- フッター：背景色と枠線のクラスを削除 -->
+            <div id="dialog-button-container" class="z-[900] shrink-0 flex flex-col gap-3 p-4"></div>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】保存前確認 -->
+<template id="tpl-confirm-base">
+    <div class="p-6 text-center flex-1 flex flex-col items-center justify-center overflow-hidden w-full">
+        <div class="font-bold text-[1rem] js-message whitespace-pre-line break-all w-full"></div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】絵文字ピッカー -->
+<template id="tpl-emoji-picker">
+    <div class="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 touch-none">
+        <!-- 外枠：サイズと角丸を標準に合わせる -->
+        <div class="w-full max-w-[400px] h-[75vh] bg-white flex flex-col overflow-hidden animate-fade-in">
+            <!-- ヘッダー：1要素1行のルールを適用 -->
+            <div class="shrink-0 px-5 py-4 flex justify-between items-start shadow-md border-b-2">
+                <div class="flex flex-col gap-1">
+                    <span class="text-[1rem] font-bold text-brand-5">マーカーライブラリ</span>
+                </div>
+                <!-- 閉じボタン：標準サイズ -->
+                <button class="js-close kb-icon-emoji-md active:scale-95 transition-transform">✕</button>
+            </div>
+            <!-- ピッカー挿入エリア：残りの高さをすべて使う -->
+            <div id="emoji-mart-container" class="flex-1 py-4 w-full bg-white overflow-hidden"></div>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】地点・住所検索 -->
+<template id="tpl-point-search-google">
+    <div class="w-full text-slate-900 my-3 space-y-5 px-2">
+        <div class="border-l-4 border-brand-3 pl-3">
+            <strong class="text-[1rem] tracking-wide">地点を検索して移動</strong>
+        </div>
+        <div class="text-[0.9rem] space-y-2">
+            <p>下記の入力欄に、探したい場所の情報を入力してください。</p>
+            <ul class="list-disc list-inside pl-1 text-slate-600 space-y-1">
+                <li>住所（例：台東区上野）</li>
+                <li>施設名（例：東京スカイツリー）</li>
+                <li>座標（例：35.7, 139.8）</li>
+                <li>※プラスコードは不可（例：PQ7V+RX）</li>
+            </ul>
+        </div>
+        <div class="w-full">
+            <input id="inputPointValue" type="text" class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] text-slate-900 focus:outline-none focus:border-brand-5 bg-white" placeholder="場所、住所、または座標を入力">
+        </div>
+        <p class="text-[0.9rem] text-slate-600 text-right">※Googleマップ等のURL貼り付けにも対応</p>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】ヘルプ表示用 -->
+<template id="tpl-dialog-help">
+    <div class="p-6 space-y-4">
+        <div class="flex items-center gap-3 border-b-2 border-brand-2 pb-3">
+            <span class="text-[1.5rem] drop-shadow-md">❓</span>
+            <span class="text-[0.9rem] font-bold text-brand-5 uppercase tracking-[0.2em]">Guide / Help</span>
+        </div>
+        <div class="js-help-body text-[0.9rem] text-slate-900 whitespace-pre-wrap pt-2"></div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】通報投稿 -->
+<template id="tpl-report-post">
+    <div class="w-full text-slate-900 px-2 space-y-4 pt-4">
+        <div class="text-[0.9rem] text-red-500 font-bold border-l-4 border-red-500 pl-2">
+            利用規約に違反していると思われる内容を通報できます。<br>通報内容は管理者が確認します。<br>できるだけ詳細に記述していただけると、その後の対処がしやすいです。
+        </div>
+        <div>
+            <div class="flex justify-between items-end mb-1">
+                <label class="block text-[0.9rem] font-bold text-slate-600 uppercase tracking-widest">通報内容</label>
+                <span class="text-[0.9rem] font-bold text-slate-600"><span id="report-text-count">0</span>/1000</span>
+            </div>
+            <textarea id="input-report-body" maxlength="1000" placeholder="問題のある箇所や理由について" 
+                class="w-full border-2 border-brand-3 p-3 text-[1rem] h-[300px] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white resize-none"></textarea>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】レビュー投稿 -->
+<template id="tpl-review-post">
+    <div class="w-full text-slate-900 px-2 space-y-6 pt-4">
+        <div class="text-center">
+            <label class="block text-[0.9rem] font-bold text-slate-600 uppercase tracking-widest">Tap to Rate</label>
+            <div id="review-star-input" class="flex justify-center gap-1 text-[40px] "></div>
+            <input type="hidden" id="input-review-rating" value="5">
+        </div>
+        <div>
+            <div class="flex justify-between items-end mb-2">
+                <label class="block text-[0.9rem] font-bold text-slate-600 uppercase tracking-widest">Review</label>
+                <span class="text-[0.9rem] font-bold text-slate-600"><span id="review-text-count">0</span>/300</span>
+            </div>
+            <textarea id="input-review-body" maxlength="300" placeholder="アプリの感想をお聞かせください" 
+                class="w-full border-2 border-brand-3 p-3 text-[1rem] min-h-[200px] focus:outline-none focus:border-brand-5 bg-white resize-none"></textarea>
+        </div>
+    </div>
+</template>
+
+<!-- 【マップ】ポップアップ -->
+<template id="tpl-marker-popup">
+    <div class="relative w-full bg-white/10 rounded-[1rem] shadow-md p-3 overflow-hidden flex flex-col">
+        <div class="absolute top-2 right-2 w-8 h-8 rounded-full bg-brand-4 text-white font-bold text-[1.2rem] flex items-center justify-center z-20">
+            <span class="index"></span>
+        </div>
+        <!-- 追加：絵文字（Noバッジの下に配置） -->
+        <div class="absolute top-4 right-14 js-face kb-icon-emoji-xlg z-20"></div>
+        <div class="flex-1 overflow-y-auto max-h-[200px]">
+            <div class="text-[0.9rem] mb-2 font-bold text-slate-600 italic">
+                <!-- 【変更】個別spanを廃止し、コンテナを設置 -->
+                <div class="js-date-container"></div>
+            </div>
+            <div class="text-[1rem] border-l-4 border-brand-3 pl-3 pr-8 py-2 mb-2 font-bold text-slate-900 relative z-10">
+                <span class="title line-clamp-1"></span>
+            </div>
+            <div class="text-[0.9rem] text-slate-700 _line-clamp-4 _overflow-y-auto px-2 leading-[1.5]">
+                <span class="body"></span>
+            </div>
+        </div>
+        <button id="btn-popup-action" class="mt-2 w-full h-10 bg-brand-2 text-brand-5 font-bold text-[0.9rem] border-y-2 border-brand-3  items-center justify-center gap-1 uppercase shadow-md active:scale-95 transition-transform tracking-widest">
+            <span class="js-action-text px-4 line-clamp-1">
+                このメモを開く
+            </span>
+        </button>
+    </div>
+</template>
+
+<!-- ローディング用 -->
+<template id="tpl-loading">
+    <div class="fixed inset-0 bg-black/40 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 z-[9998]">
+        <div class="text-[1.8rem] font-bold text-white inline-block wait-dots">Wait</div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】Atmosphere設定ダイアログ（完全高さ同調版） -->
+<template id="tpl-setting-weather">
+    <div class="w-full text-slate-900 space-y-6 px-1 py-1">
+        <!-- 1. 天候選択ボタン（上部） -->
+        <div class="w-full">
+            <div id="atm-weather-group" class="grid grid-cols-3 gap-2">
+                <button data-val="0" class="atm-w-btn h-11 border-2 border-red-100 bg-white text-red-500 font-bold text-[0.9rem] rounded-xl active:scale-95 transition-all">クリア</button>
+                <button data-val="1" class="atm-w-btn h-11 border-2 border-brand-2 bg-white text-brand-5 font-bold text-[0.9rem] rounded-xl active:scale-95 transition-all">葉っぱ</button>
+                <button data-val="2" class="atm-w-btn h-11 border-2 border-brand-2 bg-white text-brand-5 font-bold text-[0.9rem] rounded-xl active:scale-95 transition-all">雨</button>
+                <button data-val="3" class="atm-w-btn h-11 border-2 border-brand-2 bg-white text-brand-5 font-bold text-[0.9rem] rounded-xl active:scale-95 transition-all">雷雨</button>
+                <button data-val="4" class="atm-w-btn h-11 border-2 border-brand-2 bg-white text-brand-5 font-bold text-[0.9rem] rounded-xl active:scale-95 transition-all">雪</button>
+                <button data-val="5" class="atm-w-btn h-11 border-2 border-brand-2 bg-white text-brand-5 font-bold text-[0.9rem] rounded-xl active:scale-95 transition-all">桜</button>
+            </div>
+        </div>
+        <!-- 2. 設定エリア（垂直並び） -->
+        <div class="flex flex-col gap-2">
+            <!-- WIND -->
+            <div class="bg-white p-2">
+                <label class="block font-bold text-slate-600 text-[0.9rem] uppercase tracking-widest mb-1 pl-1">風速</label>
+                <div class="flex items-center gap-4">
+                    <span id="atm-wind-val" class="w-8 text-[1.5rem] font-bold text-brand-5 text-center italic">0</span>
+                    <input id="atm-wind" type="range" min="0" max="9" value="0" class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-5">
+                    <div class="flex gap-2 shrink-0">
+                        <button id="btn-wind-minus" class="w-12 h-12 rounded-xl bg-slate-100 border  flex items-center justify-center text-slate-600 text-[1.5rem] font-bold active:scale-90 ">-</button>
+                        <button id="btn-wind-plus"  class="w-12 h-12 rounded-xl bg-brand-5 border border-brand-4 flex items-center justify-center text-white text-[1.5rem] font-bold active:scale-90 shadow-md">+</button>
+                    </div>
+                </div>
+            </div>
+            <!-- DENSITY -->
+            <div class="bg-white p-2">
+                <label class="block font-bold text-slate-600 text-[0.9rem] uppercase tracking-widest mb-1 pl-1">粒度</label>
+                <div class="flex items-center gap-4">
+                    <span id="atm-density-val" class="w-8 text-[1.5rem] font-bold text-brand-5 text-center italic">0</span>
+                    <input id="atm-density" type="range" min="0" max="9" value="0" class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-5">
+                    <div class="flex gap-2 shrink-0">
+                        <button id="btn-density-minus" class="w-12 h-12 rounded-xl bg-slate-100 border  flex items-center justify-center text-slate-600 text-[1.5rem] font-bold active:scale-90 ">-</button>
+                        <button id="btn-density-plus"  class="w-12 h-12 rounded-xl bg-brand-5 border border-brand-4 flex items-center justify-center text-white text-[1.5rem] font-bold active:scale-90 shadow-md">+</button>
+                    </div>
+                </div>
+            </div>
+            <!-- DARK -->
+            <div class="bg-white p-2">
+                <label class="block font-bold text-slate-600 text-[0.9rem] uppercase tracking-widest mb-1 pl-1">暗さ</label>
+                <div class="flex items-center gap-4">
+                    <span id="atm-darkness-val" class="w-8 text-[1.5rem] font-bold text-brand-5 text-center italic">0</span>
+                    <input id="atm-darkness" type="range" min="0" max="9" value="0" class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-5">
+                    <div class="flex gap-2 shrink-0">
+                        <button id="btn-dark-minus" class="w-12 h-12 rounded-xl bg-slate-100 border  flex items-center justify-center text-slate-600 text-[1.5rem] font-bold active:scale-90 ">-</button>
+                        <button id="btn-dark-plus"  class="w-12 h-12 rounded-xl bg-brand-5 border border-brand-4 flex items-center justify-center text-white text-[1.5rem] font-bold active:scale-90 shadow-md">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 3. 下部：コード（非表示でも良いが、デバッグ用に最小化して残す） -->
+        <div class="flex justify-center border-t border-slate-50 pt-4">
+            <span id="atm-code-preview" class="text-[1.2rem] font-bold text-slate-600 tracking-[0.5em]">0000</span>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】エラー通知用画面 -->
+<template id="tpl-dialog-error">
+    <div class="p-2 text-center flex-1 flex flex-col items-center justify-center">
+        <div class="text-[3rem] mb-4 ">⚠️</div>
+        <h2 class="text-[1.3rem] font-bold text-slate-900 tracking-tight mb-3">問題が発生しました</h2>
+        <div class="js-error-message text-[0.9rem] font-bold text-red-500 whitespace-pre-wrap  bg-red-50 p-4 rounded-lg border border-red-100 w-full overflow-auto"></div>
+    </div>
+</template>
+
+<!-- 【部品】ステータスバッヂ -->
+<template id="tpl-status-badge">
+    <div class="status-badge inline-flex items-center h-4 w-10 px-1 rounded-full gap-0.5 shrink-0 border border-black/5 shadow-inner transition-colors duration-300">
+        <div class="dot w-2 h-2 rounded-full transition-all duration-300"></div>
+        <div class="dot w-2 h-2 rounded-full transition-all duration-300"></div>
+        <div class="dot w-2 h-2 rounded-full transition-all duration-300"></div>
+    </div>
+</template>
+
+<!-- 【部品】検索バー -->
+<template id="tpl-dialog-search-bar">
+    <div class="px-1">
+        <div class="relative flex items-center">
+            <input type="text" class="js-input w-full border-2 border-brand-3 pl-10 pr-10 py-2 rounded-full text-[0.9rem] focus:outline-none focus:border-brand-5 bg-white " placeholder="タイトルや本文を検索...">
+            <span class="absolute left-4 text-slate-600">🔍</span>
+            <button class="js-clear absolute right-3 w-7 h-7 flex items-center justify-center bg-slate-200 text-slate-600 rounded-full text-[0.9rem] font-bold hidden active:scale-90 transition-transform">
+                ✕
+            </button>
+        </div>
+    </div>
+</template>
+
+<!-- 【部品】共通リンクボタン -->
+<template id="tpl-link-button">
+    <button type="button" class="w-full flex items-center gap-3 p-2 rounded-full shadow-md active:scale-[0.98] transition-transform overflow-hidden">
+        <div class="js-icon-container shrink-0 w-8 h-8 flex items-center justify-center"></div>
+        <div class="flex flex-col min-w-0 flex-1">
+            <!-- タイトル -->
+            <span class="js-title-text text-[0.95rem] font-semibold text-slate-800 truncate"></span>
+            <!-- URL -->
+            <span class="js-url-text text-[0.8rem] text-left text-slate-500 truncate"></span>
+        </div>
+    </button>
+</template>
+
+<!-- 【部品】ユーザアイコン：ボタンタイプ（影あり・反応あり） -->
+<template id="tpl-user-button">
+	<button type="button" class="rounded-full pl-2 pr-4 h-10 w-fit max-w-[240px] border-4 border-white shadow-md flex items-center gap-2 active:opacity-60 transition-opacity bg-white">
+		<span class="js-icon kb-icon-emoji-lg"></span>
+		<span class="js-name text-[0.9rem] text-slate-900 tracking-tight line-clamp-1 font-bold"></span>
+	</button>
+</template>
+
+<!-- 【部品】ユーザアイコン：バッジタイプ（影なし・反応なし） -->
+<template id="tpl-user-badge">
+	<div class="rounded-full pl-2 pr-4 h-10 w-fit max-w-[240px] border  flex items-center gap-2 bg-white">
+		<span class="js-icon kb-icon-emoji-lg"></span>
+		<span class="js-name text-[0.9rem] text-slate-600 tracking-tight line-clamp-1 font-bold"></span>
+	</div>
+</template>
+
+<!-- 【部品】日付・DAY表示用テンプレート -->
+<template id="tpl-date-label">
+    <div class="js-date-root flex items-center gap-2 font-bold italic tracking-tighter">
+        <!-- DAYバッジ（丸囲み） -->
+        <div class="js-day-badge hidden rounded-full bg-black text-white flex items-center justify-center shrink-0 gap-1">
+            <span class="js-day-text"></span>
+            <!-- <span class="js-day-text2">Day</span> -->
+        </div>
+        <!-- メインテキスト（マスク日付 or 実日付） -->
+        <div class="flex items-baseline gap-2">
+            <div class="js-main-text text-slate-600 tracking-[0.05em]"></div>
+            <!-- 時刻（オプション） -->
+            <div class="js-time-text text-slate-600 tracking-[0.05em]"></div>
+        </div>
+    </div>
+</template>
+
+<!-- 【部品】アイコンマーカー -->
+<template id="tpl-marker-icon">
+    <div class="custom-marker-wrapper">
+        <div class="marker-diamond-base">
+            <span class="js-emoji leading-none"></span>
+        </div>
+    </div>
+</template>
+
+
+<!-- ⚙️ システムメニュー用 -->
+<template id="tpl-menu-sys">
+    <div class="w-full flex flex-col bg-brand-0">
+        <button id="btn-sys-notice" 
+            class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">📢</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">システム通知一覧</span>
+        </button>
+        <button id="btn-sys-version" 
+            class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">ℹ️</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">アプリの詳細情報</span>
+        </button>
+        <button id="btn-sys-legal" 
+            class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">📜</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">利用規約とポリシー</span>
+        </button>
+        <button id="btn-sys-admin" 
+            class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-red-100 active:bg-red-200 transition-colors text-red-600 bg-red-50">
+            <span class="col-span-1 kb-icon-emoji-lg">👑</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">管理者ツール</span>
+        </button>
+        <button id="btn-sys-login" 
+            class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">🚪</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase"></span>
+        </button>
+    </div>
+</template>
+
+<!-- 👤 ユーザーメニュー用 -->
+<template id="tpl-menu-user">
+    <div class="w-full flex flex-col bg-brand-0">
+        <button id="btn-sys-user-profile" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">👤</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">ユーザ情報</span>
+        </button>
+        <button id="btn-user-mail" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">📩</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">受信メール一覧</span>
+        </button>
+        <button id="btn-sys-my-report" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">🚫</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">通報まとめ一覧</span>
+        </button>
+        <button id="btn-user-history" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">🕒</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">閲覧履歴</span>
+        </button>
+        <button id="btn-sys-user-config" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">⚙️</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">利用端末の設定</span>
+        </button>
+    </div>
+</template>
+
+<!-- 🗺️ データメニュー用 -->
+<template id="tpl-menu-data">
+    <div class="w-full flex flex-col bg-brand-0">
+        <!-- まとめリスト -->
+        <button id="btn-app-archive-list" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">📚</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">まとめ一覧</span>
+        </button>
+        <!-- アプリ詳細情報 -->
+        <button id="btn-app-info" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">📖</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">まとめ詳細表示</span>
+        </button>
+        <!-- 地点メモリスト -->
+        <button id="btn-app-point-list" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">☰</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">地点メモ一覧</span>
+        </button>
+        <!-- まとめをまとめる -->
+        <button id="btn-app-merge" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">📦</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">地点メモをまとめる</span>
+        </button>
+        <!-- 地図検索モード -->
+        <button id="btn-app-search" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">🔎</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">公開データを検索</span>
+        </button>
+        <!-- 新規作成モード -->
+        <button id="btn-app-create" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">➕</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">地点メモを作成する</span>
+        </button>
+        <!-- 共有URL入力ボタン -->
+        <button id="btn-app-jump-url" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">🔗</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">共有URLから開く</span>
+        </button>
+    </div>
+</template>
+
+<!-- 👆 アクションメニュー用 -->
+<template id="tpl-menu-action">
+    <div class="w-full flex flex-col bg-brand-0">
+        <button id="btn-app-reload" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <!-- <span class="col-span-1 flex justify-center text-[1.5rem]">🌐</span> -->
+            <span class="col-span-1 kb-icon-emoji-lg">🌐</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">アプリ再起動</span>
+        </button>
+        <button id="btn-app-refresh" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">🔄</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">画面を再読み込み</span>
+        </button>
+        <button id="btn-app-restore" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">♻️</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">マーカーを元に戻す</span>
+        </button>
+        <button id="btn-app-current" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">📍</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">現在地へ移動</span>
+        </button>
+        <button id="btn-app-point-search" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">👇</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">ワードで地点移動</span>
+        </button>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】メインメニュー -->
+<template id="tpl-menu-main">
+    <div class="w-full flex flex-col bg-brand-0">
+        <!-- システム設定 -->
+        <button id="btn-main-sys" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">⚙️</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">システム設定</span>
+        </button>
+        <!-- ユーザーメニュー -->
+        <button id="btn-main-user" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">👤</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">ユーザーメニュー</span>
+        </button>
+        <!-- データ管理 -->
+        <button id="btn-main-data" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">🗺️</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">データ・まとめ管理</span>
+        </button>
+        <!-- アクションメニュー -->
+        <button id="btn-main-action" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 kb-icon-emoji-lg">👆</span>
+            <span class="col-span-1"></span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">操作・ツール</span>
+        </button>
+    </div>
+</template>
+
+<template id="tpl-menu-user-settings">
+    <div class="w-full flex flex-col bg-brand-0">
+        <button id="btn-set-theme" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 flex justify-center text-[1.5rem]">🎨</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">テーマカラーの設定</span>
+        </button>
+        <button id="btn-set-map" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 flex justify-center text-[1.5rem]">🗺️</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">地図タイプの設定</span>
+        </button>
+        <button id="btn-set-currency" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 flex justify-center text-[1.5rem]">💰</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">金額単価の設定</span>
+        </button>
+        <button id="btn-set-gps" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 flex justify-center text-[1.5rem]">📍</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">GPSの追従間隔</span>
+        </button>
+        <button id="btn-set-font" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900">
+            <span class="col-span-1 flex justify-center text-[1.5rem]">Aa</span>
+            <span class="col-span-1">
+            </span>
+            <span class="col-span-8 text-left font-bold text-[1rem] uppercase">フォントサイズ</span>
+        </button>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】リンク起動確認 -->
+<template id="tpl-dialog-link-confirm">
+    <div class="w-full flex flex-col gap-4 p-2 text-slate-900">
+        <div class="text-[0.9rem] font-bold text-red-500 border-l-4 border-red-500 pl-3">
+            外部サイトへ移動します。<br>リンク先の安全性に注意してください。
+        </div>
+        <div class="flex flex-col gap-1">
+            <label class="text-[0.8rem] font-bold text-slate-500 uppercase tracking-widest">Target URL</label>
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                <!-- break-all で長いURLを強制改行して全表示 -->
+                <div class="js-url text-[0.9rem] text-blue-600 font-bold break-all leading-relaxed select-all"></div>
+            </div>
+        </div>
+        <p class="text-[0.85rem] text-slate-600 px-1">
+            安全性が不明な場合は、Google検索を経由してサイトを確認することをお勧めします。
+        </p>
+    </div>
+</template>
+
+<!-- 【追加】まとめ一覧用フィルタスイッチ -->
+<template id="tpl-archive-list-filter">
+    <div class="flex gap-2 px-1 py-1 pt-3 bg-white">
+        <!-- PRIVATE: 最初から黒背景・影付きで定義 -->
+        <button id="btn-list-filter-pvt" data-pub="false" 
+            class="js-filter-btn flex-1 flex items-center justify-center gap-2 h-10 rounded-full font-black text-[0.9rem] transition-all active:scale-95 border-2 shadow-md bg-slate-900 text-white border-slate-900">
+            <span>🔒</span> PRIVATE
+        </button>
+        <!-- PUBLIC: 最初からブランドカラー・影付きで定義 -->
+        <button id="btn-list-filter-pub" data-pub="true" 
+            class="js-filter-btn flex-1 flex items-center justify-center gap-2 h-10 rounded-full font-black text-[0.9rem] transition-all active:scale-95 border-2 shadow-md bg-brand-5 text-white border-brand-5">
+            <span>◎</span> PUBLIC
+        </button>
+    </div>
+</template>
+
+<template id="tpl-dialog-url-jump">
+    <div class="w-full flex flex-col gap-5 p-2 text-slate-900">
+        <div class="border-l-4 border-brand-3 pl-3">
+            <strong class="text-[1rem]">URLを貼り付けて移動</strong>
+        </div>
+        <div class="flex flex-col gap-2">
+            <input id="js-jump-url-input" type="text" placeholder="https://..." 
+                class="w-full border-2 border-brand-3 px-4 py-3 text-[1rem] rounded-[1rem] focus:border-brand-5 bg-white outline-none">
+            <p class="text-[0.8rem] text-slate-500 px-1">まとめの共有URLを入力してください。</p>
+        </div>
+        <button id="btn-js-jump-exec" disabled 
+            class="w-full py-4 bg-brand-5 text-white font-bold rounded-[1rem] shadow-md opacity-50 transition-all outline-none">
+            このまとめへ移動する
+        </button>
+    </div>
+</template>
+

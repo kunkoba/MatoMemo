@@ -1,0 +1,18 @@
+■FireBase使い方
+
+CD C:\Users\Owner\Desktop\_WEB\HinekuLemon_Studio
+
+# Firebaseプロジェクトにログイン
+firebase login
+
+# アップロード（デプロイ）コマンド
+firebase deploy
+
+
+【HTML】
+https://littletripmemomock-31477.web.app/
+
+【asp/API】
+https://eminently-meet-terrapin.ngrok-free.app
+
+

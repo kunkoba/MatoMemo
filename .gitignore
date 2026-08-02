@@ -1,0 +1,44 @@
+.*/
+__del/
+_del/
+*コピー*
+?コピー?
+
+
+# Build
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+
+# IDE
+.vs/
+*.user
+*.suo
+
+# ASP.NET Core
+appsettings.Development.json
+appsettings.*.local.json
+*.env
+Migrations/
+
+# Test
+TestResult.xml
+[Tt]est[Rr]esult*/
+
+# Logs
+logs/
+
+# その他よくある不要物
+*.log
+*.tmp
+
+
+# User data
+UserData/
+Profiles/
+uploads/
+cache/
+temp/
+
+

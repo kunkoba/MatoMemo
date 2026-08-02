@@ -1,0 +1,792 @@
+<!-- 【ダイアログ子】ログイン -->
+<template id="tpl-login_2">
+    <div class="w-full text-slate-900 my-3 space-y-5 px-2">
+        <div class="border-l-4 border-brand-3 pl-3">
+            <strong class="text-[1rem] tracking-wide">ログイン</strong>
+        </div>
+        <div class="text-[0.9rem] space-y-2">
+            <p>ログインするとすべての機能が使えます。</p>
+        </div>
+        <button id="btn-login-google" class="w-full flex items-center justify-center gap-3 border-2 border-brand-3 bg-white px-3 py-3 text-[1rem] text-slate-900 font-bold hover:bg-brand-1 active:bg-brand-2">
+            Googleでログイン
+        </button>
+        <p class="text-[0.9rem] text-slate-600 text-center">※ログインにはGoogleアカウントが必要です</p>
+    </div>
+</template>
+<!-- 【ダイアログ子】ログイン（完全版：横並びレイアウト＋全ボタン維持） -->
+<template id="tpl-login">
+    <div class="w-full flex flex-col gap-6 text-slate-900 pb-4 px-2">
+        <!-- 上部：アイコン(左) ＋ フォーム(右) -->
+        <div class="flex items-center gap-4 py-2">
+            <div class="shrink-0 w-24 h-24 bg-white overflow-hidden p-2 flex justify-center items-center">
+                <img id="js-login-app-icon" src="img/ico/icon-512.png" class="w-full h-full object-contain">
+            </div>
+            <div class="flex-1 flex flex-col gap-3">
+                <input id="input-login-email" type="email" placeholder="メールアドレス" 
+                    class="w-full border-2 border-brand-3 px-3 py-2 text-[0.9rem] rounded-[0.5rem] focus:outline-none focus:border-brand-5 bg-white">
+                <input id="input-login-password" type="password" placeholder="パスワード" 
+                    class="w-full border-2 border-brand-3 px-3 py-2 text-[0.9rem] rounded-[0.5rem] focus:outline-none focus:border-brand-5 bg-white">
+            </div>
+        </div>
+        <!-- メール認証アクション -->
+        <div class="flex flex-col gap-4">
+            <div class="flex gap-3">
+                <button id="btn-login-mail" 
+                    class="flex-1 h-12 bg-brand-5 text-white font-bold shadow-md active:scale-95 transition-transform uppercase">
+                    ログイン
+                </button>
+                <button id="btn-signup-mail" 
+                    class="flex-1 h-12 bg-white text-brand-5 border-2 border-brand-5 font-bold shadow-sm active:scale-95 transition-transform uppercase">
+                    新規登録
+                </button>
+            </div>
+            <button id="btn-forgot-password" class="text-[0.85rem] text-slate-500 font-bold text-center hover:underline outline-none">パスワードを忘れた場合</button>
+        </div>
+        <!-- 区切り線 -->
+        <div class="flex items-center gap-4 px-2">
+            <div class="h-px bg-slate-200 flex-1"></div>
+            <span class="text-[0.8rem] font-bold text-slate-400 uppercase tracking-tighter">または</span>
+            <div class="h-px bg-slate-200 flex-1"></div>
+        </div>
+        <!-- Google認証 -->
+        <div class="flex flex-col">
+            <button id="btn-login-google" class="w-full flex items-center justify-center gap-3 border-2 border-slate-200 bg-white px-4 py-3 text-[1rem] text-slate-700 font-bold rounded-[1rem] shadow-sm active:scale-95 transition-all">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5">
+                Googleでログイン
+            </button>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】設定系画面 -->
+<template id="tpl-config-gps">
+    <div class="w-full text-slate-900 space-y-6 px-6 py-8 bg-brand-0">
+        <div class="flex flex-col items-center gap-4">
+            <label class="block font-bold text-slate-600 text-[0.9rem] uppercase tracking-widest">間隔を変更する</label>
+            <!-- 秒数表示エリア -->
+            <div class="flex items-baseline gap-1 h-24">
+                <span id="gps-val-display" class="text-[3.5rem] font-bold text-brand-5 ">0</span>
+                <span id="gps-unit-display" class="text-[0.9rem] font-bold text-slate-600 uppercase">sec</span>
+            </div>
+            <!-- 水平スライダー -->
+            <div class="w-full px-2">
+                <input id="gps-range-slider" type="range" min="0" max="120" step="10" value="0"
+                    class="w-full h-2 bg-brand-2 rounded-lg appearance-none cursor-pointer accent-brand-5 shadow-inner">
+            </div>
+            <!-- 目盛りラベル -->
+            <div class="w-full flex justify-between px-1 text-[0.9rem] font-bold text-slate-600 uppercase">
+                <span>Off</span>
+                <span>60s</span>
+                <span>120s</span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-config-currency">
+    <div class="w-full text-slate-900 my-3 space-y-4 px-4">
+        <div>
+            <label class="block font-bold text-slate-600 text-[0.9rem] mb-1">数値の単位</label>
+            <input id="input-currency" type="text" maxlength="5" class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] text-slate-900 focus:outline-none focus:border-brand-5 bg-white uppercase" placeholder="e.g. JPY, USD, €">
+        </div>
+        <p class="text-[0.9rem] text-slate-600 ">※入力した文字列が金額の単位として表示されます。</p>
+    </div>
+</template>
+
+<template id="tpl-mode-select">
+    <div class="w-full flex flex-col bg-brand-0">
+        <button id="btn-mode-create" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900"><span class="col-span-1 flex justify-center text-[1rem]">➕</span><span class="col-span-1"></span><span class="col-span-8 text-left font-bold text-[1rem] uppercase">Create Mode</span></button>
+        <button id="btn-mode-archive" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900"><span class="col-span-1 flex justify-center text-[1rem]">📚</span><span class="col-span-1"></span><span class="col-span-8 text-left font-bold text-[1rem] uppercase">Archive Mode</span></button>
+        <button id="btn-mode-search" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900"><span class="col-span-1 flex justify-center text-[1rem]">🔍</span><span class="col-span-1"></span><span class="col-span-8 text-left font-bold text-[1rem] uppercase">Search Mode</span></button>
+        <button id="btn-mode-anon" class="w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900"><span class="col-span-1 flex justify-center text-[1rem]">👻</span><span class="col-span-1"></span><span class="col-span-8 text-left font-bold text-[1rem] uppercase">Anonymous Mode</span></button>
+    </div>
+</template>
+
+<!-- 【最終版】アプリ詳細情報：他のダイアログ作法に完全準拠 -->
+<template id="tpl-app-info">
+    <div class="w-full flex flex-col gap-4 text-slate-900 p-2">
+        <!-- カード1：アイコンと基本情報 -->
+        <div class="bg-white rounded-[1rem] border border-slate-200 p-4 flex flex-col gap-4">
+            <!-- アイコン -->
+            <div class="flex justify-center py-2">
+                <!-- カスタムシャドウを廃止し、標準の shadow-md と border-slate-200 を使用 -->
+                <div class="w-48 h-48 bg-white rounded-[1rem] shadow-md overflow-hidden border p-2 flex justify-center items-center">
+                    <img id="js-app-icon" src="" class="w-full h-full object-contain">
+                </div>
+            </div>
+            <div class="flex flex-col gap-3 mx-4">
+                <!-- ラベル: 0.9rem slate-600 / 値: 1rem bold slate-900 -->
+                <div class="flex justify-between items-baseline border-b border-slate-200 pb-2">
+                    <span class="text-[0.9rem] text-slate-600">アプリ名</span>
+                    <span class="text-[1rem] font-bold text-slate-900 js-app-name"></span>
+                </div>
+                <div class="flex justify-between items-baseline">
+                    <span class="text-[0.9rem] text-slate-600">バージョン</span>
+                    <span class="text-[1rem] font-bold text-slate-900 js-app-version font-mono"></span>
+                </div>
+            </div>
+        </div>
+        <!-- カード3：リンク・アクション -->
+        <div class="bg-white rounded-[1rem] border border-slate-200 flex flex-col overflow-hidden">
+            <button id="btn-info-review" class="w-full flex justify-between items-center p-4 border-b border-slate-200 active:bg-slate-50 transition-colors">
+                <span class="text-[0.9rem] text-slate-600">アプリの評価</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-[1rem] font-bold text-yellow-500 js-app-score"></span>
+                    <span class="text-[0.9rem] text-slate-600">(<span class="js-app-feedback-count"></span>)</span>
+                    <span class="text-[1rem] text-slate-400 ml-1">▶</span>
+                </div>
+            </button>
+            <div class="w-full flex justify-between items-center p-4 border-b border-slate-200">
+                <span class="text-[0.9rem] text-slate-600">開発者</span>
+                <span class="text-[1rem] font-bold text-slate-900 js-app-developer"></span>
+            </div>
+            <button id="link-info-official" class="w-full flex justify-between items-center p-4 active:bg-slate-50 transition-colors">
+                <span class="text-[0.9rem] text-slate-600">公式サイト</span>
+                <span class="text-[1rem] font-bold text-brand-5">Link ▶</span>
+            </button>
+        </div>
+        <!-- カード2：全体統計 -->
+        <div class="bg-white rounded-[1rem] border border-slate-200 p-4 flex flex-col gap-3">
+            <div class="flex justify-between items-baseline border-b border-slate-200 pb-2">
+                <span class="text-[0.9rem] font-bold text-slate-900">全体統計</span>
+                <!-- 作法通りの日付クラス kb-date-tim-sm を使用 -->
+                <div class="text-[0.8rem] text-slate-600">最終更新: <span class="js-last-update kb-date-tim-sm ml-1"></span></div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mt-1">
+                <div class="flex flex-col items-center bg-slate-50 rounded-lg py-3 border border-slate-100">
+                    <span class="text-[1.5rem] mb-1 drop-shadow-sm">👤</span>
+                    <span class="text-[1.2rem] font-bold text-slate-900 js-stat-users">0</span>
+                    <span class="text-[0.8rem] text-slate-600 mt-1">ユーザー</span>
+                </div>
+                <div class="flex flex-col items-center bg-slate-50 rounded-lg py-3 border border-slate-100">
+                    <span class="text-[1.5rem] mb-1 drop-shadow-sm">📚</span>
+                    <span class="text-[1.2rem] font-bold text-slate-900 js-stat-archives">0</span>
+                    <span class="text-[0.8rem] text-slate-600 mt-1">まとめ</span>
+                </div>
+                <div class="flex flex-col items-center bg-slate-50 rounded-lg py-3 border border-slate-100">
+                    <span class="text-[1.5rem] mb-1 drop-shadow-sm">📍</span>
+                    <span class="text-[1.2rem] font-bold text-slate-900 js-stat-memos">0</span>
+                    <span class="text-[0.8rem] text-slate-600 mt-1">地点メモ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-review-list">
+    <div class="w-full flex flex-col h-full bg-slate-50 pb-2">
+        <div class="shrink-0 flex flex-col items-center justify-center py-6 bg-white border-b border-slate-200  z-10">
+            <span class="text-[0.9rem] font-bold text-slate-600 uppercase tracking-[0.2em] mb-2">総合評価</span>
+            <span class="text-[4rem] font-bold text-slate-900  js-avg-score tracking-tighter">0.0</span>
+            <span class="text-[1.2rem] text-yellow-500 tracking-widest mt-2 js-avg-stars drop-"></span>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4">
+            <div class="bg-white rounded-[1rem] border border-slate-200  overflow-hidden flex flex-col js-review-container"></div>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】アプリ情報 / プロフィール / アーカイブ -->
+<template id="tpl-view-profile">
+	<div class="relative min-h-full flex flex-col bg-white px-1">
+        <!-- 匿名設定エリア（オーナー表示時のみJSで表示制御） -->
+        <div id="view-profile-anon-area" class="hidden flex items-center gap-3 px-1 pb-3 border-b border-slate-200 mb-2">
+            <button id="btn-profile-anon-toggle" class="w-12 h-6 rounded-full bg-slate-300 relative transition-colors shrink-0 outline-none">
+                <div class="js-dot absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all shadow-sm"></div>
+            </button>
+            <span id="js-anon-status-text" class="text-[0.9rem] font-bold text-slate-600">匿名モード：OFF</span>
+        </div>
+        <!-- 上部：ステータス情報 (No. と レベル) -->
+        <div class="flex justify-between items-baseline px-1 border-b border-slate-200 pb-2 mb-2">
+            <div class="flex items-center gap-2">
+                <span class="text-[1rem] font-black text-slate-600 uppercase tracking-widest">
+                    No.<span id="view-profile-member-no" class="text-slate-700 text-[1rem] ml-1"></span>
+                </span>
+            </div>
+            <!-- ランク（レベル）を右端に移動 -->
+            <div class="flex items-center gap-2">
+                <span class="text-[1rem] font-black text-slate-600 uppercase tracking-widest">
+                    Lv.<span id="view-profile-rank" class="text-slate-700 text-[1rem] ml-1"></span>
+                </span>
+            </div>
+        </div>
+        <!-- アイコン・ニックネーム -->
+		<div class="flex items-center gap-4 mb-3 px-1">
+			<div id="view-profile-icon" class="text-[4rem] drop-shadow-md shrink-0"></div>
+			<div class="flex flex-col flex-1 min-w-0 gap-1">
+                <!-- 称号をバッジ化せずテキストのみで上部に配置 -->
+                <span id="view-profile-category" class="text-brand-5 text-[1rem] font-black tracking-wider"></span>
+                <!-- ニックネーム -->
+                <h1 id="view-profile-nickname" class="text-[1.2rem] font-black text-slate-800 break-words leading-tight"></h1>
+            </div>
+		</div>
+        <!-- 本文・リンク -->
+        <div class="bg-brand-1_ overflow-y-auto_ rounded-lg border-t border-slate-200">
+            <div id="view-profile-description"
+                class="flex-1 min-h-[200px] p-3 text-[1rem] text-slate-600 leading-[1.8] whitespace-pre-wrap break-words">
+            </div>
+            <div id="view-profile-links" class="flex flex-col gap-3 mb-2"></div>
+        </div>
+	</div>
+</template>
+
+<template id="tpl-edit-profile">
+	<div class="w-full text-black-5 space-y-3 px-1 pb-4">
+        <!-- アイコン ＆ カテゴリ（中段で横並び） -->
+		<div class="flex items-end gap-3 py-1">
+			<div class="shrink-0 flex flex-col items-center">
+				<button id="btn-profile-icon-trigger" 
+                    class="w-16 h-16 bg-white text-[3rem] rounded-[1rem] shadow-md flex items-center justify-center active:scale-95 transition-transform outline-none">
+                    <span id="edit-profile-icon-preview">😀</span>
+                    <input type="hidden" id="edit-profile-icon"></button>
+			</div>
+            <div class="flex-1">
+                <div class="flex justify-between items-end mb-1">
+                    <label class="block text-[0.9rem] font-bold uppercase text-slate-600">称号・二つ名</label>
+                    <span class="text-[0.9rem] font-bold text-slate-600"><span id="edit-profile-category-count">0</span>/10</span>
+                </div>
+                <input id="edit-profile-category" type="text" maxlength="10" placeholder="通りすがり" 
+                    class="w-full border-2 border-brand-3 px-4 py-2 text-[1rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white">
+            </div>
+		</div>
+        <!-- ニックネーム（上段で横幅いっぱい） -->
+		<div>
+			<div class="flex justify-between items-end mb-1">
+                <label class="block text-[0.9rem] font-bold uppercase text-slate-600">ニックネーム</label>
+                <span class="text-[0.9rem] font-bold text-slate-600"><span id="edit-profile-nickname-count">0</span>/20</span>
+            </div>
+			<input id="edit-profile-nickname" type="text" maxlength="20" 
+                class="w-full border-2 border-brand-3 px-4 py-2 text-[1rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white">
+		</div>
+        <!-- 紹介文 -->
+		<div>
+			<div class="flex justify-between items-end mb-1"><label class="block text-[0.9rem] font-bold uppercase text-slate-600">紹介文</label><span class="text-[0.9rem] font-bold text-slate-600"><span id="edit-profile-description-count">0</span>/300</span></div>
+			<textarea id="edit-profile-description" maxlength="300" 
+                class="w-full border-2 border-brand-3 px-4 py-3 text-[1rem] h-[300px] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white resize-none"></textarea>
+		</div>
+		<div class="space-y-2">
+			<label class="block text-[0.9rem] font-bold uppercase text-slate-600">各SNSリンク</label>
+            <div class="flex items-center gap-2">
+                <input id="edit-profile-link1" type="url" placeholder="URL 1 (https://...)" class="flex-1 border-2 border-brand-3 px-4 py-2 text-[0.9rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white text-blue-600">
+                <button id="btn-edit-profile-link1-clear" type="button" class="w-8 h-8 shrink-0 flex items-center justify-center bg-slate-200 rounded-full text-[0.9rem] active:scale-95 transition-all">✕</button>
+            </div>
+            <div class="flex items-center gap-2">
+                <input id="edit-profile-link2" type="url" placeholder="URL 2 (https://...)" class="flex-1 border-2 border-brand-3 px-4 py-2 text-[0.9rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white text-blue-600">
+                <button id="btn-edit-profile-link2-clear" type="button" class="w-8 h-8 shrink-0 flex items-center justify-center bg-slate-200 rounded-full text-[0.9rem] active:scale-95 transition-all">✕</button>
+            </div>
+            <div class="flex items-center gap-2">
+                <input id="edit-profile-link3" type="url" placeholder="URL 3 (https://...)" class="flex-1 border-2 border-brand-3 px-4 py-2 text-[0.9rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white text-blue-600">
+                <button id="btn-edit-profile-link3-clear" type="button" class="w-8 h-8 shrink-0 flex items-center justify-center bg-slate-200 rounded-full text-[0.9rem] active:scale-95 transition-all">✕</button>
+            </div>
+		</div>
+	</div>
+</template>
+
+<!-- 【ダイアログ子】アーカイブ詳細表示 -->
+<template id="tpl-view-archive">
+    <div class="w-full flex flex-col gap-6 text-slate-900 bg-white pb-4">
+        <!-- セクション：作成者 -->
+        <div class="flex flex-col gap-2">
+            <label class="text-[0.9rem] font-bold text-slate-600 uppercase">旅の案内人</label>
+            <div id="view-mem-user-wrapper" class="w-fit"></div>
+        </div>
+        <!-- セクション：ステータス -->
+        <div id="archive-status-bar-container">
+        </div>
+        <!-- セクション：タイトル -->
+        <div class="flex flex-col gap-1 border-t border-slate-200 pt-4">
+            <!-- カテゴリ追加 -->
+            <div id="view-mem-category" class="text-[0.9rem] font-bold text-brand-5 px-1 mb-0.5">カテゴリ</div>
+            <h1 id="view-mem-title" class="text-[1.2rem] font-bold break-words px-1"></h1>
+        </div>
+        <!-- セクション：説明文 -->
+        <div class="flex flex-col gap-1 border-t border-slate-200 pt-4">
+            <div id="view-mem-body" class="text-[1rem] leading-[1.8] whitespace-pre-wrap break-words px-1"></div>
+        </div>
+        <!-- セクション：リンク -->
+        <div id="view-mem-url-wrapper"  class="flex flex-col gap-2 py-2">
+            <div id="view-mem-url-wrapper2" class="flex flex-col gap-2"></div>
+        </div>
+        <!-- セクション：統計情報 -->
+        <div class="flex flex-col gap-3 border-y border-slate-200 p-4">
+            <div class="flex flex-col gap-2 _px-1">
+                <!-- 地点メモ数 -->
+                <div class="flex justify-between items-baseline">
+                    <span class="text-[0.9rem] text-slate-600">地点メモ数</span>
+                    <button id="btn-view-mem-timeline" class="text-[1rem] font-bold underline text-brand-5">
+                        <span id="mem-stat-count">0</span> 件 (タイムライン表示)
+                    </button>
+                </div>
+                <!-- 総移動距離 -->
+                <div class="flex justify-between items-baseline">
+                    <span class="text-[0.9rem] text-slate-600">総移動距離</span>
+                    <span class="text-[1rem] font-bold italic">
+                        <span id="mem-stat-distance">0</span>
+                        <span class="text-[0.9rem] font-normal text-slate-600">km</span>
+                    </span>
+                </div>
+                <!-- 合計金額 -->
+                <div class="flex justify-between items-baseline">
+                    <span class="text-[0.9rem] text-slate-600">合計金額</span>
+                    <span class="text-[1rem] font-bold italic">
+                        <span id="mem-stat-price">0</span>
+                        <span id="view-mem-price-unit" class="text-[0.9rem] font-normal text-slate-600"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 【追加】まとめ公開状況管理ステッパー -->
+<template id="tpl-archive-status-stepper">
+    <div class="bg-white flex flex-col gap-2 w-full mx-auto">
+        <!-- タイトル -->
+        <h3 class="font-bold text-slate-600 text-[0.9rem] tracking-tight">現在の公開状況</h3>
+        <!-- カードコンテナ -->
+        <div class="flex gap-2 px-2 h-20 mb-2">
+            <!-- 非公開 -->
+            <div data-step="1" 
+                class="js-step-card flex-1 flex flex-col items-center justify-center _rounded-[1rem] bg-slate-900 transition-all">
+                <span class="font-bold text-white text-center text-[0.9rem]">🔒<br>非公開</span>
+            </div>
+            <!-- 公開準備中 -->
+            <div data-step="2" 
+                class="js-step-card flex-1 flex flex-col items-center justify-center _rounded-[1rem] bg-slate-600 transition-all">
+                <span class="font-bold text-white text-center text-[0.9rem]">－<br>公開準備</span>
+            </div>
+            <!-- 公開中 -->
+            <div data-step="3" 
+                class="js-step-card flex-1 flex flex-col items-center justify-center _rounded-[1rem] bg-brand-5 transition-all relative">
+                <div id="js-stepper-limited-badge" 
+                    class="absolute top-1 right-1 bg-amber-100 text-amber-600 text-[0.8rem] rounded-full font-black px-1.5 py-0.5 opacity-0 transition-opacity">限定</div>
+                <span class="font-bold text-white text-center text-[0.9rem]">◎<br>公開中</span>
+            </div>
+        </div>
+        <!-- アクションボタン -->
+        <div class="_px-2">
+            <button id="btn-archive-status-change" 
+                class="w-full py-3 border-2 border-brand-5 text-slate-900 font-bold rounded-[1rem] shadow-md active:scale-95 transition-all text-[1rem] tracking-wider">
+                公開ステータスを変更する
+            </button>
+        </div>
+    </div>
+</template>
+
+<!-- まとめ詳細編集画面 -->
+<template id="tpl-edit-archive">
+    <div class="w-full text-slate-900 space-y-4 mb-4">
+        <!-- カテゴリ追加 -->
+        <div>
+            <div class="flex justify-between items-end mb-1">
+                <label class="text-slate-600 block text-[0.9rem] font-bold uppercase">Category</label>
+                <span class="text-[0.9rem] text-slate-600 font-bold"><span id="edit-mem-category-count">0</span>/10</span>
+            </div>
+            <input id="edit-mem-category" type="text" maxlength="10" placeholder="旅行、グルメなど" class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white">
+        </div>
+        <!-- タイトル -->
+        <div>
+            <div class="flex justify-between items-end mb-1">
+                <label class="text-slate-600 block text-[0.9rem] font-bold uppercase">
+                    まとめのタイトル
+                </label>
+                <span class="text-[0.9rem] text-slate-600 font-bold"><span id="edit-mem-title-count">0</span>/30</span></div>
+            <input id="edit-mem-title" type="text" maxlength="30" 
+                class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white">
+        </div>
+        <!-- 本文 -->
+        <div>
+            <div class="flex justify-between items-end mb-1">
+                <label class="text-slate-600 block text-[0.9rem] font-bold uppercase">
+                    まとめの説明
+                </label>
+                <span class="text-[0.9rem] text-slate-600 font-bold">
+                <span id="edit-mem-body-count">0</span>/1000</span>
+            </div>
+            <textarea id="edit-mem-body" maxlength="1000" 
+                class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] h-[300px] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white resize-none"></textarea>
+        </div>
+        <!-- リンク -->
+        <div>
+            <label class="text-slate-600 block text-[0.9rem] font-bold mb-1 uppercase">
+                Link URL
+            </label>
+            <div class="flex items-center gap-2">
+                <input id="edit-mem-url" type="url" placeholder="https://..." 
+                    class="flex-1 border-2 border-brand-3 px-3 py-2 text-[1rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white text-blue-600">
+                <button id="btn-edit-mem-url-clear" type="button" 
+                    class="w-8 h-8 shrink-0 flex items-center justify-center bg-slate-200 rounded-full text-[0.9rem] active:scale-95 transition-all">✕</button>
+            </div>
+        </div>
+        <!-- 通貨単位 -->
+        <div>
+            <label class="text-slate-600 block text-[0.9rem] font-bold mb-1 uppercase">
+                通貨単位
+            </label>
+            <input id="edit-mem-currency" type="text" maxlength="5" placeholder="円, ドル..." 
+                class="w-full border-2 border-brand-3 px-3 py-2 text-[1rem] rounded-[1rem] focus:outline-none focus:border-brand-5 bg-white uppercase text-slate-900">
+        </div>
+    </div>
+</template>
+
+<!-- まとめ共有画面 -->
+<template id="tpl-share-archive">
+    <div class="w-full text-black-5 flex flex-col items-center pb-4">
+        <!-- タイトル -->
+        <div class="w-full px-2 mt-2 border-l-4 border-brand-3 py-2">
+            <div id="share-archive-title" class="text-[1.1rem] font-black text-black-5 break-words"></div>
+        </div>
+        <!-- QRコード ＆ コピー案内 -->
+        <div class="w-full flex flex-col items-center my-6">
+            <button id="btn-share-copy" class="shadow-md w-48 h-48 p-3 bg-white rounded-[1rem] active:scale-95 transition-transform flex items-center justify-center border border-slate-200 outline-none">
+                <img id="share-qr-image" src="" alt="QR Code" class="w-full h-full object-contain">
+            </button>
+            <span class="text-[0.9rem] font-bold text-slate-600 mt-3 tracking-wider">※ QRコードをタップするとURLをコピーできます</span>
+        </div>
+        <!-- SNSシェアボタン -->
+        <div class="flex items-center justify-center gap-6 mt-2">
+            <!-- LINE -->
+            <button id="btn-share-line" class="w-12 h-12 rounded-full bg-[#06C755] text-white flex items-center justify-center text-[1.2rem] font-black shadow-md active:scale-95 transition-transform outline-none">
+                L
+            </button>
+            <!-- X -->
+            <button id="btn-share-x" class="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center text-[1.2rem] font-black shadow-md active:scale-95 transition-transform outline-none">
+                X
+            </button>
+            <!-- Facebook -->
+            <button id="btn-share-fb" class="w-12 h-12 rounded-full bg-[#1877F2] text-white flex items-center justify-center text-[1.2rem] font-black shadow-md active:scale-95 transition-transform outline-none">
+                f
+            </button>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】通知詳細 -->
+<template id="tpl-view-notice">
+    <div class="w-full flex flex-col gap-4">
+        <!-- 基本情報カード -->
+        <div class="bg-white rounded-[1rem] border border-slate-200 p-4 flex flex-col gap-2">
+            <!-- アイコン（通知種別） -->
+            <div class="flex justify-between items-baseline border-b border-slate-200 pb-2 mb-1">
+                <span class="text-[0.9rem] text-slate-600">通知種別</span>
+                <span id="view-notice-icon" class="kb-icon-emoji-lg"></span>
+            </div>
+            <!-- 日時 -->
+            <div class="flex justify-between items-baseline">
+                <span class="text-[0.9rem] text-slate-600">受信日時</span>
+                <span id="view-notice-date" class="kb-date-tim-md"></span>
+            </div>
+            <!-- ユーザー情報（差出人など：JS側で動的に表示/非表示） -->
+            <div id="view-notice-user-wrapper" class="hidden mt-2 pt-2 border-t border-slate-200"></div>
+            <!-- タイトル領域（件名：JS側で動的に表示/非表示） -->
+            <div id="view-notice-title-area" class="flex flex-col mt-2 pt-2 border-t border-slate-200 gap-1">
+                <span class="text-[0.9rem] text-slate-600">件名</span>
+                <div id="view-notice-title" class="text-[1rem] font-bold text-slate-900 break-words"></div>
+            </div>
+        </div>
+        <!-- 本文・リンクカード -->
+        <div class="bg-white rounded-[1rem] border border-slate-200 p-4 flex flex-col gap-3 flex-1 mb-1">
+            <span class="text-[0.9rem] text-slate-600 border-b border-slate-200 pb-2">内容</span>
+            <div id="view-notice-body" class="text-[1rem] text-slate-900 leading-[1.8] whitespace-pre-wrap break-words min-h-[150px]"></div>
+            <!-- リンク表示エリア -->
+            <div id="view-notice-url-wrapper" class="hidden mt-auto pt-4 border-t border-slate-200 flex-col gap-2">
+                <span class="text-[0.9rem] text-slate-600">関連リンク</span>
+                <!-- JSでボタンがappendされる -->
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-multi-select-content">
+    <div class="flex flex-col h-full w-full overflow-hidden">
+        <div class="flex-1 overflow-y-auto flex flex-col min-h-0 pr-2">
+            <div class="js-list-container space-y-3 pb-4 px-1 flex-1"></div>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】自分の通報詳細 -->
+<template id="tpl-my-report-detail">
+    <div class="w-full flex flex-col gap-4 text-slate-900 p-2">
+        <!-- 基本情報 -->
+        <div class="flex flex-col gap-3 border-b border-slate-200 pb-4">
+            <div class="flex justify-between items-baseline border-b border-slate-200 pb-2">
+                <span class="text-[0.9rem] text-slate-600">通報日時</span>
+                <span class="js-report-tim kb-date-tim-md"></span>
+            </div>
+            <!-- 対象ユーザー -->
+            <div class="flex flex-col gap-1">
+                <span class="text-[0.9rem] text-slate-600">対象ユーザー</span>
+                <div id="view-report-target-user-wrapper" class="w-full"></div>
+            </div>
+            <!-- 対象まとめ -->
+            <div class="flex flex-col gap-1">
+                <span class="text-[0.9rem] text-slate-600">対象まとめ</span>
+                <button id="btn-report-jump-archive" class="h-10 w-full flex items-center justify-between p-3 bg-white rounded-full active:bg-slate-50 transition-colors text-left shadow-md">
+                    <div class="flex-1 min-w-0 pr-2">
+                        <div id="view-report-archive-title" class="text-[1rem] font-bold text-slate-900 truncate"></div>
+                    </div>
+                    <span class="text-[1rem] ml-2">👉</span>
+                </button>
+            </div>
+        </div>
+        <!-- 通報内容 -->
+        <div class="flex flex-col gap-2">
+            <span class="text-[0.9rem] text-slate-600">通報内容</span>
+            <div id="view-report-body" class="text-[1rem] text-slate-900 leading-[1.8] whitespace-pre-wrap break-words p-3 bg-slate-50 border border-slate-200 rounded-lg min-h-[150px]"></div>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】クリック集計表示用親枠 -->
+<template id="tpl-click-stats">
+    <div class="w-full flex flex-col bg-slate-50 min-h-full pb-4">
+        <!-- ユーザー情報 -->
+        <div class="bg-white border-b border-slate-200 p-4 mb-4 ">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2 text-slate-900 font-bold">
+                    <span class="text-[1.5rem]">👤</span>
+                    <span class="text-[0.9rem]">ユーザー情報</span>
+                </div>
+                <span class="js-user-id text-[0.9rem] text-slate-600 font-bold"></span>
+            </div>
+            <div>
+                <label class="block text-[0.9rem] font-bold text-slate-600 mb-1">ニックネーム</label>
+                <div class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-600 px-3 py-1.5 rounded-md font-bold border border-amber-100 text-[0.9rem]">
+                    <span>📁</span> <span class="js-nickname"></span>
+                </div>
+            </div>
+        </div>
+        <!-- リンク集計リストコンテナ -->
+        <div class="js-links-container space-y-4 px-4"></div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】リンク1件分のアイテム -->
+<template id="tpl-archive-click-stats_2">
+    <div class="w-full flex flex-col gap-6 text-slate-900 p-2">
+        <!-- アーカイブ基本情報 -->
+        <div class="bg-white flex flex-col gap-4">
+            <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                <span class="text-[1.2rem]">📊</span>
+                <span class="text-[1rem] font-black tracking-tight">まとめの統計レポート</span>
+            </div>
+            <div class="grid grid-cols-1 gap-3">
+                <div class="flex justify-between items-center px-1">
+                    <span class="text-[0.9rem] text-slate-600">公開ステータス</span>
+                    <div class="flex gap-1 items-center">
+                        <span class="js-arc-status-badge px-3 py-1 rounded-full text-[0.8rem] font-bold"></span>
+                        <span class="js-arc-owner-badge hidden bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[0.7rem] font-bold border border-blue-100">OWNER</span>
+                    </div>
+                </div>
+                <div class="flex border-t border-slate-50 pt-3 px-1">
+                    <span class="text-[1rem] font-bold text-slate-900 js-arc-title line-clamp-2 text-right flex-1 ml-4"></span>
+                </div>
+                <div class="flex justify-between items-baseline border-t border-slate-50 pt-3 px-1">
+                    <span class="text-[0.9rem] text-slate-600">累計閲覧数</span>
+                    <span class="text-[1.3rem] font-black text-brand-5 js-arc-view-count">0</span>
+                </div>
+            </div>
+            <!-- リンク解析セクション -->
+            <div class="mt-2 p-4 bg-slate-50 rounded-xl flex flex-col gap-3">
+                <div class="flex flex-col gap-1 mb-1">
+                    <span class="text-[0.8rem] font-bold text-slate-500 uppercase tracking-widest">Official Link</span>
+                    <div class="text-[0.9rem] text-blue-500 font-bold truncate js-arc-url"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="flex flex-col border-l-2 border-brand-3 pl-3">
+                        <span class="text-[0.7rem] text-slate-600 font-bold">Total</span>
+                        <span class="js-arc-total text-[1.1rem] font-black">0</span>
+                    </div>
+                    <div class="flex flex-col border-l-2 border-slate-200 pl-3">
+                        <span class="text-[0.7rem] text-slate-600 font-bold">Unique</span>
+                        <span class="js-arc-unique text-[1.1rem] font-black">0</span>
+                    </div>
+                    <div class="flex flex-col border-l-2 border-slate-200 pl-3">
+                        <span class="text-[0.7rem] text-slate-600 font-bold">Guest</span>
+                        <span class="js-arc-guest text-[1.1rem] font-black">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 明細リスト見出し -->
+        <div class="flex items-center gap-3 px-2">
+            <div class="h-px bg-slate-200 flex-1"></div>
+            <span class="text-[0.8rem] font-bold text-slate-400 uppercase tracking-[0.3em]">Details</span>
+            <div class="h-px bg-slate-200 flex-1"></div>
+        </div>
+        <!-- 明細コンテナ -->
+        <div class="js-details-container flex flex-col gap-4"></div>
+    </div>
+</template>
+<!-- 【ダイアログ子】アーカイブ・明細クリック集計表示用親枠 -->
+<template id="tpl-archive-click-stats-item_2">
+    <div class="relative bg-white rounded-[1rem] p-4 shadow-sm overflow-hidden flex flex-col gap-4">
+        <!-- 左端のアクセントライン -->
+        <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-5 opacity-50"></div>
+        <div class="flex justify-between items-start pl-1">
+            <div class="flex items-center gap-3">
+                <span class="js-dtl-seq w-7 h-7 bg-slate-900 text-white text-[0.9rem] font-black rounded-full flex items-center justify-center italic"></span>
+                <span class="js-dtl-title text-[1rem] font-bold text-slate-900 truncate max-w-[200px]"></span>
+            </div>
+            <span class="js-dtl-icon shrink-0 kb-icon-emoji-md"></span>
+        </div>
+        <!-- リアクション集計：チップ風デザイン -->
+        <div class="flex flex-col gap-2 pl-1">
+            <span class="text-[0.8rem] font-bold text-slate-500 uppercase tracking-tighter">Reactions</span>
+            <div class="js-dtl-reactions flex flex-wrap gap-2"></div>
+        </div>
+        <!-- リンク統計：カード内カード形式 -->
+        <div class="js-dtl-stats-box hidden flex flex-col gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+            <div class="flex flex-col gap-0.5">
+                <span class="text-[0.7rem] font-bold text-slate-500">Destination</span>
+                <span class="js-dtl-url text-[0.85rem] text-blue-600 font-bold truncate"></span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 border-t border-slate-200 pt-2">
+                <div class="flex flex-col">
+                    <span class="text-[0.7rem] text-slate-500 font-bold">Total</span>
+                    <span class="js-dtl-total text-[1rem] font-black">0</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[0.7rem] text-slate-500 font-bold">Unique</span>
+                    <span class="js-dtl-unique text-[1rem] font-black">0</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[0.7rem] text-slate-500 font-bold">Guest</span>
+                    <span class="js-dtl-guest text-[1rem] font-black">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-archive-click-stats">
+    <div class="w-full flex flex-col gap-5 text-slate-900 bg-white">
+        <!-- セクション：対象まとめ -->
+        <div class="flex flex-col gap-1">
+            <label class="text-[0.9rem] font-bold text-slate-600">対象まとめ</label>
+            <div class="px-4 py-1 flex flex-col gap-2">
+                <div class="text-[1rem] font-bold text-slate-900 js-arc-title line-clamp-2"></div>
+                <!-- ステータス・オーナーバッジ -->
+                <div class="flex gap-2 items-center">
+                    <span class="js-arc-status-badge px-2 py-0.5 rounded text-[0.8rem] font-bold"></span>
+                    <span class="js-arc-owner-badge hidden bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[0.7rem] font-bold border border-blue-100 uppercase">OWNER</span>
+                </div>
+            </div>
+        </div>
+        <!-- セクション：累計閲覧数 -->
+        <div class="flex flex-col gap-1 border-t border-slate-200 pt-3">
+            <label class="text-[0.9rem] font-bold text-slate-600">累計閲覧数</label>
+            <div class="text-[1.1rem] font-bold text-brand-5 px-4"><span class="js-arc-view-count">0</span> 回</div>
+        </div>
+        <!-- セクション：リンク解析 -->
+        <div class="flex flex-col gap-1 border-t border-slate-200 pt-3">
+            <label class="text-[0.9rem] font-bold text-slate-600">リンク解析</label>
+            <div class="js-arc-link-container flex flex-col gap-3 mt-1">
+                <div class="bg-slate-50 rounded-[1rem] p-4 flex flex-col gap-2 border border-slate-200">
+                    <div class="js-arc-url text-blue-500 font-bold italic break-all text-[0.9rem] mb-1 line-clamp-1"></div>
+                    <div class="px-4">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-[0.9rem] text-slate-600">総クリック数</span>
+                            <span class="js-arc-total text-[1rem] font-bold text-brand-5">0</span>
+                        </div>
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-[0.9rem] text-slate-600">クリックユーザ数</span>
+                            <span class="js-arc-unique text-[1rem] font-bold text-slate-700">0</span>
+                        </div>
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-[0.9rem] text-slate-600">Guestクリック数</span>
+                            <span class="js-arc-guest text-[1rem] font-bold text-slate-600">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- セクション：地点別詳細 -->
+        <div class="flex flex-col gap-1 border-t border-slate-200 pt-3">
+            <label class="text-[0.9rem] font-bold text-slate-600">地点メモ別統計</label>
+            <div class="js-details-container flex flex-col"></div>
+        </div>
+    </div>
+</template>
+<template id="tpl-archive-click-stats-item">
+    <div class="flex flex-col gap-2 py-6 border-b pr-2">
+        <!-- 地点ヘッダー -->
+        <div class="flex items-center gap-2">
+            <span class="js-dtl-seq w-6 h-6 bg-slate-800 text-white text-[0.8rem] font-bold rounded-full flex items-center justify-center shrink-0"></span>
+            <span class="js-dtl-title text-[1rem] font-bold text-slate-900 truncate flex-1"></span>
+            <span class="js-dtl-icon kb-icon-emoji-lg shrink-0"></span>
+        </div>
+        <div class="flex flex-col gap-1 py-1 px-4">
+            <!-- リアクション -->
+            <div class="flex justify-between items-baseline">
+                <!-- <span class="text-[0.9rem] text-slate-600">リアクション数</span> -->
+                <div class="js-dtl-reactions flex gap-3 text-[1rem] font-bold"></div>
+            </div>
+            <!-- 個別リンク統計 -->
+            <div class="js-dtl-stats-box hidden mt-2 flex flex-col gap-2">
+                <div class="bg-slate-50 rounded-[1rem] p-4 flex flex-col gap-2 border border-slate-200">
+                    <div class="js-dtl-url text-blue-500 font-bold italic break-all text-[0.9rem] mb-1 line-clamp-1"></div>
+                    <div class="px-4">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-[0.9rem] text-slate-600">総クリック数</span>
+                            <span class="js-dtl-total text-[1rem] font-bold text-brand-5">0</span>
+                        </div>
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-[0.9rem] text-slate-600">クリックユーザ数</span>
+                            <span class="js-dtl-unique text-[1rem] font-bold text-slate-700">0</span>
+                        </div>
+                        <!-- js-dtl-guest を復活 -->
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-[0.9rem] text-slate-600">Guestクリック数</span>
+                            <span class="js-dtl-guest text-[1rem] font-bold text-slate-600">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】法的情報詳細 -->
+<template id="tpl-view-legal">
+    <div class="w-full flex flex-col gap-4 text-slate-900 p-2">
+        <!-- 更新日時 -->
+        <div class="flex justify-between items-baseline border-b border-slate-200 pb-2 px-1 mt-2">
+            <span class="text-[0.9rem] font-bold text-slate-600 uppercase tracking-widest">最終更新日時</span>
+            <span class="js-legal-date kb-date-tim-sm"></span>
+        </div>
+        <!-- 本文エリア -->
+        <div class="bg-slate-50 border border-slate-200 rounded-[1rem] p-4 min-h-[300px]">
+            <div class="js-legal-body text-[1rem] text-slate-900 leading-[1.8] whitespace-pre-wrap break-words"></div>
+        </div>
+    </div>
+</template>
+
+<!-- 【ダイアログ子】公開状態変更メニュー -->
+<template id="tpl-archive-status-change">
+    <div class="w-full flex flex-col gap-4 p-2">
+        <h3 class="text-center font-bold text-slate-900 text-[1rem] mb-2">公開状態を変更する</h3>
+        <!-- ①まとめ解体：背景白、枠あり（テーマカラー） -->
+        <button data-id="1" class="js-status-btn w-full py-4 text-[1rem] font-bold rounded-[1rem] transition-all bg-white border-2 border-brand-5 text-brand-5">
+            野良メモ（まとめ解体）
+        </button>
+        <!-- ②非公開：黒 -->
+        <button data-id="2" class="js-status-btn w-full py-4 text-[1rem] font-bold rounded-[1rem] transition-all bg-slate-900 text-white">
+            非公開
+        </button>
+        <!-- ③公開準備：グレー -->
+        <button data-id="3" class="js-status-btn w-full py-4 text-[1rem] font-bold rounded-[1rem] transition-all bg-slate-500 text-white">
+            公開準備中
+        </button>
+        <!-- ④限定公開：テーマカラー、枠あり（オレンジ） -->
+        <button data-id="4" class="js-status-btn w-full py-4 text-[1rem] font-bold rounded-[1rem] transition-all bg-brand-5 border-2 border-orange-400 text-white">
+            限定公開中
+        </button>
+        <!-- ⑤完全公開：テーマカラー -->
+        <button data-id="5" class="js-status-btn w-full py-4 text-[1rem] font-bold rounded-[1rem] transition-all bg-brand-5 text-white">
+            完全公開中
+        </button>
+    </div>
+</template>
+

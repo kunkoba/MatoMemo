@@ -1,0 +1,535 @@
+﻿{
+  "MatoMemo": {
+    "_Docker起動.txt": null,
+    "deploy": {},
+    "dev": {
+      "Dockerfile.dev": null
+    },
+    "_src": {
+      "★アプリ再構築.ods": null,
+      "★アプリ開発支援_指示書.txt": null,
+      "★アプリ開発支援_指示書（テンプレ）.txt": null,
+      "★アプリ開発支援_指示書１.txt": null,
+      "★改修案.txt": null,
+      "backend": {
+        "LittleTripMemo.sln": null,
+        "LittleTripMemo": {
+          ".dockerignore": null,
+          "appsettings.Development.json": null,
+          "appsettings.json": null,
+          "Dockerfile": null,
+          "libman.json": null,
+          "LittleTripMemo.http": null,
+          "MatoMemo.csproj": null,
+          "MatoMemo.csproj.user": null,
+          "Program.cs": null,
+          "★ngrok使用方法.txt": null,
+          "デザイン集.ods": null,
+          "Attribute": {
+            "CustomAuthorizeAttribute.cs": null
+          },
+          "bin": {
+            "Debug": {
+              "net8.0": {
+                "appsettings.Development.json": null,
+                "appsettings.json": null,
+                "libman.json": null,
+                "LittleTripMemo.deps.json": null,
+                "LittleTripMemo.exe": null,
+                "LittleTripMemo.pdb": null,
+                "LittleTripMemo.runtimeconfig.json": null,
+                "LittleTripMemo.staticwebassets.endpoints.json": null,
+                "LittleTripMemo.staticwebassets.runtime.json": null,
+                "cs": {},
+                "de": {},
+                "es": {},
+                "fr": {},
+                "it": {},
+                "ja": {},
+                "ko": {},
+                "pl": {},
+                "pt-BR": {},
+                "ru": {},
+                "runtimes": {
+                  "browser": {
+                    "lib": {
+                      "net8.0": {}
+                    }
+                  }
+                },
+                "tr": {},
+                "zh-Hans": {},
+                "zh-Hant": {}
+              }
+            },
+            "Release": {
+              "net8.0": {
+                "appsettings.Development.json": null,
+                "appsettings.json": null,
+                "libman.json": null,
+                "LittleTripMemo.deps.json": null,
+                "LittleTripMemo.exe": null,
+                "LittleTripMemo.pdb": null,
+                "LittleTripMemo.runtimeconfig.json": null,
+                "LittleTripMemo.staticwebassets.endpoints.json": null,
+                "LittleTripMemo.staticwebassets.runtime.json": null,
+                "cs": {},
+                "de": {},
+                "es": {},
+                "fr": {},
+                "it": {},
+                "ja": {},
+                "ko": {},
+                "pl": {},
+                "pt-BR": {},
+                "ru": {},
+                "runtimes": {
+                  "browser": {
+                    "lib": {
+                      "net8.0": {}
+                    }
+                  }
+                },
+                "tr": {},
+                "wwwroot - コピー": {},
+                "wwwroot - コピー (2)": {},
+                "wwwroot - コピー (3)": {},
+                "wwwroot - コピー (4)": {},
+                "wwwroot - コピー (6)": {},
+                "wwwroot copy": {},
+                "wwwroot copy2": {},
+                "wwwroot copy3": {},
+                "zh-Hans": {},
+                "zh-Hant": {},
+                "_DEL": {
+                  "_old1": {
+                    "_wwwroot": {},
+                    "_新しいフォルダー": {
+                      "新しいフォルダー": {
+                        "mock - コピー": {}
+                      }
+                    }
+                  },
+                  "_old2": {
+                    "wwwroot2 - コピー (10)": {},
+                    "wwwroot2 - コピー (11)": {},
+                    "wwwroot2 - コピー (12)": {},
+                    "wwwroot2 - コピー (13)": {},
+                    "wwwroot2 - コピー (14)": {},
+                    "wwwroot2 - コピー (3)": {},
+                    "wwwroot2 - コピー (4)": {},
+                    "wwwroot2 - コピー (5)": {},
+                    "wwwroot2 - コピー (6)": {},
+                    "wwwroot2 - コピー (7)": {},
+                    "wwwroot2 - コピー (8)": {},
+                    "wwwroot2 - コピー (9)": {}
+                  }
+                },
+                "_old1": {
+                  "_wwwroot": {},
+                  "_新しいフォルダー": {
+                    "新しいフォルダー": {
+                      "mock - コピー": {}
+                    }
+                  }
+                },
+                "_old2": {
+                  "wwwroot2 - コピー (10)": {},
+                  "wwwroot2 - コピー (11)": {},
+                  "wwwroot2 - コピー (12)": {},
+                  "wwwroot2 - コピー (13)": {},
+                  "wwwroot2 - コピー (14)": {},
+                  "wwwroot2 - コピー (3)": {},
+                  "wwwroot2 - コピー (4)": {},
+                  "wwwroot2 - コピー (5)": {},
+                  "wwwroot2 - コピー (6)": {},
+                  "wwwroot2 - コピー (7)": {},
+                  "wwwroot2 - コピー (8)": {},
+                  "wwwroot2 - コピー (9)": {}
+                }
+              }
+            }
+          },
+          "Common": {
+            "EnumManager.cs": null,
+            "ErrorCodes.cs": null,
+            "interface.cs": null,
+            "SafeUrlAttribute.cs": null,
+            "SystemStatus.cs": null,
+            "UserContext.cs": null,
+            "UserValidationFilter.cs": null
+          },
+          "Configs": {
+            "MyAppSettings.cs": null
+          },
+          "Controllers": {
+            "AccountController.cs": null,
+            "AdminController.cs": null,
+            "CoreController.cs": null,
+            "PrivateController.cs": null,
+            "PublicController.cs": null,
+            "SysController.cs": null,
+            "_BaseController.cs": null,
+            "Debug": {
+              "DebugController.cs": null
+            }
+          },
+          "DataAccess": {
+            "DapperTypeHandlers.cs": null
+          },
+          "DbContext": {
+            "ApplicationDbContext.cs": null
+          },
+          "Exceptions": {
+            "BusinessException.cs": null,
+            "ErrorResponse.cs": null,
+            "ExceptionHandling.cs": null
+          },
+          "Extensions": {
+            "ServiceExtensions.cs": null
+          },
+          "Infrastructure": {
+            "TransactionProvider.cs": null
+          },
+          "JWT": {
+            "JwtMiddleware.cs": null,
+            "JwtService.cs": null
+          },
+          "Logs": {
+            "error-20260706.txt": null,
+            "error-20260711.txt": null,
+            "error-20260725.txt": null,
+            "log-20260629.txt": null,
+            "log-20260630.txt": null,
+            "log-20260701.txt": null,
+            "log-20260702.txt": null,
+            "log-20260703.txt": null,
+            "log-20260704.txt": null,
+            "log-20260705.txt": null,
+            "log-20260706.txt": null,
+            "log-20260707.txt": null,
+            "log-20260708.txt": null,
+            "log-20260711.txt": null,
+            "log-20260712.txt": null,
+            "log-20260713.txt": null,
+            "log-20260715.txt": null,
+            "log-20260716.txt": null,
+            "log-20260717.txt": null,
+            "log-20260718.txt": null,
+            "log-20260719.txt": null,
+            "log-20260720.txt": null,
+            "log-20260723.txt": null,
+            "log-20260725.txt": null,
+            "log-20260726.txt": null,
+            "log-20260727.txt": null,
+            "log-20260728.txt": null,
+            "log-20260729.txt": null
+          },
+          "Middleware": {
+            "SystemManagementMiddleware.cs": null
+          },
+          "Migrations": {
+            "20260227123258_InitialCreate.cs": null,
+            "20260227123258_InitialCreate.Designer.cs": null,
+            "20260426180736_AddUserProfileColumns.cs": null,
+            "20260426180736_AddUserProfileColumns.Designer.cs": null,
+            "ApplicationDbContextModelSnapshot.cs": null
+          },
+          "Models": {
+            "Models.cs": null
+          },
+          "obj": {
+            "LittleTripMemo.csproj.nuget.dgspec.json": null,
+            "LittleTripMemo.csproj.nuget.g.props": null,
+            "LittleTripMemo.csproj.nuget.g.targets": null,
+            "MatoMemo.csproj.nuget.dgspec.json": null,
+            "MatoMemo.csproj.nuget.g.props": null,
+            "MatoMemo.csproj.nuget.g.targets": null,
+            "project.assets.json": null,
+            "project.nuget.cache": null,
+            "Debug": {
+              "net8.0": {
+                ".NETCoreApp,Version=v8.0.AssemblyAttributes.cs": null,
+                "ApiEndpoints.json": null,
+                "apphost.exe": null,
+                "LittleTr.8C590E06.Up2Date": null,
+                "LittleTripMemo.AssemblyInfo.cs": null,
+                "LittleTripMemo.AssemblyInfoInputs.cache": null,
+                "LittleTripMemo.assets.cache": null,
+                "LittleTripMemo.csproj.AssemblyReference.cache": null,
+                "LittleTripMemo.csproj.BuildWithSkipAnalyzers": null,
+                "LittleTripMemo.csproj.CoreCompileInputs.cache": null,
+                "LittleTripMemo.csproj.FileListAbsolute.txt": null,
+                "LittleTripMemo.GeneratedMSBuildEditorConfig.editorconfig": null,
+                "LittleTripMemo.genruntimeconfig.cache": null,
+                "LittleTripMemo.GlobalUsings.g.cs": null,
+                "LittleTripMemo.MvcApplicationPartsAssemblyInfo.cache": null,
+                "LittleTripMemo.MvcApplicationPartsAssemblyInfo.cs": null,
+                "LittleTripMemo.pdb": null,
+                "LittleTripMemo.sourcelink.json": null,
+                "MatoMemo.AssemblyInfo.cs": null,
+                "MatoMemo.AssemblyInfoInputs.cache": null,
+                "MatoMemo.assets.cache": null,
+                "MatoMemo.csproj.AssemblyReference.cache": null,
+                "MatoMemo.GeneratedMSBuildEditorConfig.editorconfig": null,
+                "MatoMemo.GlobalUsings.g.cs": null,
+                "rjsmcshtml.dswa.cache.json": null,
+                "rjsmrazor.dswa.cache.json": null,
+                "rpswa.dswa.cache.json": null,
+                "staticwebassets.build.endpoints.json": null,
+                "staticwebassets.build.json": null,
+                "staticwebassets.build.json.cache": null,
+                "staticwebassets.development.json": null,
+                "staticwebassets.references.upToDateCheck.txt": null,
+                "staticwebassets.removed.txt": null,
+                "EndpointInfo": {
+                  "LittleTripMemo.json": null,
+                  "LittleTripMemo.OpenApiFiles.cache": null
+                },
+                "ref": {},
+                "refint": {},
+                "staticwebassets": {}
+              }
+            },
+            "Release": {
+              "net8.0": {
+                ".NETCoreApp,Version=v8.0.AssemblyAttributes.cs": null,
+                "ApiEndpoints.json": null,
+                "apphost.exe": null,
+                "LittleTr.8C590E06.Up2Date": null,
+                "LittleTripMemo.AssemblyInfo.cs": null,
+                "LittleTripMemo.AssemblyInfoInputs.cache": null,
+                "LittleTripMemo.assets.cache": null,
+                "LittleTripMemo.csproj.AssemblyReference.cache": null,
+                "LittleTripMemo.csproj.BuildWithSkipAnalyzers": null,
+                "LittleTripMemo.csproj.CoreCompileInputs.cache": null,
+                "LittleTripMemo.csproj.FileListAbsolute.txt": null,
+                "LittleTripMemo.GeneratedMSBuildEditorConfig.editorconfig": null,
+                "LittleTripMemo.genruntimeconfig.cache": null,
+                "LittleTripMemo.GlobalUsings.g.cs": null,
+                "LittleTripMemo.MvcApplicationPartsAssemblyInfo.cache": null,
+                "LittleTripMemo.MvcApplicationPartsAssemblyInfo.cs": null,
+                "LittleTripMemo.pdb": null,
+                "LittleTripMemo.sourcelink.json": null,
+                "rjsmcshtml.dswa.cache.json": null,
+                "rjsmrazor.dswa.cache.json": null,
+                "rpswa.dswa.cache.json": null,
+                "staticwebassets.build.endpoints.json": null,
+                "staticwebassets.build.json": null,
+                "staticwebassets.build.json.cache": null,
+                "staticwebassets.development.json": null,
+                "staticwebassets.references.upToDateCheck.txt": null,
+                "staticwebassets.removed.txt": null,
+                "EndpointInfo": {
+                  "LittleTripMemo.json": null,
+                  "LittleTripMemo.OpenApiFiles.cache": null
+                },
+                "ref": {},
+                "refint": {},
+                "staticwebassets": {}
+              }
+            }
+          },
+          "Properties": {
+            "launchSettings.json": null
+          },
+          "Repository": {
+            "_BaseRepository.cs": null,
+            "App": {
+              "ArchivePubRepository.cs": null,
+              "ArchiveRepository.cs": null,
+              "CountQueueRepository.cs": null,
+              "DetailPubRepository.cs": null,
+              "DetailRepository.cs": null,
+              "ReactionPubRepository.cs": null
+            },
+            "Batch": {
+              "CountQueueTaskRepository.cs": null,
+              "TableStatisticsTaskRepository.cs": null
+            },
+            "Core": {
+              "CoreConfigRepository.cs": null
+            },
+            "Sys": {
+              "AppInfoRepository.cs": null,
+              "AppUserRepository.cs": null,
+              "SysFeedbackRepository.cs": null,
+              "SysNotificationRepository.cs": null,
+              "SysReportRepository.cs": null,
+              "SysUserHistoryRepository.cs": null,
+              "SysUserLogRepository.cs": null,
+              "SysUserNotificationRepository.cs": null,
+              "TableStatisticsRepository.cs": null
+            }
+          },
+          "Services": {
+            "ServiceUtilities.cs": null,
+            "_BaseService.cs": null,
+            "Account": {
+              "EnsureLoginUserService.cs": null,
+              "GetUserProfileService.cs": null,
+              "RegistrationUserService.cs": null,
+              "UpdateUserProfileService.cs": null,
+              "WithdrawalUserService.cs": null
+            },
+            "Admin": {
+              "AdminCloseArchivePubService.cs": null,
+              "AdminUnpublishArchiveService.cs": null,
+              "GetAdminAllInfoService.cs": null,
+              "GetAdminNotificationsService.cs": null,
+              "GetAllFeedbackService.cs": null,
+              "GetAllNotificationsService.cs": null,
+              "GetAllUserNotificationsService.cs": null,
+              "GetBanUsersService.cs": null,
+              "GetReportDetailsService.cs": null,
+              "GetReportSummaryService.cs": null,
+              "GetSentUserMailListService.cs": null,
+              "GetUserHistoryService.cs": null,
+              "SendUserNotificationService.cs": null,
+              "UpdateUserBanStatusService.cs": null,
+              "UpsertNotificationService.cs": null
+            },
+            "Common": {
+              "UserHistoryRegister.cs": null
+            },
+            "Core": {
+              "GetCoreConfigService.cs": null,
+              "GetLegalConfigsService.cs": null,
+              "UpdateCoreConfigService.cs": null,
+              "UpdateLegalConfigService.cs": null
+            },
+            "Private": {
+              "AddDetailsService.cs": null,
+              "BulkSyncDetailsService.cs": null,
+              "DeleteArchiveService.cs": null,
+              "DeleteStrayDetailsService.cs": null,
+              "DetachDetailsService.cs": null,
+              "GetArchiveDetailsService.cs": null,
+              "GetArchiveListService.cs": null,
+              "GetUnMergeDetailsService.cs": null,
+              "MergeDetailsService.cs": null,
+              "PublishArchiveService.cs": null,
+              "RecreatePublicArchiveService.cs": null,
+              "UpdateArchiveService.cs": null,
+              "UpdateDetailService.cs": null
+            },
+            "Public": {
+              "AddCountQueueService.cs": null,
+              "BulkSyncReactionService.cs": null,
+              "CloseArchiveService.cs": null,
+              "GetArchiveDetailsPubService.cs": null,
+              "GetArchiveListByIdsService.cs": null,
+              "GetArchiveListByUserService.cs": null,
+              "OpenArchiveService.cs": null,
+              "OpenLimitedArchiveService.cs": null,
+              "SearchByLocationPubService.cs": null,
+              "UnpublishArchiveService.cs": null,
+              "UpdateArchivePubService.cs": null,
+              "UpdateDetailPubService.cs": null
+            },
+            "Sys": {
+              "DeleteMyReportService.cs": null,
+              "GetMyFeedbackService.cs": null,
+              "GetMyReportService.cs": null,
+              "GetMyUserNotificationsService.cs": null,
+              "GetSystemInfoService.cs": null,
+              "UpsertFeedbackService.cs": null,
+              "UpsertReportService.cs": null
+            }
+          },
+          "Worker": {
+            "SystemMaintenanceWorker.cs": null
+          }
+        }
+      },
+      "frontend": {
+        "matomemo_front": {
+          ".firebaserc": null,
+          ".gitignore": null,
+          "apple-app-site-association": null,
+          "firebase.json": null,
+          "index.html": null,
+          "index_2 - コピー.html": null,
+          "manifest.json": null,
+          "sw.js": null,
+          "★FireBase使用方法.txt": null,
+          ".firebase": {
+            "hosting..cache": null
+          },
+          ".well-known": {
+            "assetlinks.json": null
+          },
+          "css": {
+            "app-style.css": null,
+            "component-style.css": null,
+            "leaflet.css": null,
+            "images": {
+              "layers-2x.png": null,
+              "layers.png": null,
+              "marker-icon-2x.png": null,
+              "marker-icon.png": null,
+              "marker-shadow.png": null
+            }
+          },
+          "img": {
+            "face": {
+              "face_bad.png": null,
+              "face_good.png": null,
+              "face_normal.png": null
+            },
+            "ico": {
+              "icon-192.png": null,
+              "icon-48.png": null,
+              "icon-512.png": null
+            }
+          },
+          "js": {
+            "app-const.js": null,
+            "app-data.js": null,
+            "app-manager.js": null,
+            "auth-manager.js": null,
+            "common.js": null,
+            "config.js": null,
+            "local-db-controller.js": null,
+            "notice-manager.js": null,
+            "polling-manager.js": null,
+            "component": {
+              "bar-controller.js": null,
+              "detail-content-controller.js": null,
+              "detail-frame-controller.js": null,
+              "map-controller.js": null,
+              "marker-controller.js": null,
+              "ui-manager.js": null
+            },
+            "dialog": {
+              "dialog-manager-admin.js": null,
+              "dialog-manager-app.js": null,
+              "dialog-manager-archive.js": null,
+              "dialog-manager-notice.js": null,
+              "dialog-manager-system.js": null,
+              "dialog-manager.js": null
+            },
+            "leaflet": {
+              "leaflet-arrowheads.js": null,
+              "leaflet.geometryutil.js": null,
+              "leaflet.js": null
+            },
+            "lib": {
+              "lib_atmosphere.js": null,
+              "lib_cracker.js": null,
+              "lib_cracker.js.html": null,
+              "lib_fireworks.js": null,
+              "_lib_atmosphere - コピー.js": null
+            }
+          },
+          "template": {
+            "template-admin.html": null,
+            "template-core.html": null,
+            "template-list.html": null,
+            "template-screen.html": null
+          }
+        }
+      }
+    }
+  }
+}

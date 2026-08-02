@@ -1,0 +1,17 @@
+■ngrok使い方
+
+ngrok version
+
+ngrok http https://localhost:7292
+
+【一時的なドメイン】
+https://2cd8-112-71-71-140.ngrok-free.app
+
+
+【固定ドメイン】
+eminently-meet-terrapin.ngrok-free.app
+
+ngrok http --domain=eminently-meet-terrapin.ngrok-free.app https://localhost:7292
+
+
+

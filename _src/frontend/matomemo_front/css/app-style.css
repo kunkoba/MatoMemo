@@ -1,0 +1,207 @@
+/* 画面・アプリ共通設定 */
+
+/* テーマ定義：レベル間の差を抑えた配色 */
+:root[data-theme='blue'] {
+    --brand-lvl0: #fff; --brand-lvl1: #f0f9ff; --brand-lvl2: #e0f2fe; --brand-lvl3: #7dd3fc; --brand-lvl4: #38bdf8; --brand-lvl5: #0ea5e9;
+}
+:root[data-theme='green'] {
+    --brand-lvl0: #fff; --brand-lvl1: #f0fdf4; --brand-lvl2: #dcfce7; --brand-lvl3: #86efac; --brand-lvl4: #4ade80; --brand-lvl5: #22c55e;
+}
+:root[data-theme='red'] {
+    --brand-lvl0: #fff; --brand-lvl1: #fef2f2; --brand-lvl2: #fee2e2; --brand-lvl3: #fca5a5; --brand-lvl4: #f87171; --brand-lvl5: #ef4444;
+}
+:root[data-theme='yellow'] {
+    --brand-lvl0: #fff; --brand-lvl1: #fefce8; --brand-lvl2: #fef9c3; --brand-lvl3: #fde047; --brand-lvl4: #facc15; --brand-lvl5: #eab308;
+}
+
+/* レベル別の背景色ユーティリティ */
+.bg-brand-0 { background-color: var(--brand-lvl0); }
+.bg-brand-1 { background-color: var(--brand-lvl1); }
+.bg-brand-2 { background-color: var(--brand-lvl2); }
+.bg-brand-3 { background-color: var(--brand-lvl3); }
+.bg-brand-4 { background-color: var(--brand-lvl4); }
+.bg-brand-5 { background-color: var(--brand-lvl5); }
+/* テーマ変数と連動する文字色クラス */
+.text-brand-0 { color: var(--brand-lvl0); }
+.text-brand-1 { color: var(--brand-lvl1); }
+.text-brand-2 { color: var(--brand-lvl2); }
+.text-brand-3 { color: var(--brand-lvl3); }
+.text-brand-4 { color: var(--brand-lvl4); }
+.text-brand-5 { color: var(--brand-lvl5); }
+/* 枠線 */
+.border-brand-0 { border-color: var(--brand-lvl0); }
+.border-brand-1 { border-color: var(--brand-lvl1); }
+.border-brand-2 { border-color: var(--brand-lvl2); }
+.border-brand-3 { border-color: var(--brand-lvl3); }
+.border-brand-4 { border-color: var(--brand-lvl4); }
+.border-brand-5 { border-color: var(--brand-lvl5); }
+
+/* フォントサイズ定義（モバイル基準 / 768px以上でPC基準） */
+html[data-font-size='small']    { font-size: 12px; }
+html[data-font-size='standard'] { font-size: 14px; }
+html[data-font-size='large']    { font-size: 16px; }
+
+@media (min-width: 768px) {
+    html[data-font-size='small']    { font-size: 14px; }
+    html[data-font-size='standard'] { font-size: 16px; }
+    html[data-font-size='large']    { font-size: 18px; }
+}
+
+/* 基本設定 */
+body {
+    /* font-family: 'Noto Sans JP', sans-serif; */
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    /* font-family: 'Zen Kaku Gothic New', sans-serif; */
+    /* font-family: 'Shippori Mincho', serif; */
+    margin: 0;
+    background-color: #fff;
+    color: #383838;
+}
+
+/* 共通インタラクション：形状変化なしの色変化 */
+button:active {
+    filter: brightness(1.2);
+}
+.bg-brand-4:active, .bg-slate-500:active {
+    filter: brightness(0.9);
+}
+
+/* 日付用スタイル */
+.kb-date-tim-sm {
+    /* 文字サイズ: text-[0.9rem] */
+    font-size: 0.9rem;
+    /* 太字: font-bold */
+    font-weight: 700;
+    /* 文字色: text-slate-900 */
+    color: rgb(15 23 42);
+    /* イタリック: italic */
+    font-style: italic;
+    /* 文字間隔 */
+    letter-spacing: 0.1em;
+}
+.kb-date-tim-md {
+    /* 文字サイズ: text-[0.9rem] */
+    font-size: 1.0rem;
+    /* 太字: font-bold */
+    font-weight: 700;
+    /* 文字色: text-slate-900 */
+    color: rgb(15 23 42);
+    /* イタリック: italic */
+    font-style: italic;
+    /* 文字間隔 */
+    letter-spacing: 0.1em;
+}
+.kb-date-tim-lg {
+    /* 文字サイズ: text-[0.9rem] */
+    font-size: 1.2rem;
+    /* 太字: font-bold */
+    font-weight: 700;
+    /* 文字色: text-slate-600 */
+    color: rgb(148 163 184);
+    /* イタリック: italic */
+    font-style: italic;
+    /* 文字間隔 */
+    letter-spacing: 0.1em;
+}
+
+/* 絵文字アイコン用クラス（共通ドロップシャドウを追加） */
+.kb-icon-emoji-sm,
+.kb-icon-emoji-md,
+.kb-icon-emoji-lg {
+    filter:
+        drop-shadow(0 0px 0.5px rgba(0,0,0,0.8))
+        drop-shadow(0 1px 0.5px rgba(0,0,0,0.8))
+        ;
+}
+.kb-icon-emoji-xlg {
+    filter:
+        drop-shadow(0 0 1px rgba(0,0,0,0.8))
+        drop-shadow(0 1px 1px rgba(0,0,0,0.8))
+        /* drop-shadow(0 0 1px var(--brand-lvl5)) */
+        ;
+}
+/* 絵文字アイコン用クラス */
+.kb-icon-emoji-sm {
+    font-size: 1.0rem;
+    width:     1.0rem;
+    height:    1.0rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.kb-icon-emoji-md {
+    font-size: 1.4rem;
+    width:     1.4rem;
+    height:    1.4rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.kb-icon-emoji-lg {
+    font-size: 1.8rem;
+    width:     1.8rem;
+    height:    1.8rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.kb-icon-emoji-xlg {
+    font-size: 2.8rem;
+    width:     2.8rem;
+    height:    2.8rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* マーカーアイコン関連 */
+:root {
+    --marker-size: 24px; /* ここが基準サイズ */
+}
+.custom-marker-wrapper {
+    /* 重要：Leafletが作るアイコン枠（60px）を flex で埋め尽くして中央に寄せる */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 影の設定 */
+    filter: 
+        /* drop-shadow(0 0px 1px rgba(0,0,0,0.7)) */
+        drop-shadow(0 1px 1px var(--brand-lvl3))
+        ;
+}
+.marker-diamond-base {
+    width:  var(--marker-size);
+    height: var(--marker-size);
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    /* border: 2px solid var(--brand-lvl5); */
+    transform: rotate(45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+.marker-diamond-base .js-emoji {
+    transform: rotate(-45deg);
+    /* font-size: calc(var(--marker-size) * 0.75); */
+    font-size: calc(var(--marker-size) * 1);
+    line-height: 1;
+    display: block;
+    filter: 
+        drop-shadow(0 1px 1px rgba(0,0,0,0.7))
+        drop-shadow(0 1px 1px rgba(0,0,0,0.7))
+        drop-shadow(0 1px 1px rgba(0,0,0,0.7))
+        /* drop-shadow(0 0px 1px var(--brand-lvl3)) */
+        ;
+}
+
+.shadow-md {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
+}
+

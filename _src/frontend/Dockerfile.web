@@ -1,0 +1,11 @@
+# 軽量なWebサーバー（Nginx）を使用
+FROM nginx:alpine
+
+# index.html がある現在のフォルダの中身を、Nginxの公開フォルダに丸ごとコピー
+COPY . /usr/share/nginx/html
+
+# 80番ポートで待ち受け
+EXPOSE 80
+
+# Nginxを起動
+CMD ["nginx", "-g", "daemon off;"]

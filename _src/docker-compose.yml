@@ -1,0 +1,48 @@
+services:
+  # 1. フロントエンド (HTML/JS)
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.web
+    container_name: mato_memo-web
+    ports:
+      - "8081:80" # ブラウザで http://localhost でアクセス
+    depends_on:
+      - api
+
+  # 2. バックエンド (ASP.NET Core API)
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.api
+    container_name: mato_memo-api
+    ports:
+      - "5255:8080" # APIの待ち受け
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      # コンテナ間通信のためHostを「db」に、DB名を「mato_memo」に指定
+      - ConnectionStrings__LittleTripMemoConnStr=Host=db;Port=5432;Database=mato_memo;Username=postgres;Password=password
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 3. データベース (PostgreSQL)
+  db:
+    image: postgres:16
+    container_name: mato_memo-db
+    environment:
+      POSTGRES_DB: mato_memo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mato_memo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
