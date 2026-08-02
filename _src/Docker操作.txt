@@ -1,12 +1,12 @@
-# DockerƒCƒ[ƒW‚Ìì¬‚·‚é
+# Dockerã‚¤ãƒ¡ãƒ¼ã‚¸ã®ä½œæˆã™ã‚‹
 docker build -f dev/Dockerfile.dev -t matomemo-backend-dev .
 
-# ƒRƒ“ƒeƒi‚ğ‹N“®‚·‚é
+# ã‚³ãƒ³ãƒ†ãƒŠã‚’èµ·å‹•ã™ã‚‹
 docker run -p 5000:5000 -v ./src/backend:/app matomemo-backend-dev
 
 
-# ÀsƒRƒ}ƒ“ƒh
-# ƒ^[ƒ~ƒiƒ‹‚Åƒ‹[ƒgƒtƒHƒ‹ƒ_idocker-compose.yml ‚ª‚ ‚éêŠj‚ÉˆÚ“®‚µAˆÈ‰º‚ğ’@‚¢‚Ä‚­‚¾‚³‚¢B
+# å®Ÿè¡Œã‚³ãƒãƒ³ãƒ‰
+# ã‚¿ãƒ¼ãƒŸãƒŠãƒ«ã§ãƒ«ãƒ¼ãƒˆãƒ•ã‚©ãƒ«ãƒ€ï¼ˆdocker-compose.yml ãŒã‚ã‚‹å ´æ‰€ï¼‰ã«ç§»å‹•ã—ã€ä»¥ä¸‹ã‚’å©ã„ã¦ãã ã•ã„ã€‚
 cd C:\Users\Owner\Desktop\__Developer\MatoMemo\_src
 docker-compose up -d --build
 

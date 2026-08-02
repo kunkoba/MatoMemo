@@ -1,7 +1,7 @@
-﻿
-using Dapper;
+﻿using Dapper;
 using LittleTripMemo.Common;
 using System.Data;
+using System.Runtime.CompilerServices; // ★追加
 
 namespace LittleTripMemo.Repository;
 
@@ -38,7 +38,8 @@ public abstract class _BaseRepository
     /// <param name="sql">実行するSQLクエリ</param>
     /// <param name="param">SQLに渡すパラメータオブジェクト</param>
     /// <param name="action">Dapperの実行関数本体</param>
-    private async Task<T> WrapAsync<T>(string sql, object? param, Func<Task<T>> action)
+    /// <param name="methodName">呼び出し元のメソッド名</param>
+    private async Task<T> WrapAsync<T>(string sql, object? param, Func<Task<T>> action, string methodName)
     {
         try
         {
@@ -55,8 +56,9 @@ public abstract class _BaseRepository
             // 連続する空白を1つにまとめるとさらに綺麗（任意）
             flatSql = System.Text.RegularExpressions.Regex.Replace(flatSql, @"\s+", " ");
 
-            _logger.LogError("【SQL実行失敗】Msg: {msg} | SQL: {sql} | Params: {@param}",
-                cleanMsg, flatSql.Trim(), param);
+            // ★ ログ出力を強化：Repo名(GetType().Name)とMethod名(methodName)を追加
+            _logger.LogError("【SQL実行失敗】Source: {repo}.{method} | Msg: {msg} | SQL: {sql} | Params: {@param}",
+                this.GetType().Name, methodName, cleanMsg, flatSql.Trim(), param);
 
             throw; // 例外自体はミドルウェアへ投げる
         }
@@ -65,20 +67,20 @@ public abstract class _BaseRepository
     #region Dapper Wrappers (リポジトリ継承先でSQL発行に使用するメソッド群)
 
     /// <summary> INSERT / UPDATE / DELETE を実行し、影響を受けた行数を返す。 </summary>
-    protected async Task<int> ExecuteAsync(string sql, object? param = null)
-        => await WrapAsync(sql, param, () => _db.ExecuteAsync(sql, param, _transaction));
+    protected async Task<int> ExecuteAsync(string sql, object? param = null, [CallerMemberName] string methodName = "")
+        => await WrapAsync(sql, param, () => _db.ExecuteAsync(sql, param, _transaction), methodName);
 
     /// <summary> COUNT / SUM などの集計結果や、単一カラムの値を1つだけ取得する。 </summary>
-    protected async Task<T> ExecuteScalarAsync<T>(string sql, object? param = null)
-        => await WrapAsync(sql, param, () => _db.ExecuteScalarAsync<T>(sql, param, _transaction));
+    protected async Task<T> ExecuteScalarAsync<T>(string sql, object? param = null, [CallerMemberName] string methodName = "")
+        => await WrapAsync(sql, param, () => _db.ExecuteScalarAsync<T>(sql, param, _transaction), methodName);
 
     /// <summary> 検索結果をエンティティのリストとして全件取得する。 </summary>
-    protected async Task<IEnumerable<T>> QueryAsync<T>(string sql, object? param = null)
-        => await WrapAsync(sql, param, () => _db.QueryAsync<T>(sql, param, _transaction));
+    protected async Task<IEnumerable<T>> QueryAsync<T>(string sql, object? param = null, [CallerMemberName] string methodName = "")
+        => await WrapAsync(sql, param, () => _db.QueryAsync<T>(sql, param, _transaction), methodName);
 
     /// <summary> 条件に合う最初の1件を取得する。存在しない場合は default(T) を返す。 </summary>
-    protected async Task<T?> QuerySingleOrDefaultAsync<T>(string sql, object? param = null)
-        => await WrapAsync(sql, param, () => _db.QuerySingleOrDefaultAsync<T>(sql, param, _transaction));
+    protected async Task<T?> QuerySingleOrDefaultAsync<T>(string sql, object? param = null, [CallerMemberName] string methodName = "")
+        => await WrapAsync(sql, param, () => _db.QuerySingleOrDefaultAsync<T>(sql, param, _transaction), methodName);
 
     #endregion
 }
@@ -104,5 +106,5 @@ public interface ITransactionProvider : IDisposable
 
     // EF Core等の外部で開始された接続とトランザクションをセットする
     void SetExternalTransaction(IDbConnection connection, IDbTransaction transaction);
-}
 
+}
