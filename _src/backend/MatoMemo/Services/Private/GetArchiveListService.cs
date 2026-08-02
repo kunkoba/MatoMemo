@@ -31,6 +31,12 @@ public class GetArchiveListService(
         SetAppFlags(archives);
         SetAppFlags(archivesPub);
 
+        // ★ 追記：公開側の状態を ID 引けるように辞書化
+        var pubStatusDict = archivesPub.ToDictionary(
+            x => x.archive_id,
+            x => (x.del_flg ? PublicStatus.Delete : (x.closed_flg ? PublicStatus.Close : PublicStatus.Open)).ToString()
+        );
+
         // 秘密側リストの整形
         var list1 = archives.Select(x => new DtoArchive
         {
@@ -47,7 +53,7 @@ public class GetArchiveListService(
             is_public = false,
             is_owner = x.is_owner,
             detail_count = x.detail_count,
-            has_public_status = string.Empty
+            has_public_status = pubStatusDict.GetValueOrDefault(x.archive_id, PublicStatus.Nothing.ToString())
         });
 
         // 公開側リストの整形
@@ -67,7 +73,7 @@ public class GetArchiveListService(
             is_public = true,
             is_owner = x.is_owner,
             detail_count = x.detail_count,
-            has_public_status = string.Empty
+            has_public_status = string.Empty    // 不要
         });
 
         return new Response(list1.Concat(list2).OrderByDescending(x => x.update_tim).ToList());

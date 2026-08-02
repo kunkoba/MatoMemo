@@ -196,7 +196,24 @@ const _DetailFrameCore = {
                 // 移動ボタン
                 this.btnMoveFirst.addEventListener("click", () => this._moveAndRender(() => $Marker.FocusFirst()));
                 this.btnMovePrev.addEventListener("click",  () => this._moveAndRender(() => $Marker.FocusPrev()));
-                this.btnMoveNext.addEventListener("click",  () => this._moveAndRender(() => $Marker.FocusNext()));
+                // this.btnMoveNext.addEventListener("click",  () => this._moveAndRender(() => $Marker.FocusNext()));
+                this.btnMoveNext.addEventListener("click", async () => {
+                    if ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.CREATE) return;
+                    const details = $Data.Store.GetDetails();
+                    const isLast = ($Marker._currentIndex >= details.length - 1);
+                    if (isLast) {
+                        const isOk = await $Dialog.ShowConfirm({
+                            title: "Navigation",
+                            message: "最後まで到達しました。最初に戻りますか？",
+                            label: "最初に戻る"
+                        });
+                        if (isOk) {
+                            this._moveAndRender(() => $Marker.FocusFirst());
+                        }
+                    } else {
+                        this._moveAndRender(() => $Marker.FocusNext());
+                    }
+                });
                 this.btnMoveLast.addEventListener("click",  () => this._moveAndRender(() => $Marker.FocusLast()));
                 this.mapBarrier.addEventListener("click", () => this.handleCloseOrCancel());
             }
@@ -244,7 +261,7 @@ const _DetailFrameCore = {
         }
     },
     // 移動して詳細画面表示
-    _moveAndRender(callback) {
+    _moveAndRender_2(callback) {
         // 引数として渡された実行処理（アロー関数）を呼び出す
         callback();
         // 移動後のデータを取得して反映
@@ -252,6 +269,19 @@ const _DetailFrameCore = {
         $DetailContent.RenderDetail(detail);
         // リアクションも再描画する
         this.renderReactions(detail);
+    },
+    _moveAndRender(callback) {
+        // 1. マーカーのインデックス更新と地図移動
+        callback();
+        // 2. 新しいインデックスのデータを取得
+        const detail = $Marker.GetDataWithCurrentIndex();
+        // 3. コンテンツとリアクションを更新
+        $DetailContent.RenderDetail(detail);
+        this.renderReactions(detail);
+        // ★ 追加：SEARCHモードの場合、ジャンプボタンのタイトルも更新する
+        if ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH && this.txtJumpArchiveTitle) {
+            this.txtJumpArchiveTitle.textContent = detail.a_title || "まとめへ移動";
+        }
     },
     // 詳細パネルの開閉と関連UIの更新
     toggleDetailPanel(isShow) {

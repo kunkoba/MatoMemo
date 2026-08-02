@@ -1,129 +1,6 @@
 // BarController: 上部バーおよび下部バーの統合制御
 const _BarCore = {
     // 初期化
-    init_2() {
-        if (!this.rootTop) {
-            // 要素取得：共通
-            this.rootTop = $Dom.GetElementById('ui-top-bar');
-            this.rootBot = $Dom.GetElementById('ui-bottom-bar');
-            // 要素取得：上部バー関連
-            this.btnArchiveTitle = $Dom.GetElementById('ui-archive-title');
-            this.uiSortGroup = $Dom.GetElementById('ui-sort-group');
-            this.sortField = $Dom.GetElementById('sort-field');
-            this.sortReaction = $Dom.GetElementById('sort-reaction');
-            this.sortWord = $Dom.GetElementById('sort-word');
-            this.sortFeel = $Dom.GetElementById('sort-feel');
-            this.btnMarkerEmoji = $Dom.GetElementById('btn-marker-mode-emoji');
-            this.btnMarkerFeel = $Dom.GetElementById('btn-marker-mode-feel');
-            // 要素取得：下部バー関連
-            this.btnSysMenu = $Dom.GetElementById('btn-sys-menu');
-            this.btnUserMenu = $Dom.GetElementById('btn-user-menu');
-            this.btnDataMenu = $Dom.GetElementById('btn-data-menu');
-            this.btnAppMenu = $Dom.GetElementById('btn-app-menu');
-            this.groupAction = $Dom.GetElementById('bot-group-action');
-            this.btnCreate = $Dom.GetElementById('btn-create');
-            this.btnSearch = $Dom.GetElementById('btn-search');
-            this.groupMove = $Dom.GetElementById('bot-group-move');
-            this.btnFirst = $Dom.GetElementById('btn-bot-move-first');
-            this.btnPrev = $Dom.GetElementById('btn-bot-move-prev');
-            this.btnOpen = $Dom.GetElementById('btn-bot-move-open');
-            this.btnNext = $Dom.GetElementById('btn-bot-move-next');
-            this.btnLast = $Dom.GetElementById('btn-bot-move-last');
-            this.btnMainToggle = $Dom.GetElementById('main-menu-btn');
-            this.btnListBtn = $Dom.GetElementById('point-list-btn');
-            this.btnMapSwitch = $Dom.GetElementById('btn-map-main-switch');
-            // スイッチクリックイベント
-            this.btnMapSwitch.onclick = () => {
-                const next = !$App.AppData.Context.IsMapSwitchOn;
-                $App.AppData.Context.IsMapSwitchOn = next;
-                this._updateMainSwitchUI(next);
-            };
-            // イベント登録：上部バー
-            this.btnArchiveTitle.addEventListener('click', () => $Dialog.ShowArchiveInfo());
-            [this.btnMarkerEmoji, this.btnMarkerFeel].forEach(btn => {
-                btn.addEventListener('click', () => this.updateMarkerMode(btn.dataset.mode));
-            });
-            this.sortField.addEventListener("click", (e) => {
-                const btn = e.target.closest("button");
-                if (!btn) return;
-                $Dom.QuerySelectorAll("button", this.sortField).forEach(b => {
-                    b.classList.replace("bg-brand-3", "bg-brand-0");
-                });
-                btn.classList.replace("bg-brand-0", "bg-brand-3");
-                const val = btn.dataset.value;
-                if (this.sortReaction) $Dom.ToggleShow(this.sortReaction, val === '3');
-                if (this.sortWord) $Dom.ToggleShow(this.sortWord, val === '4');
-                if (this.sortFeel) $Dom.ToggleShow(this.sortFeel, val === '5');
-            });
-            // 動的ボタン生成：Feel
-            if (this.sortFeel) {
-                const feelTypes = Object.values($Const.FEEL_TYPE);
-                this.sortFeel.innerHTML = feelTypes.map((f, idx) => `
-                    <button data-value="${f.val}" class="ui-btn h-full px-4 transition-colors flex items-center 
-                        ${idx === 0 ? 'bg-brand-3' : 'bg-brand-0'} ${f.val == 0 ? 'hidden' : ''}">
-                        <img src="${f.path}" class="w-7 h-7 object-contain pointer-events-none">
-                    </button>`).join('');
-                this.sortFeel.onclick = (e) => {
-                    const btn = e.target.closest("button");
-                    if (!btn) return;
-                    $Dom.QuerySelectorAll("button", this.sortFeel).forEach(b => b.classList.replace("bg-brand-3", "bg-brand-0"));
-                    btn.classList.replace("bg-brand-0", "bg-brand-3");
-                };
-            }
-            // 動的ボタン生成：Reaction
-            if (this.sortReaction) {
-                this.sortReaction.innerHTML = Object.values($Const.REACTION_TYPE).map((t, idx) => `
-                    <button data-value="${t.id}" class="ui-btn h-full px-3 transition-colors ${idx === 0 ? 'bg-brand-3' : 'bg-brand-0'}">
-                        ${t.emoji}
-                    </button>`).join('');
-                this.sortReaction.onclick = (e) => {
-                    const btn = e.target.closest("button");
-                    if (!btn) return;
-                    $Dom.QuerySelectorAll("button", this.sortReaction).forEach(b => b.classList.replace("bg-brand-3", "bg-brand-0"));
-                    btn.classList.replace("bg-brand-0", "bg-brand-3");
-                };
-            }
-            // イベント登録：下部バー
-            this.btnSysMenu.onclick = () => $Dialog.ShowSystemMenu();
-            this.btnUserMenu.onclick = () => $Dialog.ShowUserMenu();
-            this.btnDataMenu.onclick = () => $Dialog.ShowDataMenu();
-            this.btnAppMenu.onclick = () => $Dialog.ShowActionMenu();
-            this.btnMainToggle.onclick = () => $Dialog.ShowMainMenu();
-            if (this.btnListBtn) {
-                this.btnListBtn.onclick = () => ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH) 
-                    ? $Dialog.ShowDetailsSearchResult() : $Dialog.ShowDetailsTimeLine();
-            }
-            this.btnFirst.onclick = () => $Marker.FocusFirst();
-            this.btnPrev.onclick = () => $Marker.FocusPrev();
-            this.btnNext.onclick = () => $Marker.FocusNext();
-            this.btnLast.onclick = () => $Marker.FocusLast();
-            this.btnOpen.onclick = () => $DetailFrame.Open($Marker.GetDataWithCurrentIndex());
-            this.btnCreate.onclick = () => {
-                if ($App.AppData.Context.ScreenMode !== $Const.SCREEN_MODE.CREATE) {
-                    $App.AppData.Context.ScreenMode = $Const.SCREEN_MODE.CREATE;
-                    $App.RefreshScreen();
-                    return;
-                }
-                $Marker.RefreshCurrentArrow();
-                $Marker.FocusToLocationMarker();
-                setTimeout(() => $DetailFrame.Open(), 100);
-            };
-            this.btnSearch.onclick = async () => {
-                if ($App.AppData.Context.ScreenMode !== $Const.SCREEN_MODE.SEARCH) {
-                    $App.AppData.Context.ScreenMode = $Const.SCREEN_MODE.SEARCH;
-                    $App.RefreshScreen();
-                    return;
-                }
-                const params = { ...$Map.GetSearchRange(0.8), ...this.getSortSetting(), limit: 20 };
-                $Data.Clear();
-                if (await $Data.Access.SearchByLocationPub(params)) {
-                    if ($Data.Store.GetDetails().length > 0) $Marker.RefreshPointMarker();
-                    else $Notice.Info("データが見つかりませんでした。");
-                }
-            };
-        }
-    },
-	// 上下バーの初期化・要素取得・イベント登録
     init() {
         if (this.rootTop) return; // 二重初期化防止
         // 1. 基盤要素の取得
@@ -211,7 +88,22 @@ const _BarCore = {
         }
         this.btnFirst.onclick = () => $Marker.FocusFirst();
         this.btnPrev.onclick = () => $Marker.FocusPrev();
-        this.btnNext.onclick = () => $Marker.FocusNext();
+        // this.btnNext.onclick = () => $Marker.FocusNext();
+        this.btnNext.onclick = async () => {
+            const mode = $App.AppData.Context.ScreenMode;
+            const details = $Data.Store.GetDetails();
+            const isLast = ($Marker._currentIndex >= details.length - 1);
+            if (mode !== $Const.SCREEN_MODE.CREATE && isLast) {
+                const isOk = await $Dialog.ShowConfirm({
+                    title: "Navigation",
+                    message: "最後まで到達しました。最初に戻りますか？",
+                    label: "最初に戻る"
+                });
+                if (isOk) $Marker.FocusFirst();
+            } else {
+                $Marker.FocusNext();
+            }
+        };
         this.btnLast.onclick = () => $Marker.FocusLast();
         this.btnOpen.onclick = () => $DetailFrame.Open($Marker.GetDataWithCurrentIndex());
         this.btnCreate.onclick = () => {

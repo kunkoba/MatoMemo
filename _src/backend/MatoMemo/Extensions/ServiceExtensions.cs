@@ -70,7 +70,6 @@ public static class ServiceExtensions
         services.AddScoped<BulkSyncDetailsService>();
         services.AddScoped<PublishArchiveService>();
         services.AddScoped<UpdateDetailService>();
-        services.AddScoped<RecreatePublicArchiveService>();
         services.AddScoped<BulkUpdateCoordinatesService>();
 
         // Public

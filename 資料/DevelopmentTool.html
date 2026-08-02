@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Development Toolbox</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tool-section { display: none; }
+        .tool-section.active { display: block; }
+        .tab-btn { transition: all 0.2s; border-bottom: 2px solid transparent; }
+        .tab-btn.active { border-bottom-color: #2563eb; color: #2563eb; }
+        .json-node { margin-left: 20px; }
+        .hidden-content { display: none; }
+        .toggle-btn { cursor: pointer; display: inline-block; padding: 0 6px; background: #4b5563; border-radius: 4px; color: white; margin-right: 8px; font-size: 12px; user-select: none; }
+        #toast { visibility: hidden; opacity: 0; transition: opacity 0.3s, visibility 0.3s; }
+        #toast.show { visibility: visible; opacity: 1; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg font-medium z-50"></div>
+    <div class="w-full mx-auto bg-white rounded-2xl shadow-md border border-gray-200 p-4 md:p-6">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800">Development Toolbox</h1>
+        <div class="flex gap-4 mb-6 border-b border-gray-200 overflow-x-auto">
+            <button onclick="switchTab(event, 'html')" class="tab-btn active px-4 py-2 font-medium whitespace-nowrap">HTML整形</button>
+            <button onclick="switchTab(event, 'json')" class="tab-btn px-4 py-2 font-medium whitespace-nowrap">JSON整形</button>
+            <button onclick="switchTab(event, 'js')" class="tab-btn px-4 py-2 font-medium whitespace-nowrap">JS行トリミング</button>
+            <button onclick="switchTab(event, 'svg')" class="tab-btn px-4 py-2 font-medium whitespace-nowrap">SVG Path抽出</button>
+        </div>
+        <!-- HTML Tool -->
+        <div id="tab-html" class="tool-section active">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-lg font-bold">HTML整形</h2>
+                <div class="flex gap-2 items-center">
+                    <div class="flex border rounded-lg overflow-hidden text-sm">
+                        <button id="btn-indent-2" onclick="htmlTool.setIndent(2)" class="px-3 py-1 bg-blue-600 text-white">2</button>
+                        <button id="btn-indent-4" onclick="htmlTool.setIndent(4)" class="px-3 py-1 bg-gray-100 hover:bg-gray-200">4</button>
+                    </div>
+                    <button onclick="clearInput('htmlInput', 'outputHtml')" class="text-sm bg-red-100 text-red-600 px-3 py-1 rounded-lg hover:bg-red-200">入力クリア</button>
+                </div>
+            </div>
+            <textarea id="htmlInput" oninput="htmlTool.format()" class="w-full h-40 p-4 border rounded-xl font-mono text-sm mb-4" placeholder="HTMLを入力..."></textarea>
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-medium text-gray-700">出力結果</span>
+                <button onclick="copyContent('outputHtml')" class="bg-blue-600 text-white px-4 py-1 rounded text-sm hover:bg-blue-700">結果をコピー</button>
+            </div>
+            <textarea id="outputHtml" readonly class="w-full h-96 p-4 bg-gray-50 border rounded-xl font-mono text-sm"></textarea>
+        </div>
+        <!-- JSON Tool -->
+        <div id="tab-json" class="tool-section">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-lg font-bold">JSON整形</h2>
+                <button onclick="clearInput('jsonInput', 'jsonOutput')" class="text-sm bg-red-100 text-red-600 px-3 py-1 rounded-lg hover:bg-red-200">入力クリア</button>
+            </div>
+            <textarea id="jsonInput" oninput="jsonTool.update()" class="w-full h-40 p-4 border rounded-xl font-mono text-sm mb-4" placeholder="JSONを入力..."></textarea>
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-medium text-gray-700">出力エリア</span>
+                <div class="flex gap-2">
+                    <button onclick="jsonTool.toggleAll(true)" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">全て展開</button>
+                    <button onclick="jsonTool.toggleAll(false)" class="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700">全て閉じる</button>
+                    <button onclick="jsonTool.copy()" class="bg-blue-600 text-white px-4 py-1 rounded text-sm hover:bg-blue-700">JSONをコピー</button>
+                </div>
+            </div>
+            <div id="jsonOutput" class="w-full h-96 p-4 border rounded-xl bg-gray-900 text-green-400 font-mono text-sm overflow-auto"></div>
+        </div>
+        <!-- JS Tool -->
+        <div id="tab-js" class="tool-section">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-lg font-bold">JS行トリミング</h2>
+                <button onclick="clearInput('jsInput', 'jsOutput')" class="text-sm bg-red-100 text-red-600 px-3 py-1 rounded-lg hover:bg-red-200">入力クリア</button>
+            </div>
+            <textarea id="jsInput" oninput="jsTool.trim()" class="w-full h-40 p-4 border rounded-xl font-mono text-sm mb-4" placeholder="JSを入力..."></textarea>
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-medium text-gray-700">出力結果</span>
+                <button onclick="copyContent('jsOutput')" class="bg-blue-600 text-white px-4 py-1 rounded text-sm hover:bg-blue-700">結果をコピー</button>
+            </div>
+            <textarea id="jsOutput" readonly class="w-full h-96 p-4 bg-gray-50 border rounded-xl font-mono text-sm"></textarea>
+        </div>
+        <!-- SVG Tool -->
+        <div id="tab-svg" class="tool-section">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-lg font-bold">SVG Path抽出</h2>
+                <button onclick="clearInput('svgInput', 'svgOutput')" class="text-sm bg-red-100 text-red-600 px-3 py-1 rounded-lg hover:bg-red-200">入力クリア</button>
+            </div>
+            <textarea id="svgInput" oninput="svgTool.extract()" class="w-full h-40 p-4 border rounded-xl font-mono text-sm mb-4" placeholder="SVGを入力..."></textarea>
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-medium text-gray-700">出力結果</span>
+                <button onclick="copyContent('svgOutput')" class="bg-blue-600 text-white px-4 py-1 rounded text-sm hover:bg-blue-700">結果をコピー</button>
+            </div>
+            <textarea id="svgOutput" readonly class="w-full h-96 p-4 bg-gray-50 border rounded-xl font-mono text-sm"></textarea>
+        </div>
+    </div>
+    <script>
+        // --- Shared Utilities ---
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+        function copyToClipboard(text) {
+            if (!text) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => { showToast('コピーしました！'); }).catch(() => { fallbackCopy(text); });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.select();
+            try { document.execCommand('copy'); showToast('コピーしました！'); } catch (err) { showToast('コピーに失敗しました'); }
+            document.body.removeChild(textArea);
+        }
+        function switchTab(e, tab) {
+            document.querySelectorAll('.tool-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            e.target.classList.add('active');
+        }
+        function clearInput(inputId, outputId) {
+            document.getElementById(inputId).value = '';
+            const out = document.getElementById(outputId);
+            if (out.tagName === 'TEXTAREA') out.value = '';
+            else out.innerHTML = '';
+            showToast('クリアしました');
+        }
+        function copyContent(id) {
+            const el = document.getElementById(id);
+            const text = el.tagName === 'TEXTAREA' ? el.value : el.innerText;
+            copyToClipboard(text);
+        }
+        // --- Tools Logic ---
+        const htmlTool = {
+            indentSize: 2,
+            setIndent: (size) => {
+                htmlTool.indentSize = size;
+                document.getElementById('btn-indent-2').className = size === 2 ? 'px-3 py-1 bg-blue-600 text-white' : 'px-3 py-1 bg-gray-100 hover:bg-gray-200';
+                document.getElementById('btn-indent-4').className = size === 4 ? 'px-3 py-1 bg-blue-600 text-white' : 'px-3 py-1 bg-gray-100 hover:bg-gray-200';
+                htmlTool.format();
+            },
+            format: () => {
+                const input = document.getElementById('htmlInput').value.trim();
+                if (!input) { document.getElementById('outputHtml').value = ''; return; }
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(input, 'text/html');
+                let formatted = "";
+                function serialize(node, level = 0) {
+                    const indent = " ".repeat(level * htmlTool.indentSize);
+                    node.childNodes.forEach(child => {
+                        if (child.nodeType === Node.ELEMENT_NODE) {
+                            const tagName = child.tagName.toLowerCase();
+                            const attrs = Array.from(child.attributes).map(a => ` ${a.name}="${a.value}"`).join('');
+                            const selfClosing = ['br', 'hr', 'img', 'input', 'meta', 'link', 'area', 'base', 'col', 'embed', 'keygen', 'param', 'source', 'track', 'wbr'];
+                            if (selfClosing.includes(tagName)) {
+                                formatted += `${indent}<${tagName}${attrs}>\n`;
+                            } else {
+                                formatted += `${indent}<${tagName}${attrs}>`;
+                                if (child.childNodes.length > 0) {
+                                    formatted += "\n";
+                                    serialize(child, level + 1);
+                                    formatted += `${indent}</${tagName}>\n`;
+                                } else {
+                                    formatted += `</${tagName}>\n`;
+                                }
+                            }
+                        } else if (child.nodeType === Node.TEXT_NODE) {
+                            const text = child.textContent.trim();
+                            if (text) formatted += `${indent}${text}\n`;
+                        }
+                    });
+                }
+                serialize(doc.body.firstChild ? doc.body : doc.documentElement);
+                document.getElementById('outputHtml').value = formatted.trim();
+            }
+        };
+        const jsonTool = {
+            update: () => {
+                const input = document.getElementById('jsonInput').value;
+                const out = document.getElementById('jsonOutput');
+                if (!input.trim()) { out.innerHTML = ''; return; }
+                try {
+                    const parsed = JSON.parse(input);
+                    out.innerHTML = '';
+                    out.appendChild(jsonTool.render('root', parsed));
+                } catch(e) { out.innerHTML = `<span class="text-red-400">JSONエラー: ${e.message}</span>`; }
+            },
+            render: (key, data) => {
+                const d = document.createElement('div');
+                d.className = 'my-1';
+                if (data !== null && typeof data === 'object') {
+                    const toggle = document.createElement('span'); 
+                    toggle.className = 'toggle-btn toggle-icon'; 
+                    toggle.textContent = '▼';
+                    const c = document.createElement('div'); 
+                    c.className = 'json-node content-body';
+                    toggle.onclick = (e) => { 
+                        c.classList.toggle('hidden-content'); 
+                        toggle.textContent = c.classList.contains('hidden-content') ? '▶' : '▼';
+                    };
+                    d.appendChild(toggle); 
+                    d.appendChild(document.createTextNode(key + ':'));
+                    Object.entries(data).forEach(([ik, iv]) => c.appendChild(jsonTool.render(ik, iv)));
+                    d.appendChild(c);
+                } else { 
+                    d.innerHTML = `<span style="margin-left: 28px;"></span><strong>${key}:</strong> <span class="text-yellow-300">${JSON.stringify(data)}</span>`; 
+                }
+                return d;
+            },
+            toggleAll: (expand) => {
+                const contents = document.querySelectorAll('#jsonOutput .content-body');
+                const icons = document.querySelectorAll('#jsonOutput .toggle-icon');
+                contents.forEach(el => expand ? el.classList.remove('hidden-content') : el.classList.add('hidden-content'));
+                icons.forEach(el => el.textContent = expand ? '▼' : '▶');
+            },
+            copy: () => {
+                const input = document.getElementById('jsonInput').value;
+                try {
+                    const formatted = JSON.stringify(JSON.parse(input), null, 4);
+                    copyToClipboard(formatted);
+                } catch(e) { showToast('有効なJSONではありません'); }
+            }
+        };
+        const jsTool = {
+            trim: () => {
+                const input = document.getElementById('jsInput').value;
+                document.getElementById('jsOutput').value = input.split('\n').filter(l => l.trim() !== '').join('\n');
+            }
+        };
+        const svgTool = {
+            extract: () => {
+                const input = document.getElementById('svgInput').value;
+                const doc = new DOMParser().parseFromString(input, 'image/svg+xml');
+                const res = Array.from(doc.querySelectorAll('path')).map(p => {
+                    const d = (p.getAttribute('d') || '').replace(/[\r\n]+/g, '').replace(/\s+/g, ' ').trim();
+                    let attrs = Array.from(p.attributes).filter(a => a.name !== 'd').map(a => `${a.name}="${a.value}"`).join(' ');
+                    return `<path ${attrs} d="${d}" />`.replace('  ', ' ');
+                }).join(' ');
+                document.getElementById('svgOutput').value = res;
+            }
+        };
+    </script>
+</body>
+</html>

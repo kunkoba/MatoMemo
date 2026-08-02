@@ -12,6 +12,7 @@ export default {
             search:      $Dom.QuerySelector('#btn-app-search', el),
             create:      $Dom.QuerySelector('#btn-app-create', el),
             jumpUrl:     $Dom.QuerySelector('#btn-app-jump-url', el),
+            bulkCoords:  $Dom.QuerySelector('#btn-app-save-coords', el),
         };
         const mode = $App.AppData.Context.ScreenMode;
         const isArchive = (mode === $Const.SCREEN_MODE.ARCHIVE || mode === $Const.SCREEN_MODE.ARCHIVE_PUB);
@@ -34,6 +35,31 @@ export default {
             $App.RefreshScreen(); 
         };
         b.jumpUrl.onclick = () => this.ShowJumpByUrl();
+        // 地点一括更新
+        const arc = $Data.Store.GetArchive();
+        $Dom.ToggleShow(b.bulkCoords, arc?.is_owner && $App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.ARCHIVE);
+        b.bulkCoords.onclick = async () => {
+            const details = $Data.Store.GetDetails();
+            if (!details.length) return;
+            const isOk = await this.ShowConfirm({
+                title: "SAVE POSITIONS",
+                message: "すべての地点の位置情報を変更します。よろしいですか？"
+            });
+            if (!isOk) return;
+            const payload = {
+                archive_id: $App.AppData.Context.TargetArchiveId,
+                items: details.map(d => ({
+                    seq: d.seq,
+                    latitude: d.latitude,
+                    longitude: d.longitude
+                }))
+            };
+            if (await $Data.Access.BulkUpdateCoordinates(payload)) {
+                $Notice.Info("位置情報を更新しました");
+                this._core.closeAll();
+                await $App.RefreshScreen();
+            }
+        };
         // 画面を開く
         const help = [
             "地点メモ関連の操作を行います",
@@ -52,10 +78,10 @@ export default {
         const el = $Dom.GenerateTemplate('tpl-menu-action');
         const isLoggedIn = $App.AppData.Context.IsLoggedIn;
         const b = {
-            reload:   $Dom.QuerySelector('#btn-app-reload', el),
-            refresh:  $Dom.QuerySelector('#btn-app-refresh', el),
-            restore:  $Dom.QuerySelector('#btn-app-restore', el),
-            current:  $Dom.QuerySelector('#btn-app-current', el),
+            reload:      $Dom.QuerySelector('#btn-app-reload', el),
+            refresh:     $Dom.QuerySelector('#btn-app-refresh', el),
+            restore:     $Dom.QuerySelector('#btn-app-restore', el),
+            current:     $Dom.QuerySelector('#btn-app-current', el),
             pointSearch: $Dom.QuerySelector('#btn-app-point-search', el),
         };
         const mode = $App.AppData.Context.ScreenMode;

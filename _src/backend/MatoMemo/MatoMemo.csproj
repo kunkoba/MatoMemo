@@ -91,6 +91,7 @@
     <Compile Remove="Services\Admin\~GetReportSummaryService.cs" />
     <Compile Remove="Services\Private\_ArchiveUpdateService.cs" />
     <Compile Remove="Services\Private\_HistoryRegistrationService.cs" />
+    <Compile Remove="Services\Private\~RecreatePublicArchiveService.cs" />
     <Compile Remove="Services\Private\~UpsertDetailService.cs" />
     <Compile Remove="Services\Public\~CloseLimitedArchiveService.cs" />
     <Compile Remove="Services\Public\~UpdateDetailPubService.cs" />

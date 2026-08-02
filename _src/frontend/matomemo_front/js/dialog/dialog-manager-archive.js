@@ -280,9 +280,9 @@ export default {
             $Dom.QuerySelectorAll('.js-filter-btn', filterToggle).forEach(btn => {
                 const isActive = (btn.dataset.pub === "true") === isShowPublic;
                 btn.classList.toggle('opacity-100', isActive);
-                btn.classList.toggle('opacity-10', !isActive);
-                // 影も不要であれば toggle('shadow-md', isActive) も削除
-                btn.classList.toggle('shadow-md', isActive);
+                btn.classList.toggle('opacity-20', !isActive);
+                // // 影も不要であれば toggle('shadow-md', isActive) も削除
+                // btn.classList.toggle('shadow-md', isActive);
                 btn.style.pointerEvents = isActive ? 'none' : 'auto'; // 選択中を再度押せなくする
             });
             // フィルタ実行
@@ -297,6 +297,14 @@ export default {
             // アイテム描画
             filtered.forEach(item => {
                 const child = $Dom.GenerateTemplate("tpl-list-child-archive");
+                // まとめ状態バッヂ
+                if (!isShowPublic) {
+                    const pubBadge = $Dom.QuerySelector(".js-public-mark-badge", child);
+                    const status = item.has_public_status; // Nothing, Open, Close, Delete
+                    if (status === $Const.PUBLIC_DATA_STATUS.OPEN) {
+                        $Dom.ToggleShow(pubBadge, true);
+                    }
+                }
                 $Dom.QuerySelector(".js-update-tim", child).textContent = $Util.FormatDate(item.update_tim);
                 $Dom.QuerySelector(".js-title", child).textContent = item.title;
                 $Dom.QuerySelector(".js-memo", child).textContent = item.memo || "";
@@ -464,7 +472,7 @@ export default {
             const header = $Dom.GenerateTemplate("tpl-multi-select-date");
             const dateEl = $Dom.QuerySelector(".js-date-text", header);
             // 共通部品を呼び出し（グループ化のキーである date 文字列をオブジェクトとして渡す）
-            $UI.Generator.MemoDateFormatter(dateEl, { memo_date: date });
+            $UI.Generator.MemoDateFormatter(dateEl, { memo_date: date, is_owner: true });
             header.onclick = () => {
                 const groupItems = groups[date];
                 const isAllSelected = groupItems.every(item => selectedSeqs.has(item.seq));
@@ -762,8 +770,24 @@ export default {
                                 const status = arc.has_public_status;
                                 const PDS = $Const.PUBLIC_DATA_STATUS;
                                 // ① 有効な公開データが既にある場合は遮断
+                                // if (status === PDS.OPEN || status === PDS.CLOSE) {
+                                //     return $Notice.Warn("既に有効な公開データが存在するため、公開データは作れません。");
+                                // }
                                 if (status === PDS.OPEN || status === PDS.CLOSE) {
-                                    return $Notice.Warn("既に有効な公開データが存在するため、公開データは作れません。");
+                                    // 警告の代わりに確認ダイアログを表示
+                                    const isJump = await this.ShowConfirm({
+                                        title: "OPEN ARCHIVE",
+                                        message: "すでに有効な公開データが存在します。\nまとめを開きますか？",
+                                        label: "開く"
+                                    });
+                                    if (isJump) {
+                                        this._core.closeAll();
+                                        // 公開まとめモードへ遷移
+                                        $App.AppData.Context.ScreenMode = $Const.SCREEN_MODE.ARCHIVE_PUB;
+                                        $App.AppData.Context.TargetArchiveId = arc.archive_id;
+                                        await $App.RefreshScreen();
+                                    }
+                                    return; // 元の「作成処理」へ進ませないために return
                                 }
                                 // ② 削除済みデータがある場合の選択ロジック
                                 let resetFlg = true;

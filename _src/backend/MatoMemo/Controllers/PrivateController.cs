@@ -25,7 +25,7 @@ public class PrivateController(
     UpdateDetailService updateDetailService,
     BulkSyncDetailsService bulkSyncDetailsService,
     PublishArchiveService publishArchiveService,
-    RecreatePublicArchiveService recreatePublicArchiveService // ★救済機能を追加
+    BulkUpdateCoordinatesService bulkUpdateCoordinatesService
 ) : _BaseController(userContext, jwtService, provider)
 {
     [HttpPost("GetUnMergeDetails")]
@@ -77,10 +77,12 @@ public class PrivateController(
         => OkWithBase(await bulkSyncDetailsService.ExecuteAsync(req));
 
     /// <summary>
-    /// 公開データを一旦完全に削除し、秘密側の最新状態で作り直す（救済用）
+    /// アーカイブ内の明細の地点情報を一括更新する
     /// </summary>
-    [HttpPost("RecreatePublicArchive")]
-    public async Task<IActionResult> RecreatePublicArchive([FromBody] RecreatePublicArchiveService.RecreatePublicArchiveReq req)
-        => OkWithBase(await recreatePublicArchiveService.ExecuteAsync(req));
+    /// <param name="req"></param>
+    /// <returns></returns>
+    [HttpPost("BulkUpdateCoordinates")]
+    public async Task<IActionResult> BulkUpdateCoordinates([FromBody] BulkUpdateCoordinatesService.BulkUpdateCoordinatesReq req)
+        => OkWithBase(await bulkUpdateCoordinatesService.ExecuteAsync(req));
 
 }

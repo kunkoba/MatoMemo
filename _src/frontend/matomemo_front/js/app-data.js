@@ -21,7 +21,8 @@ const API_ENDPOINTS = {
     BulkSyncDetails:        { method: 'post', url: '/api/Private/BulkSyncDetails' },
     DeleteStrayDetails:     { method: 'post', url: '/api/Private/DeleteStrayDetails' },
     DetachDetails:          { method: 'post', url: '/api/Private/DetachDetails' },
-    RecreatePublicArchive:  { method: 'post', url: '/api/Private/RecreatePublicArchive' },  // 未使用
+    RecreatePublicArchive:  { method: 'post', url: '/api/Private/RecreatePublicArchive' }, // 未使用
+    BulkUpdateCoordinates:  { method: 'post', url: '/api/Private/BulkUpdateCoordinates' },
     // Public (Anonymous)
     GetArchiveDetailsPub:   { method: 'get',  url: '/api/Public/GetArchiveDetailsPub/{encodedId}' },
     AddClick:               { method: 'post', url: '/api/Public/AddClick' },
