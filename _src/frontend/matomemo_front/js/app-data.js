@@ -99,9 +99,17 @@ window.$Data = {
         async _fetchData(method, url, params, isDebug = false) {// 設定ファイルから取得
             const BaseUrl = window.ENV_CONFIG.BASE_URL;
             console.log("▼ Access:", BaseUrl + url, params);
-            // オフラインチェック
-            if (!$App.AppData.Context.IsOnline) {
-                $Notice.Warn("オフライン中は、機能が制限されます。");
+            // // オフラインチェック
+            // if (!$App.AppData.Context.IsOnline) {
+            //     $Notice.Warn("オフライン中は、機能が制限されます。");
+            //     return false;
+            // }
+            // 通信ガード判定
+            const isHealthCheck = url.includes("EnsureLoginUser");
+            const isLogicOffline = !$App.AppData.Context.IsOnline;
+            // 生存確認以外、かつ論理オフライン時は遮断
+            if (!isHealthCheck && isLogicOffline) {
+                $Notice.Warn("オフライン（またはサーバ未接続）のため制限中");
                 return false;
             }
             // メイン処理

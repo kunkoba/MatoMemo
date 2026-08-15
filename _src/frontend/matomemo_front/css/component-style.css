@@ -7,21 +7,21 @@
 
 /* ローディング：ドット（アニメーション） */
 @keyframes dots {
-  0%   { content: ""; }
-  10%  { content: "."; }
-  20%  { content: ".."; }
-  30%  { content: "..."; }
-  40%  { content: "...."; }
-  50%  { content: "....."; }
-  60%  { content: "......"; }
-  70%  { content: "......."; }
-  80%  { content: "........"; }
-  90%  { content: "........."; }
-  100% { content: ""; }
+    0%   { content: ""; }
+    10%  { content: "."; }
+    20%  { content: ".."; }
+    30%  { content: "..."; }
+    40%  { content: "...."; }
+    50%  { content: "....."; }
+    60%  { content: "......"; }
+    70%  { content: "......."; }
+    80%  { content: "........"; }
+    90%  { content: "........."; }
+    100% { content: ""; }
 }
 .wait-dots::after {
-  content: "";
-  animation: dots 10s steps(1) infinite;
+    content: "";
+    animation: dots 10s steps(1) infinite;
 }
 
 /* Leaflet の固定位置を解除 */

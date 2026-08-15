@@ -13,5 +13,8 @@ eminently-meet-terrapin.ngrok-free.app
 
 ngrok http --domain=eminently-meet-terrapin.ngrok-free.app https://localhost:7292
 
+ngrok http --domain=eminently-meet-terrapin.ngrok-free.app http://localhost:5255
+
+ngrok http --domain=eminently-meet-terrapin.ngrok-free.app 5255 --host-header="localhost:5255"
 
 

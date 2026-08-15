@@ -39,18 +39,18 @@
             <div class="js-face kb-icon-emoji-lg mb-3"></div>
             <div class="text-[0.9rem] font-bold text-slate-900 js-time tracking-wider bg-brand-0 px-1"></div>
         </div>
-        <div class="ml-2 w-full bg-white relative overflow-hidden flex flex-col items-end gap-2">
-            <!-- 右上アクショングループ（絶対配置で一括管理） -->
-            <div class="_absolute top-2 right-2 flex items-center _justify-end gap-4 z-20">
-                <!-- 削除ボタン（順序：左） -->
-                <button class="js-btn-detach hidden w-7 h-7 bg-white text-slate-600 flex items-center justify-center hover:bg-slate-100 active:scale-95 transition-all text-[0.9rem]">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
-                </button>
-                <!-- Feelアイコン（順序：中央） -->
-                <img src="" class="js-feel-image hidden w-8 h-8 object-contain">
-                <!-- 番号バッジ（順序：右） -->
-                <div class="js-index-badge w-7 h-7 rounded-full bg-brand-4 text-white font-bold text-[0.9rem] flex items-center justify-center"></div>
-            </div>
+        <!-- 右上アクショングループ（絶対配置で一括管理） -->
+        <div class="absolute top-2 right-2 flex items-center gap-4 z-20">
+            <!-- 削除ボタン（順序：左） -->
+            <button class="js-btn-detach hidden w-7 h-7 bg-white text-slate-600 flex items-center justify-center hover:bg-slate-100 active:scale-95 transition-all text-[0.9rem]">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+            </button>
+            <!-- Feelアイコン（順序：中央） -->
+            <img src="" class="js-feel-image hidden w-8 h-8 object-contain">
+            <!-- 番号バッジ（順序：右） -->
+            <div class="js-index-badge w-7 h-7 rounded-full bg-brand-4 text-white font-bold text-[0.9rem] flex items-center justify-center"></div>
+        </div>
+        <div class="mt-6 ml-2 w-full bg-white relative overflow-hidden flex flex-col items-end gap-2">
             <!-- タイトル -->
             <div class="border-l-4 border-brand-3 pl-2 py-2 w-full">
                 <div class="js-title text-[1rem] font-bold text-slate-900 break-words"></div>

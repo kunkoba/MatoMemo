@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full bg-slate-100 text-slate-800">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Formatter & Tree Viewer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+        code, textarea, .font-mono { 
+            font-family: 'JetBrains Mono', Consolas, 'Cascadia Code', 'Fira Code', 'Courier New', monospace; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Custom Scrollbars for Light Mode */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .tree-node-parent {
+            transition: all 0.15s ease;
+        }
+        .tree-node-parent:hover {
+            background-color: #f1f5f9;
+        }
+        .highlight-match { 
+            background-color: #fef08a; 
+            color: #854d0e; 
+            padding: 0 3px; 
+            border-radius: 2px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col overflow-hidden bg-slate-100 text-slate-800">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="bg-indigo-600 text-white p-2.5 rounded-lg shadow-md shadow-indigo-500/20">
+                <i class="fa-solid fa-code text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-xl leading-none tracking-wide text-slate-900">JSON 整形 & ツリー表示ツール</h1>
+                <p class="text-xs text-slate-500 mt-1">JSON Formatter, Minifier, Validator & Tree Viewer</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap text-sm">
+            <!-- Preset Samples -->
+            <div class="relative inline-block text-left">
+                <select id="sampleSelect" class="bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 cursor-pointer hover:bg-slate-100 transition">
+                    <option value="" disabled selected>サンプルデータを選択</option>
+                    <option value="tree">ディレクトリ構造 (ファイル優先)</option>
+                    <option value="simple">標準的なデータオブジェクト</option>
+                    <option value="array">配列リストデータ</option>
+                </select>
+            </div>
+
+            <button id="btnClear" class="bg-white hover:bg-slate-50 text-slate-700 text-sm px-3.5 py-1.5 rounded-lg border border-slate-300 transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-trash-can text-slate-400"></i> クリア
+            </button>
+            <button id="btnPaste" class="bg-white hover:bg-slate-50 text-slate-700 text-sm px-3.5 py-1.5 rounded-lg border border-slate-300 transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-regular fa-clipboard text-slate-400"></i> 貼り付け
+            </button>
+        </div>
+    </header>
+
+    <!-- Control Bar -->
+    <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-sm shrink-0">
+        <div class="flex items-center gap-4 flex-wrap">
+            <!-- Indent Selector -->
+            <div class="flex items-center gap-1.5">
+                <span class="text-slate-600 font-medium">インデント:</span>
+                <div class="inline-flex rounded-md shadow-sm border border-slate-300 p-0.5 bg-white">
+                    <button class="indent-btn px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition active-indent" data-indent="2">2文字</button>
+                    <button class="indent-btn px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition" data-indent="4">4文字</button>
+                    <button class="indent-btn px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition" data-indent="tab">Tab</button>
+                    <button class="indent-btn px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition" data-indent="0">圧縮 (1行)</button>
+                </div>
+            </div>
+
+            <!-- Sort Option -->
+            <div class="flex items-center gap-1.5">
+                <span class="text-slate-600 font-medium">ソート:</span>
+                <select id="sortOption" class="bg-white border border-slate-300 text-slate-700 text-sm rounded-md px-2.5 py-1 focus:outline-none focus:border-indigo-500 shadow-sm">
+                    <option value="none">元の順序を維持</option>
+                    <option value="asc">キー順 (A-Z)</option>
+                    <option value="desc">キー逆順 (Z-A)</option>
+                    <option value="files-first">ファイル優先 (null先頭)</option>
+                </select>
+            </div>
+
+            <!-- Font Size Option -->
+            <div class="flex items-center gap-1.5">
+                <span class="text-slate-600 font-medium">文字サイズ:</span>
+                <select id="fontSizeSelect" class="bg-white border border-slate-300 text-slate-700 text-sm rounded-md px-2.5 py-1 focus:outline-none focus:border-indigo-500 shadow-sm">
+                    <option value="14px">小 (14px)</option>
+                    <option value="16px" selected>標準 (16px)</option>
+                    <option value="18px">中 (18px)</option>
+                    <option value="20px">大 (20px)</option>
+                    <option value="22px">特大 (22px)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- View Switcher -->
+        <div class="flex items-center gap-2">
+            <div class="inline-flex rounded-md shadow-sm border border-slate-300 p-0.5 bg-white">
+                <button id="viewTree" class="view-btn px-3 py-1 rounded text-slate-600 hover:text-slate-900 transition active-view flex items-center gap-1.5">
+                    <i class="fa-solid fa-sitemap"></i> ツリー表示
+                </button>
+                <button id="viewText" class="view-btn px-3 py-1 rounded text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-code"></i> テキスト表示
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-0 overflow-hidden relative bg-white">
+        
+        <!-- Left: Input Pane -->
+        <section class="flex flex-col border-r border-slate-200 bg-white min-h-0">
+            <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 flex items-center justify-between text-xs text-slate-500">
+                <span class="font-medium flex items-center gap-1.5 text-sm text-slate-700">
+                    <i class="fa-solid fa-pen-to-square text-indigo-500"></i> JSON 入力
+                </span>
+                <div id="inputStats" class="text-slate-500 text-xs">0 文字 | 0 行</div>
+            </div>
+            
+            <div class="relative flex-1 min-h-0 bg-white">
+                <textarea id="jsonInput" placeholder="ここにJSONを貼り付けまたは入力してください..." 
+                    class="w-full h-full p-4 bg-white text-slate-800 text-base font-mono resize-none focus:outline-none leading-relaxed"
+                    spellcheck="false"></textarea>
+            </div>
+        </section>
+
+        <!-- Right: Output Pane -->
+        <section class="flex flex-col bg-slate-50/50 min-h-0 relative">
+            <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 flex items-center justify-between text-xs text-slate-500">
+                <div class="flex items-center gap-3">
+                    <span class="font-medium flex items-center gap-1.5 text-sm text-slate-700">
+                        <i class="fa-solid fa-square-poll-vertical text-emerald-500"></i> 出力プレビュー
+                    </span>
+                    <!-- Search Input for Tree -->
+                    <div id="searchContainer" class="hidden md:flex items-center relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 text-slate-400 text-xs"></i>
+                        <input id="searchInput" type="text" placeholder="キー・値を検索..." 
+                            class="bg-white border border-slate-300 rounded-md pl-7 pr-2 py-1 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 w-40 focus:w-52 transition-all shadow-sm">
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-2">
+                    <button id="btnExpandAll" class="bg-white hover:bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded border border-slate-300 shadow-sm transition hidden" title="すべて展開">
+                        <i class="fa-solid fa-angles-down text-slate-400"></i> 展開
+                    </button>
+                    <button id="btnCollapseAll" class="bg-white hover:bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded border border-slate-300 shadow-sm transition hidden" title="すべて折りたたむ">
+                        <i class="fa-solid fa-angles-right text-slate-400"></i> 折りたたみ
+                    </button>
+                    <button id="btnCopy" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1 rounded shadow transition flex items-center gap-1 font-medium">
+                        <i class="fa-regular fa-copy"></i> コピー
+                    </button>
+                    <button id="btnDownload" class="bg-white hover:bg-slate-100 text-slate-700 text-xs px-3 py-1 rounded border border-slate-300 shadow-sm transition flex items-center gap-1">
+                        <i class="fa-solid fa-download text-slate-400"></i> 保存
+                    </button>
+                </div>
+            </div>
+
+            <!-- Validation Status Bar -->
+            <div id="statusBar" class="bg-emerald-50 border-b border-emerald-200 px-4 py-1.5 text-xs text-emerald-700 flex items-center justify-between">
+                <span id="statusMessage" class="flex items-center gap-1.5 font-medium text-xs">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i> 正常なJSONです
+                </span>
+                <span id="outputStats" class="text-xs opacity-90 font-medium">ノード数: 0</span>
+            </div>
+
+            <!-- Output Display Container -->
+            <div class="flex-1 overflow-auto p-4 relative min-h-0 bg-white">
+                <!-- Tree View Container -->
+                <div id="treeOutput" class="font-mono text-base text-slate-800"></div>
+                
+                <!-- Text Code Output Container -->
+                <pre id="textOutput" class="hidden font-mono text-base text-slate-800 whitespace-pre-wrap break-all leading-relaxed bg-white p-2 border border-slate-100 rounded-lg"></pre>
+            </div>
+        </section>
+    </main>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-indigo-600 text-white text-xs px-4 py-2.5 rounded-lg shadow-xl opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 z-50">
+        <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">コピーしました</span>
+    </div>
+
+    <script>
+        // State variables
+        let currentIndent = '2';
+        let currentSort = 'none';
+        let currentView = 'tree'; // 'tree' or 'text'
+        let currentFontSize = '16px';
+        let parsedData = null;
+
+        // DOM elements
+        const jsonInput = document.getElementById('jsonInput');
+        const treeOutput = document.getElementById('treeOutput');
+        const textOutput = document.getElementById('textOutput');
+        const statusBar = document.getElementById('statusBar');
+        const statusMessage = document.getElementById('statusMessage');
+        const inputStats = document.getElementById('inputStats');
+        const outputStats = document.getElementById('outputStats');
+        const sampleSelect = document.getElementById('sampleSelect');
+        const searchInput = document.getElementById('searchInput');
+        const btnExpandAll = document.getElementById('btnExpandAll');
+        const btnCollapseAll = document.getElementById('btnCollapseAll');
+
+        const SAMPLES = {
+            tree: {
+                "matomemo": {
+                    "output_result.json": null,
+                    "_Docker起動.txt": null,
+                    "パスを捜査して結果を出力するバッチ.bat": null,
+                    "src": {
+                        "app.js": null,
+                        "style.css": null,
+                        "components": {
+                            "Header.jsx": null,
+                            "Footer.jsx": null
+                        }
+                    },
+                    "docs": {
+                        "README.md": null
+                    }
+                }
+            },
+            simple: {
+                "appName": "JSON Formatter",
+                "version": "1.2.0",
+                "active": true,
+                "features": ["Tree View", "Minify", "Sort Keys", "Instant Validation"],
+                "settings": {
+                    "theme": "light",
+                    "autoFormat": true,
+                    "indentSize": 4
+                },
+                "metadata": null
+            },
+            array: [
+                { "id": 1, "name": "Alice", "role": "Developer", "active": true },
+                { "id": 2, "name": "Bob", "role": "Designer", "active": false },
+                { "id": 3, "name": "Charlie", "role": "Manager", "active": true }
+            ]
+        };
+
+        function sortObjectKeys(obj, sortType) {
+            if (sortType === 'none' || obj === null || typeof obj !== 'object') {
+                return obj;
+            }
+
+            if (Array.isArray(obj)) {
+                return obj.map(item => sortObjectKeys(item, sortType));
+            }
+
+            const keys = Object.keys(obj);
+
+            if (sortType === 'asc') {
+                keys.sort((a, b) => a.localeCompare(b));
+            } else if (sortType === 'desc') {
+                keys.sort((a, b) => b.localeCompare(a));
+            } else if (sortType === 'files-first') {
+                keys.sort((a, b) => {
+                    const isObjA = obj[a] !== null && typeof obj[a] === 'object';
+                    const isObjB = obj[b] !== null && typeof obj[b] === 'object';
+                    if (isObjA === isObjB) {
+                        return a.localeCompare(b);
+                    }
+                    return isObjA ? 1 : -1; // files (non-objects) first
+                });
+            }
+
+            const sortedObj = {};
+            for (const key of keys) {
+                sortedObj[key] = sortObjectKeys(obj[key], sortType);
+            }
+            return sortedObj;
+        }
+
+        function processAndRenderJSON() {
+            const rawText = jsonInput.value.trim();
+            updateInputStats(rawText);
+
+            if (!rawText) {
+                showEmptyState();
+                return;
+            }
+
+            try {
+                parsedData = JSON.parse(rawText);
+                showValidStatus();
+
+                // Sort data if required
+                const processedData = sortObjectKeys(parsedData, currentSort);
+
+                // Count total nodes
+                const nodeCount = countNodes(processedData);
+                outputStats.textContent = `ノード数: ${nodeCount}`;
+
+                // Format string representation
+                let formattedText = '';
+                if (currentIndent === '0') {
+                    formattedText = JSON.stringify(processedData);
+                } else if (currentIndent === 'tab') {
+                    formattedText = JSON.stringify(processedData, null, '\t');
+                } else {
+                    const spaces = parseInt(currentIndent, 10);
+                    formattedText = JSON.stringify(processedData, null, spaces);
+                }
+
+                textOutput.textContent = formattedText;
+
+                // Render Tree View
+                treeOutput.innerHTML = '';
+                const searchKeyword = searchInput.value.trim().toLowerCase();
+                const treeElement = createTreeDOM(processedData, '', searchKeyword);
+                treeOutput.appendChild(treeElement);
+
+            } catch (err) {
+                showErrorStatus(err.message);
+                textOutput.textContent = rawText;
+                treeOutput.innerHTML = `<div class="p-4 text-rose-700 bg-rose-50 border border-rose-200 rounded-lg font-mono text-xs">
+                    <i class="fa-solid fa-triangle-exclamation mr-2 text-rose-500"></i>構文エラー: ${escapeHTML(err.message)}
+                </div>`;
+                outputStats.textContent = 'エラー';
+            }
+        }
+
+        function countNodes(data) {
+            if (data === null || typeof data !== 'object') return 1;
+            let count = 1;
+            for (const key in data) {
+                if (Object.prototype.hasOwnProperty.call(data, key)) {
+                    count += countNodes(data[key]);
+                }
+            }
+            return count;
+        }
+
+        function createTreeDOM(data, keyName = '', searchKeyword = '') {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'tree-node pl-4 my-1 border-l-2 border-slate-200 leading-relaxed';
+
+            const type = data === null ? 'null' : Array.isArray(data) ? 'array' : typeof data;
+
+            // PARENT NODE (Objects or Arrays -> HAS CHILDREN, CLICKABLE)
+            if (type === 'object' || type === 'array') {
+                const isArray = type === 'array';
+                const keys = Object.keys(data);
+                const isEmpty = keys.length === 0;
+
+                const header = document.createElement('div');
+                // Highly visible parent container styling with hover background and badge indicator
+                header.className = 'flex items-center gap-2 cursor-pointer select-none py-1 px-2 rounded-lg tree-node-parent border border-slate-200/60 bg-slate-50/80 my-1 group transition-colors shadow-sm';
+
+                // Fold Arrow Icon
+                const toggleIcon = document.createElement('i');
+                toggleIcon.className = `fa-solid fa-chevron-down text-slate-500 text-xs w-3 text-center transition-transform duration-150 ${isEmpty ? 'invisible' : ''}`;
+
+                // Type Folder / Container Icon
+                const typeIcon = document.createElement('i');
+                typeIcon.className = `fa-solid ${isArray ? 'fa-list-ol text-purple-600' : 'fa-folder-open text-amber-500'} text-sm`;
+
+                // Parent Key Label
+                const keySpan = document.createElement('span');
+                keySpan.className = 'font-bold text-slate-900 group-hover:text-indigo-600';
+                if (keyName !== '') {
+                    keySpan.innerHTML = highlightMatch(escapeHTML(keyName), searchKeyword);
+                } else {
+                    keySpan.textContent = isArray ? '配列' : 'オブジェクト';
+                }
+
+                // Count Badge (Children Indicator - makes parent status very obvious)
+                const badge = document.createElement('span');
+                badge.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 ml-auto border border-slate-300/50';
+                badge.textContent = isArray ? `${keys.length} 件` : `${keys.length} 項目`;
+
+                header.appendChild(toggleIcon);
+                header.appendChild(typeIcon);
+                header.appendChild(keySpan);
+                header.appendChild(badge);
+
+                const childrenContainer = document.createElement('div');
+                childrenContainer.className = 'tree-children';
+
+                if (!isEmpty) {
+                    for (const k of keys) {
+                        childrenContainer.appendChild(createTreeDOM(data[k], isArray ? '' : k, searchKeyword));
+                    }
+                }
+
+                // Toggle Collapse/Expand dynamically based on actual DOM state
+                header.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isCollapsed = childrenContainer.classList.contains('hidden');
+                    if (isCollapsed) {
+                        childrenContainer.classList.remove('hidden');
+                        toggleIcon.classList.remove('fa-chevron-right');
+                        toggleIcon.classList.add('fa-chevron-down');
+                        if (!isArray) {
+                            typeIcon.classList.remove('fa-folder');
+                            typeIcon.classList.add('fa-folder-open');
+                        }
+                    } else {
+                        childrenContainer.classList.add('hidden');
+                        toggleIcon.classList.remove('fa-chevron-down');
+                        toggleIcon.classList.add('fa-chevron-right');
+                        if (!isArray) {
+                            typeIcon.classList.remove('fa-folder-open');
+                            typeIcon.classList.add('fa-folder');
+                        }
+                    }
+                });
+
+                wrapper.appendChild(header);
+                wrapper.appendChild(childrenContainer);
+
+            } else {
+                // LEAF NODE (File / Primitive Value -> NO CHILDREN)
+                const line = document.createElement('div');
+                line.className = 'flex items-center gap-2 py-1 px-2 rounded-md hover:bg-slate-100/80 my-0.5 border border-transparent transition-colors';
+
+                // File Icon
+                const fileIcon = document.createElement('i');
+                fileIcon.className = 'fa-regular fa-file-code text-slate-400 text-xs w-3 text-center';
+
+                const keySpan = document.createElement('span');
+                if (keyName !== '') {
+                    keySpan.className = 'font-medium text-slate-700';
+                    keySpan.innerHTML = highlightMatch(escapeHTML(keyName), searchKeyword) + '<span class="text-slate-400 font-normal">: </span>';
+                }
+
+                const valueSpan = document.createElement('span');
+                let formattedValue = JSON.stringify(data);
+
+                if (type === 'string') {
+                    valueSpan.className = 'text-emerald-700 font-medium break-all';
+                } else if (type === 'number') {
+                    valueSpan.className = 'text-amber-700 font-semibold';
+                } else if (type === 'boolean') {
+                    valueSpan.className = 'text-sky-700 font-bold';
+                } else if (type === 'null') {
+                    valueSpan.className = 'text-slate-400 italic';
+                    formattedValue = 'null';
+                }
+
+                valueSpan.innerHTML = highlightMatch(escapeHTML(formattedValue), searchKeyword);
+
+                line.appendChild(fileIcon);
+                if (keyName !== '') line.appendChild(keySpan);
+                line.appendChild(valueSpan);
+                wrapper.appendChild(line);
+            }
+
+            return wrapper;
+        }
+
+        function highlightMatch(text, keyword) {
+            if (!keyword) return text;
+            const idx = text.toLowerCase().indexOf(keyword);
+            if (idx === -1) return text;
+            const matched = text.substring(idx, idx + keyword.length);
+            return text.substring(0, idx) + `<mark class="highlight-match">${matched}</mark>` + text.substring(idx + keyword.length);
+        }
+
+        function escapeHTML(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function updateInputStats(text) {
+            const chars = text.length;
+            const lines = text ? text.split('\n').length : 0;
+            inputStats.textContent = `${chars.toLocaleString()} 文字 | ${lines.toLocaleString()} 行`;
+        }
+
+        function showValidStatus() {
+            statusBar.className = 'bg-emerald-50 border-b border-emerald-200 px-4 py-1.5 text-xs text-emerald-700 flex items-center justify-between';
+            statusMessage.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> 正常なJSONです';
+        }
+
+        function showErrorStatus(msg) {
+            statusBar.className = 'bg-rose-50 border-b border-rose-200 px-4 py-1.5 text-xs text-rose-700 flex items-center justify-between';
+            statusMessage.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600"></i> 構文エラー: ${escapeHTML(msg)}`;
+        }
+
+        function showEmptyState() {
+            treeOutput.innerHTML = `<div class="text-slate-400 text-center py-12 text-xs">
+                <i class="fa-solid fa-code text-3xl mb-2 block text-slate-300"></i>
+                JSONを入力するか、上のサンプルデータを選択してください
+            </div>`;
+            textOutput.textContent = '';
+            showValidStatus();
+            statusMessage.innerHTML = '<i class="fa-solid fa-info-circle text-slate-400"></i> 入力待ち';
+            outputStats.textContent = 'ノード数: 0';
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.textContent = message;
+            toast.className = `fixed bottom-5 right-5 text-white text-xs px-4 py-2.5 rounded-lg shadow-xl transition-all duration-300 flex items-center gap-2 z-50 ${
+                isError ? 'bg-rose-600' : 'bg-indigo-600'
+            } opacity-100 translate-y-0`;
+
+            toastIcon.className = isError ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-circle-check';
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        // Live formatting input listener
+        jsonInput.addEventListener('input', () => {
+            processAndRenderJSON();
+        });
+
+        // Indent buttons
+        document.querySelectorAll('.indent-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.indent-btn').forEach(b => {
+                    b.classList.remove('bg-indigo-600', 'text-white', 'shadow');
+                    b.classList.add('text-slate-600');
+                });
+                e.target.classList.add('bg-indigo-600', 'text-white', 'shadow');
+                e.target.classList.remove('text-slate-600');
+
+                currentIndent = e.target.getAttribute('data-indent');
+                processAndRenderJSON();
+            });
+        });
+
+        // Sort selector
+        document.getElementById('sortOption').addEventListener('change', (e) => {
+            currentSort = e.target.value;
+            processAndRenderJSON();
+        });
+
+        // Font size selector
+        document.getElementById('fontSizeSelect').addEventListener('change', (e) => {
+            currentFontSize = e.target.value;
+            treeOutput.style.fontSize = currentFontSize;
+            textOutput.style.fontSize = currentFontSize;
+            jsonInput.style.fontSize = currentFontSize;
+        });
+
+        // Search input listener
+        searchInput.addEventListener('input', () => {
+            processAndRenderJSON();
+        });
+
+        // View toggle buttons (Tree vs Text)
+        const viewTreeBtn = document.getElementById('viewTree');
+        const viewTextBtn = document.getElementById('viewText');
+
+        function setView(view) {
+            currentView = view;
+            if (view === 'tree') {
+                treeOutput.classList.remove('hidden');
+                textOutput.classList.add('hidden');
+                viewTreeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow');
+                viewTextBtn.classList.remove('bg-indigo-600', 'text-white', 'shadow');
+                btnExpandAll.classList.remove('hidden');
+                btnCollapseAll.classList.remove('hidden');
+            } else {
+                treeOutput.classList.add('hidden');
+                textOutput.classList.remove('hidden');
+                viewTextBtn.classList.add('bg-indigo-600', 'text-white', 'shadow');
+                viewTreeBtn.classList.remove('bg-indigo-600', 'text-white', 'shadow');
+                btnExpandAll.classList.add('hidden');
+                btnCollapseAll.classList.add('hidden');
+            }
+        }
+
+        viewTreeBtn.addEventListener('click', () => setView('tree'));
+        viewTextBtn.addEventListener('click', () => setView('text'));
+
+        // Expand / Collapse all
+        btnExpandAll.addEventListener('click', () => {
+            treeOutput.querySelectorAll('.tree-children').forEach(el => el.classList.remove('hidden'));
+            treeOutput.querySelectorAll('.fa-chevron-right').forEach(icon => {
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-down');
+            });
+            treeOutput.querySelectorAll('.fa-folder').forEach(icon => {
+                icon.classList.remove('fa-folder');
+                icon.classList.add('fa-folder-open');
+            });
+        });
+
+        btnCollapseAll.addEventListener('click', () => {
+            treeOutput.querySelectorAll('.tree-children').forEach(el => el.classList.add('hidden'));
+            treeOutput.querySelectorAll('.fa-chevron-down').forEach(icon => {
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-right');
+            });
+            treeOutput.querySelectorAll('.fa-folder-open').forEach(icon => {
+                icon.classList.remove('fa-folder-open');
+                icon.classList.add('fa-folder');
+            });
+        });
+
+        // Sample preset dropdown
+        sampleSelect.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (SAMPLES[val]) {
+                jsonInput.value = JSON.stringify(SAMPLES[val], null, 2);
+                processAndRenderJSON();
+                showToast('サンプルデータを読み込みました');
+            }
+            e.target.selectedIndex = 0;
+        });
+
+        // Clear button
+        document.getElementById('btnClear').addEventListener('click', () => {
+            jsonInput.value = '';
+            processAndRenderJSON();
+            showToast('クリアしました');
+        });
+
+        // Paste button
+        document.getElementById('btnPaste').addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text) {
+                    jsonInput.value = text;
+                    processAndRenderJSON();
+                    showToast('クリップボードから貼り付けました');
+                }
+            } catch (err) {
+                showToast('貼り付け権限がありません', true);
+            }
+        });
+
+        // Copy button
+        document.getElementById('btnCopy').addEventListener('click', () => {
+            const textToCopy = textOutput.textContent;
+            if (!textToCopy) {
+                showToast('コピーする内容がありません', true);
+                return;
+            }
+
+            const tempArea = document.createElement('textarea');
+            tempArea.value = textToCopy;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('JSONをコピーしました！');
+            } catch (e) {
+                showToast('コピーに失敗しました', true);
+            }
+            document.body.removeChild(tempArea);
+        });
+
+        // Download button
+        document.getElementById('btnDownload').addEventListener('click', () => {
+            const content = textOutput.textContent;
+            if (!content) {
+                showToast('保存するデータがありません', true);
+                return;
+            }
+            const blob = new Blob([content], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'formatted_output.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('output_result.json をダウンロードしました');
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Initial indent active button setup
+            const firstIndentBtn = document.querySelector('.indent-btn[data-indent="2"]');
+            if (firstIndentBtn) {
+                firstIndentBtn.classList.add('bg-indigo-600', 'text-white', 'shadow');
+                firstIndentBtn.classList.remove('text-slate-600');
+            }
+
+            // Load default sample directory tree dataset
+            jsonInput.value = JSON.stringify(SAMPLES.tree, null, 2);
+            setView('tree');
+            treeOutput.style.fontSize = currentFontSize;
+            textOutput.style.fontSize = currentFontSize;
+            jsonInput.style.fontSize = currentFontSize;
+            processAndRenderJSON();
+        });
+    </script>
+</body>
+</html>

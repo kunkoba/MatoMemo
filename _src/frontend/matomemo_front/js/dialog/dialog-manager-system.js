@@ -125,7 +125,8 @@ export default {
     ShowUserMenu() {
         if (!$App.AppData.Context.IsLoggedIn) return this.ShowLoginDialog();
         const el = $Dom.GenerateTemplate('tpl-menu-user');
-        const profile = $App.AppData.Owner.SystemInfo.ownerProfile; // プロフィール取得
+        // const profile = $App.AppData.Owner.SystemInfo.ownerProfile; // プロフィール取得
+        const profile = $App.AppData.Owner.SystemInfo?.ownerProfile;
         const b = {
             profile: $Dom.QuerySelector('#btn-sys-user-profile', el),
             mail:    $Dom.QuerySelector('#btn-user-mail', el),
@@ -136,7 +137,8 @@ export default {
         // 新着バッヂ更新
         $UI.Generator.ApplyNewBadge(b.mail, $App.AppData.Context.UnreadMailCount > 0, 'label');
         // ① 閲覧履歴が0件（または存在しない）場合はボタンを非表示にする
-        const hasHistory = profile.view_history && profile.view_history.length > 0;
+        // const hasHistory = profile.view_history && profile.view_history.length > 0;
+        const hasHistory = profile?.view_history && profile.view_history.length > 0;
         $Dom.ToggleShow(b.history, hasHistory);
         // 各種イベント
         b.profile.onclick = () => this.ShowUserProfile($App.AppData.Owner.SystemInfo.ownerProfile, true);

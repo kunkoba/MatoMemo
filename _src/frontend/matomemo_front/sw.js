@@ -17,15 +17,41 @@ const CACHE_KEYS = {
 const CORE_ASSETS = [
     './',
     './index.html',
-    './img/ico/icon-48.png',
-    './img/ico/icon-192.png',
-    './img/ico/icon-512.png',
+    './manifest.json',
+    './css/app-style.css',
+    './css/component-style.css',
+    './css/leaflet.css',
+    './js/config.js',
+    './js/app-const.js',
+    './js/common.js',
+    './js/app-data.js',
+    './js/app-manager.js',
+    './js/local-db-controller.js',
+    './js/notice-manager.js',
+    './js/polling-manager.js',
+    './js/auth-manager.js',
+    './js/lib/lib_atmosphere.js',
+    './js/leaflet/leaflet.js',
+    './js/leaflet/leaflet.geometryutil.js',
+    './js/leaflet/leaflet-arrowheads.js',
+    './js/component/ui-manager.js',
+    './js/component/bar-controller.js',
+    './js/component/detail-frame-controller.js',
+    './js/component/detail-content-controller.js',
+    './js/component/map-controller.js',
+    './js/component/marker-controller.js',
+    './js/dialog/dialog-manager.js',
+    './js/dialog-manager-system.js',
+    './js/dialog-manager-app.js',
+    './js/dialog-manager-archive.js',
+    './js/dialog-manager-notice.js',
+    './js/dialog-manager-admin.js',
     './template/template-core.html',
     './template/template-screen.html',
     './template/template-list.html',
     './template/template-admin.html',
-    './css/app-style.css',
-    './css/component-style.css'
+    './img/ico/icon-192.png',
+    './img/ico/icon-512.png'
 ];
 // キャッシュ優先（Cache First）にする外部ドメイン群
 const STATIC_DOMAINS = [
@@ -42,14 +68,17 @@ const STATIC_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.wo
 const isApiRequest = (url) => {
     return url.includes('/api/') || url.includes('ngrok-free.app') || url.includes('localhost:5000');
 };
-// --- 1. インストール処理 ---
+// --- 1. インストール処理（1つ失敗しても他を活かす＋ログ出力） ---
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_KEYS.STATIC).then((cache) => {
-            return cache.addAll(CORE_ASSETS);
+            return Promise.all(
+                CORE_ASSETS.map(url => {
+                    return cache.add(url).catch(err => console.warn(`[SW] Missing file: ${url}`));
+                })
+            );
         })
     );
-    // 新しいSWが見つかったら、待機せずに即座に入れ替える
     self.skipWaiting();
 });
 // --- 2. アクティベート処理 ---

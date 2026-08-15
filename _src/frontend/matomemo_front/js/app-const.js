@@ -6,7 +6,7 @@ window.$Const = {
         DESCRIPTION: "メモをまとめて自分だけの旅行記を作ろう",
         DEVELOPER: "kunkoba",
         OFFICIAL_SITE: "https://hinekulemonstudio.web.app/",
-        VERSION: "1.1.8",
+        VERSION: "1.1.9",
         VERSION_DESCRIPTION: `
 メジャー.マイナー.パッチの形式で表されます。
 
@@ -22,7 +22,7 @@ window.$Const = {
     },
     // アプリ設定
     APP_CONFIG: {
-        ADMIN_PW: window.ENV_CONFIG.ADMIN_PW,
+        ADMIN_PW: (window.ENV_CONFIG && window.ENV_CONFIG.ADMIN_PW) ? window.ENV_CONFIG.ADMIN_PW : "",
         SAVE_DETAIL_SEC: 300,
         SAVE_REACTION_SEC: 300,
     },

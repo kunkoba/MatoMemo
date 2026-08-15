@@ -604,12 +604,23 @@ export default {
         };
         // 統計情報の描画
         const renderStats = (arc, details) => {
-            const totalPrice = details.reduce((sum, item) => sum + Number(item.memo_price || 0), 0);
+            // 1. 各小計と合計を計算
+            const plusSum  = details.filter(d => d.memo_price > 0).reduce((s, i) => s + Number(i.memo_price), 0);
+            const minusSum = details.filter(d => d.memo_price < 0).reduce((s, i) => s + Number(i.memo_price), 0);
+            const total    = plusSum + minusSum;
+            // 2. プラスとマイナスが混在する場合のみ小計を表示
+            const showBreakdown = (plusSum > 0 && minusSum < 0);
+            $Dom.ToggleShow($Dom.QuerySelector('#mem-stat-price-plus-row', el), showBreakdown);
+            $Dom.ToggleShow($Dom.QuerySelector('#mem-stat-price-minus-row', el), showBreakdown);
+            if (showBreakdown) {
+                $Dom.QuerySelector('#mem-stat-price-plus', el).textContent = `+${plusSum.toLocaleString()}`;
+                $Dom.QuerySelector('#mem-stat-price-minus', el).textContent = minusSum.toLocaleString();
+            }
+            // 3. 合計金額の表示（色分けロジックは維持）
             const priceVal = $Dom.QuerySelector('#mem-stat-price', el);
-            priceVal.textContent = totalPrice.toLocaleString();
-            if (totalPrice > 0) priceVal.className = "font-bold text-[1.1rem] text-blue-500";
-            else if (totalPrice < 0) priceVal.className = "font-bold text-[1.1rem] text-red-500";
-            else priceVal.className = "font-bold text-[1.1rem] text-slate-900";
+            priceVal.textContent = total.toLocaleString();
+            priceVal.className = "font-bold text-[1.1rem] " + (total > 0 ? "text-blue-500" : (total < 0 ? "text-red-500" : "text-slate-900"));
+            // 4. その他統計（既存のまま）
             $Dom.QuerySelector('#view-mem-price-unit', el).textContent = arc.currency_unit || $App.AppData.Owner.Currency_unit || 'JPY';
             $Dom.QuerySelector('#mem-stat-distance', el).textContent = $Util.GetTotalDistance(details).toFixed(1);
             $Dom.QuerySelector('#btn-view-mem-timeline', el).onclick = () => this.ShowDetailsTimeLine();

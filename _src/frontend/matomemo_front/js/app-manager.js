@@ -39,6 +39,15 @@ const _AppCore = {
         if (saved.loginUserId) {
             AppData.Owner.SystemInfo = { login_user_id: saved.loginUserId };
         }
+    // // 保存されていたプロフィールがあれば復元
+    // if (saved.ownerProfile) {
+    //     AppData.Owner.SystemInfo = { 
+    //         login_user_id: saved.loginUserId,
+    //         ownerProfile: saved.ownerProfile // 絵文字や名前を戻す
+    //     };
+    // } else if (saved.loginUserId) {
+    //     AppData.Owner.SystemInfo = { login_user_id: saved.loginUserId };
+    // }
         // URLパラメータ解析
         const params = new URLSearchParams(location.search);
         const targetId = $Util.DecodeId(params.get("encodedId"));
@@ -70,29 +79,26 @@ const _AppCore = {
     },
     // オフライン監視・GPS追従・データ同期などのポーリング処理をまとめて登録する
     initPollingTasks() {
-        const checkSec = 10;
+        const checkSec = 1;
         const saveDetailSec = $Const.APP_CONFIG.SAVE_DETAIL_SEC;
         const saveReactionSec = $Const.APP_CONFIG.SAVE_REACTION_SEC;
         const activityCheckSec = 300;
         $Polling.Init();
         // オフライン監視
         $Polling.Add($Polling.TASKS.OFFLINE_CHECK, () => {
-            const isOn = navigator.onLine;
-            $App.AppData.Context.IsOnline = isOn;
-            if (isOn) {
-                // オンライン復帰時：通知を隠し、各同期タスクを再開
-                $Notice.Offline.Hide();
-                $Polling.Start($Polling.TASKS.DATA_DETAIL);
-                $Polling.Start($Polling.TASKS.DATA_REACTION);
-                $Polling.Start($Polling.TASKS.SYNC_ACTIVITY);
-            } else {
-                // オフライン時：通知を表示し、各同期タスクを停止
+            const isPhysicalOn = navigator.onLine;
+            if (!isPhysicalOn) {
+                // 1. 物理断：即座に論理オフラインにし、バーを出す
+                AppManager.AppData.Context.IsOnline = false;
                 $Notice.Offline.Show();
-                $Polling.Stop($Polling.TASKS.DATA_DETAIL);
-                $Polling.Stop($Polling.TASKS.DATA_REACTION);
-                $Polling.Stop($Polling.TASKS.SYNC_ACTIVITY);
+            } else {
+                // 2. 物理復帰 且つ 論理オフラインの場合：
+                // ここで生存確認を呼んで、自動復帰のトリガーにする
+                if (!AppManager.AppData.Context.IsOnline) {
+                    this.syncActivityLog(); 
+                }
             }
-        }, checkSec);
+        }, checkSec); // 10秒ごとに監視
         // GPS追従（初期登録）
         $Polling.Add(
             $Polling.TASKS.GPS_FOLLOW,
@@ -128,7 +134,7 @@ const _AppCore = {
         $Polling.Start($Polling.TASKS.OFFLINE_CHECK);
     },
     // 最終利用日の同期
-    async syncActivityLog() {
+    async syncActivityLog_2() {
         if (!$App.AppData.Context.IsLoggedIn || !navigator.onLine) {
             return true;
         }
@@ -145,6 +151,23 @@ const _AppCore = {
             this.save($App.AppData.Owner);
             return true;
         }
+        return false;
+    },
+    // 最終利用日の同期
+    async syncActivityLog() {
+        // 物理的にネットがない場合はチェック不要（今の状態を維持）
+        if (!navigator.onLine) return true;
+        // 物理ネットがあるなら、サーバへの生存確認を「常に」試行する
+        if (await $Data.Access.EnsureLoginUser()) {
+            // 成功＝サーバ復活！論理オンラインに戻す
+            AppManager.AppData.Context.IsOnline = true;
+            $Notice.Offline.Hide();
+            const today = new Date().setHours(0, 0, 0, 0);
+            AppManager.AppData.Owner.LastLoginDate = $Util.FormatDate(today, 'YYYY-MM-DD');
+            this.save(AppManager.AppData.Owner);
+            return true;
+        }
+        // サーバが応答しない、またはログイン無効の場合は失敗
         return false;
     },
     // 法的情報（利用規約・プライバシーポリシー等）の差分更新
@@ -243,6 +266,10 @@ const AppManager = {
             // 定期タスク（ポーリング）の登録・開始
             {
                 _AppCore.initPollingTasks();
+                // 起動時にすでにオフラインなら即表示
+                if (!navigator.onLine || !this.AppData.Context.IsOnline) {
+                    $Notice.Offline.Show();
+                }
                 if (this.AppData.Owner.GpsTrackingSec > 0 && navigator.onLine) {
                     $Polling.Start($Polling.TASKS.GPS_FOLLOW);
                 }
@@ -335,19 +362,28 @@ const AppManager = {
             $Notice.Warn("ログインセッションが切れました。再度ログインが必要です。");
             return false;
         }
-        // 2. 通信・サーバエラーの判定
-        let msg = "サーバへ接続できません。ローカル機能のみ利用可能です。";
-        if (response) {
-            try {
-                const res = await response.json();
-                msg = res.message || "サーバでエラーが発生しました。";
-            } catch (e) {
-                msg = "データの取得に失敗しました。";
-            }
-        } else if (!navigator.onLine) {
-            msg = "オフラインのため通信をスキップしました。";
+        {
+            // // 2. 通信・サーバエラーの判定
+            // let msg = "サーバへ接続できません。ローカル機能のみ利用可能です。";
+            // if (response) {
+            //     try {
+            //         const res = await response.json();
+            //         msg = res.message || "サーバでエラーが発生しました。";
+            //     } catch (e) {
+            //         msg = "データの取得に失敗しました。";
+            //     }
+            // } else if (!navigator.onLine) {
+            //     msg = "オフラインのため通信をスキップしました。";
+            // }
+            // // 全てトースト通知で処理し、例外は投げない
+            // $Notice.Error(msg);
+            // return false;
         }
-        // 全てトースト通知で処理し、例外は投げない
+        // 接続失敗時は論理オフラインへ移行
+        this.AppData.Context.IsOnline = false;
+        $Notice.Offline.Show(); // オフラインバーを表示
+
+        let msg = "サーバ接続が切断されました。オフラインモードへ移行します。";
         $Notice.Error(msg);
         return false;
     },
