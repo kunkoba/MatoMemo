@@ -48,7 +48,7 @@ const Notice = {
     // オフライン通知
     Offline: {
         el: null,
-        Show() {
+        Show_2() {
             if (!this.el) {
                 this.el = $Dom.GenerateTemplate("tpl-offline");
             }
@@ -56,6 +56,17 @@ const Notice = {
             this.el.style.opacity = "1";
             // $Dom.ToggleShow($Dom.GetElementById('ad-space-mobile-1'), false);
             // $Dom.ToggleShow($Dom.GetElementById('ad-space-mobile-2'), false);
+        },
+        // メッセージを引数で受け取る
+        Show(msg) {
+            if (!this.el) { // 要素未生成なら作成
+                this.el = $Dom.GenerateTemplate("tpl-offline");
+            }
+            const textEl = this.el.querySelector(".js-text"); // テキスト要素取得
+            if (textEl && msg) { // メッセージがあれば上書き
+                textEl.textContent = msg; // 文言反映
+            }
+            this.el.style.opacity = "1"; // 表示
         },
         Hide() {
             if (!this.el) return;

@@ -86,19 +86,16 @@ const _AppCore = {
         $Polling.Init();
         // オフライン監視
         $Polling.Add($Polling.TASKS.OFFLINE_CHECK, () => {
-            const isPhysicalOn = navigator.onLine;
-            if (!isPhysicalOn) {
-                // 1. 物理断：即座に論理オフラインにし、バーを出す
-                AppManager.AppData.Context.IsOnline = false;
-                $Notice.Offline.Show();
-            } else {
-                // 2. 物理復帰 且つ 論理オフラインの場合：
-                // ここで生存確認を呼んで、自動復帰のトリガーにする
-                if (!AppManager.AppData.Context.IsOnline) {
-                    this.syncActivityLog(); 
-                }
+            if (!navigator.onLine) { // インターネット接続なし
+                AppManager.AppData.Context.IsOnline = false; // 論理オフライン
+                $Notice.Offline.Show("インターネットに接続できません"); // 文言指定
+                return; // 終了
             }
-        }, checkSec); // 10秒ごとに監視
+            // ネットはあるが論理オフライン（サーバ未接続）なら再試行
+            if (!AppManager.AppData.Context.IsOnline) {
+                this.syncActivityLog(); // 疎通確認へ
+            }
+        }, checkSec);
         // GPS追従（初期登録）
         $Polling.Add(
             $Polling.TASKS.GPS_FOLLOW,
@@ -153,22 +150,21 @@ const _AppCore = {
         }
         return false;
     },
-    // 最終利用日の同期
+    // 最終利用日の同期およびサーバ復帰確認
     async syncActivityLog() {
-        // 物理的にネットがない場合はチェック不要（今の状態を維持）
-        if (!navigator.onLine) return true;
-        // 物理ネットがあるなら、サーバへの生存確認を「常に」試行する
+        if (!navigator.onLine) return true; // ネット断時は上位で判定するためスルー
+        // サーバ疎通確認（前回の修正でUI非干渉化したもの）
         if (await $Data.Access.EnsureLoginUser()) {
-            // 成功＝サーバ復活！論理オンラインに戻す
-            AppManager.AppData.Context.IsOnline = true;
-            $Notice.Offline.Hide();
-            const today = new Date().setHours(0, 0, 0, 0);
-            AppManager.AppData.Owner.LastLoginDate = $Util.FormatDate(today, 'YYYY-MM-DD');
-            this.save(AppManager.AppData.Owner);
-            return true;
+            AppManager.AppData.Context.IsOnline = true; // オンライン復帰
+            $Notice.Offline.Hide(); // バーを隠す
+            const today = new Date().setHours(0, 0, 0, 0); // 本日開始時刻
+            AppManager.AppData.Owner.LastLoginDate = $Util.FormatDate(today, 'YYYY-MM-DD'); // 日付保存
+            this.save(AppManager.AppData.Owner); // 永続化
+            return true; // 復帰成功
         }
-        // サーバが応答しない、またはログイン無効の場合は失敗
-        return false;
+        // ネットはあるがサーバに繋がらない場合
+        $Notice.Offline.Show("サーバに接続できません"); // 文言指定
+        return false; // 復帰失敗
     },
     // 法的情報（利用規約・プライバシーポリシー等）の差分更新
     async refreshLegalConfigs() {

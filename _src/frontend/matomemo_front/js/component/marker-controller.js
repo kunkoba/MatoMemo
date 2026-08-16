@@ -97,7 +97,7 @@ const _MarkerCore = {
         });
     },
     // 現在地マーカーの更新
-    async refreshCurrentLocation() {
+    async refreshCurrentLocation_2() {
         $Warn.CatchAsync(async () => {
             const pos = await $Util.GetCurrentPosition();
             const p = [pos.coords.latitude, pos.coords.longitude];
@@ -107,6 +107,26 @@ const _MarkerCore = {
             if (this.locationMarker) this.locationMarker.setLatLng(p);
             if ($App.AppData.Context.ScreenMode == $Const.SCREEN_MODE.CREATE) {
                 // 現在地まで線を引く
+                this.generateArrowToCurrent();
+            }
+        })();
+    },
+    // 現在地マーカーの更新（同期対応版）
+    async refreshCurrentLocation() {
+        // return await を追加し、呼び出し元が完了を待てるようにする
+        return await $Warn.CatchAsync(async () => {
+            const pos = await $Util.GetCurrentPosition(); // GPS座標の取得
+            const lat = pos.coords.latitude; // 緯度
+            const lng = pos.coords.longitude; // 経度
+            const p = [lat, lng]; // 座標配列作成
+            // 詳細画面の入力欄へ反映
+            $DetailContent.SetPos(lat, lng);
+            // 地図上の現在地マーカーを物理移動
+            if (this.locationMarker) {
+                this.locationMarker.setLatLng(p);
+            }
+            // 新規作成モード時は現在地への矢印を再描画
+            if ($App.AppData.Context.ScreenMode == $Const.SCREEN_MODE.CREATE) {
                 this.generateArrowToCurrent();
             }
         })();

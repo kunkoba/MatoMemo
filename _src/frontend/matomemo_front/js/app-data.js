@@ -4,7 +4,7 @@
 const API_ENDPOINTS = {
     // Account
     LoginFirebase:          { method: 'post', url: '/api/Account/LoginFirebase' },
-    EnsureLoginUser:        { method: 'post', url: '/api/Account/EnsureLoginUser' },
+    // EnsureLoginUser:        { method: 'post', url: '/api/Account/EnsureLoginUser' },
     UpdateProfile:          { method: 'post', url: '/api/Account/UpdateProfile' },
     GetUserProfile:         { method: 'post', url: '/api/Account/GetUserProfile' },
     Withdrawal:             { method: 'post', url: '/api/Account/Withdrawal' }, // 未使用
@@ -216,6 +216,33 @@ window.$Data = {
         },
         // 定形APIの展開（自動生成モジュールのマージ）
         ...ApiModule,
+        // ユーザーアカウント確認（UI非干渉・完全非同期）
+        async EnsureLoginUser(params = {}) {
+            const baseUrl = window.ENV_CONFIG.BASE_URL; // ベースURL
+            const url = baseUrl + '/api/Account/EnsureLoginUser'; // 接続先
+            const token = $App.AppData.Owner.Token; // トークン取得
+            const ver = $Const.APP_INFO.VERSION; // バージョン取得
+            const options = { // 通信設定
+                method: 'POST', // メソッド
+                headers: { // ヘッダー
+                    'Content-Type': 'application/json', // コンテンツ
+                    'Authorization': `Bearer ${token}`, // 認証
+                    'X-App-Version': ver // アプリVer
+                },
+                body: JSON.stringify(params) // ボディ
+            };
+            try {
+                const response = await fetch(url, options); // 通信実行
+                if (!response.ok) { // ステータス異常
+                    return false; // 沈黙して終了
+                }
+                const result = await response.json(); // 解析
+                this._setData(result.data); // データ同期
+                return true; // 成功
+            } catch (err) { // ネットワーク断など
+                return false; // 沈黙して終了
+            }
+        },
         // 個別実装（パスパラメータ等を含む特殊なAPI）
         async GetArchiveDetailsPub(params = {}) {
             const encodedId = $Util.EncodeId(params.archive_id);
