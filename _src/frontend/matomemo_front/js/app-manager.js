@@ -162,7 +162,7 @@ const _AppCore = {
         return false; // 復帰失敗
     },
     // 法的情報（利用規約・プライバシーポリシー等）の差分更新
-    async refreshLegalConfigs() {
+    async refreshLegalConfigs_2() {
         const localData = await $LocalDb.Legal.GetAll();
         // ローカルの最終更新日時を各項目ごとに算出
         const items = Object.values($Const.LEGAL_TYPE).map(key => ({
@@ -182,6 +182,41 @@ const _AppCore = {
         }
         if (hasUpdate) {
             await $Data.LocalDb.CheckLegalUnread();
+        }
+    },
+    // 法的情報（利用規約・プライバシーポリシー等）の差分更新
+    async refreshLegalConfigs() {
+        // ローカルDBから全件取得
+        const localData = await $LocalDb.Legal.GetAll(); // 全ドキュメント取得
+        // 取得データをメモリ(AppData)に同期（オフライン表示用）
+        localData.forEach(d => { // 取得したデータをループ
+            if (AppManager.AppData.Legal.hasOwnProperty(d.id)) { // 定義済みキーか確認
+                AppManager.AppData.Legal[d.id] = d; // メモリに格納
+            }
+        });
+        // サーバー通信前に、現在のローカル状態で未読バッジを判定
+        await $Data.LocalDb.CheckLegalUnread(); // 未読フラグをUIに反映
+        // サーバーとの差分チェック用リスト作成
+        const items = Object.values($Const.LEGAL_TYPE).map(key => ({ // 各定数キーに対して
+            key: key, // 規約の識別子
+            last_sync_tim: localData.find(d => d.id === key)?.update_tim || "1900-01-01T00:00:00" // 最終更新日
+        }));
+        // サーバーに最新情報を問い合わせ
+        if (!await $Data.Access.GetLegalConfigs({ items })) { // 通信失敗時はここで終了
+            return; // オフライン等の場合は現在のメモリデータで続行
+        }
+        // サーバーから差分が返ってきた場合の更新処理
+        const results = $Data.resData.results || []; // 結果リスト取得
+        let hasUpdate = false; // 更新有無フラグ
+        for (const res of results) { // 更新分をループ
+            if (res.value !== null) { // 内容が更新されている場合
+                await $LocalDb.Legal.Save(res.key, res.value, res.update_tim, true); // DB保存（未読として保存）
+                hasUpdate = true; // 更新ありにセット
+            }
+        }
+        // 新しいデータが保存された場合のみ、再度未読チェックを実行
+        if (hasUpdate) { // 更新があったら
+            await $Data.LocalDb.CheckLegalUnread(); // UIバッジを再計算
         }
     },
     // サービスワーカー登録

@@ -1,6 +1,14 @@
 export default {
     // （システム）アプリ情報
     ShowAppInfo() {
+        // システム情報と統計情報の取得
+        const sysInfo = $App.AppData.Owner.SystemInfo; // システム全体情報
+        const appInfo = sysInfo?.app_info; // アプリ統計データ
+        // データの存在チェック（未取得時は画面を開かない）
+        if (!appInfo) { // 統計情報が空の場合
+            $Notice.Warn("現在、サーバに接続できません"); // 警告通知
+            return; // 処理を中断
+        }
         const el = $Dom.GenerateTemplate("tpl-app-info");
         // アイコン・基本情報
         $Dom.QuerySelector('#js-app-icon', el).src = "img/ico/icon-512.png";
@@ -8,8 +16,8 @@ export default {
         $Dom.QuerySelector('.js-app-version', el).textContent = $Const.APP_INFO.VERSION;
         $Dom.QuerySelector('.js-app-developer', el).textContent = $Const.APP_INFO.DEVELOPER;
         // 統計データ
-        const sysInfo = $App.AppData.Owner.SystemInfo || {};
-        const appInfo = sysInfo.app_info || {};
+        // const sysInfo = $App.AppData.Owner.SystemInfo || {};
+        // const appInfo = sysInfo.app_info || {};
         $Dom.QuerySelector('.js-stat-users', el).textContent = (appInfo.total_user_count || 0).toLocaleString();
         $Dom.QuerySelector('.js-stat-archives', el).textContent = (appInfo.total_archive_pub_count || 0).toLocaleString();
         $Dom.QuerySelector('.js-stat-memos', el).textContent = (appInfo.total_detail_pub_count || 0).toLocaleString();
