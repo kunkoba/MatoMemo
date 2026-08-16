@@ -99,17 +99,12 @@ window.$Data = {
         async _fetchData(method, url, params, isDebug = false) {// 設定ファイルから取得
             const BaseUrl = window.ENV_CONFIG.BASE_URL;
             console.log("▼ Access:", BaseUrl + url, params);
-            // // オフラインチェック
-            // if (!$App.AppData.Context.IsOnline) {
-            //     $Notice.Warn("オフライン中は、機能が制限されます。");
-            //     return false;
-            // }
             // 通信ガード判定
             const isHealthCheck = url.includes("EnsureLoginUser");
             const isLogicOffline = !$App.AppData.Context.IsOnline;
             // 生存確認以外、かつ論理オフライン時は遮断
             if (!isHealthCheck && isLogicOffline) {
-                $Notice.Warn("オフライン（またはサーバ未接続）のため制限中");
+                $Notice.Warn("現在、サーバに接続できません");
                 return false;
             }
             // メイン処理
@@ -218,6 +213,8 @@ window.$Data = {
         ...ApiModule,
         // ユーザーアカウント確認（UI非干渉・完全非同期）
         async EnsureLoginUser(params = {}) {
+            // 物理的なネットワーク接続がない場合は通信せずに終了
+            if (!navigator.onLine) return false; // 接続なし
             const baseUrl = window.ENV_CONFIG.BASE_URL; // ベースURL
             const url = baseUrl + '/api/Account/EnsureLoginUser'; // 接続先
             const token = $App.AppData.Owner.Token; // トークン取得

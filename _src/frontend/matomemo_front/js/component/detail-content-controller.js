@@ -376,6 +376,7 @@ const _DetailContentCore = {
     // フォームに地点を設定
     setPos(lat, lng){
         // 1. DOM要素がまだ取得されていない（初期化前）場合は安全にスルー（エラー回避）
+        if (!this.root) return; // 初期化前ならスルー
         if (!this.editLat || !this.editLng) return;
         // 2. アプリの状態が「CREATEモード（新規作成）」以外の時は、フォームへの反映を無視する
         if ($App.AppData.Context.ScreenMode !== $Const.SCREEN_MODE.CREATE) return;

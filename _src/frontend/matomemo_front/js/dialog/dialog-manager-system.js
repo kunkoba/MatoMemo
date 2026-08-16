@@ -25,6 +25,7 @@ export default {
         });
     },
     ShowLoginDialog() {
+        console.trace("ShowLoginDialog CALL TRACE"); 
         const el = $Dom.GenerateTemplate("tpl-login");
         const inEmail = $Dom.QuerySelector("#input-login-email", el);
         const inPass = $Dom.QuerySelector("#input-login-password", el);

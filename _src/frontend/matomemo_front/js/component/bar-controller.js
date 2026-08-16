@@ -238,6 +238,7 @@ const _BarCore = {
     },
     // ユーザアイコン更新
     updateUserIcon() {
+        // console.trace("★updateUserIcon:");
         const icon = $App.AppData.Owner.SystemInfo?.ownerProfile?.icon;
         if (icon) this.btnUserMenu.textContent = icon;
     }

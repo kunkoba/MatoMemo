@@ -469,7 +469,7 @@ const DetailFrameController = {
         } else {
             targetPos = $Marker.GetCurrentMarkerPos(); // 既存データ時は選択中のマーカー
         }
-        _DetailFrameCore.toggleDetailPanel(true, targetPos);
+        // _DetailFrameCore.toggleDetailPanel(true, targetPos);
         _DetailFrameCore.toggleDetailPanel(true);
         const isOwner = detail?.is_owner ?? true;
         // ScreenMode または detailのプロパティでPublicデータか判定
@@ -503,8 +503,8 @@ const DetailFrameController = {
                 _DetailFrameCore.txtJumpArchiveTitle.textContent = detail.a_title || "まとめへ移動";
             }
             //
-            $Dom.ToggleShow(_DetailFrameCore.btnEdit, isOwner);
-            $Dom.ToggleShow(_DetailFrameCore.btnReport, !isOwner && isPublic);
+            // $Dom.ToggleShow(_DetailFrameCore.btnEdit, isOwner);
+            // $Dom.ToggleShow(_DetailFrameCore.btnReport, !isOwner && isPublic);
             $DetailContent.RenderDetail(detail, false);
             $Dom.ToggleShow(_DetailFrameCore.btnCancel, false);
             $Dom.ToggleShow(_DetailFrameCore.btnSave, false);

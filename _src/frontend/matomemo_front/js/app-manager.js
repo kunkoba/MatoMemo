@@ -1,6 +1,6 @@
 // --- 内部プロセス（プライベート） ---
 const _AppCore = {
-    settingsKey: "little_trip_settings",
+    settingsKey: "matomemo_settings",
     // ビューポート制御（キーボード対策）とUI初期化を行う
     async setupShell() {
         // ビューポート制御（キーボード対策）
@@ -37,17 +37,11 @@ const _AppCore = {
         AppData.Owner.Token = saved.token;
         AppData.Owner.LastLoginDate = saved.lastLoginDate;
         if (saved.loginUserId) {
-            AppData.Owner.SystemInfo = { login_user_id: saved.loginUserId };
+            AppData.Owner.SystemInfo = { 
+                login_user_id: saved.loginUserId, // ID復元
+                ownerProfile: saved.ownerProfile // プロフィール情報をローカルから復元
+            };
         }
-    // // 保存されていたプロフィールがあれば復元
-    // if (saved.ownerProfile) {
-    //     AppData.Owner.SystemInfo = { 
-    //         login_user_id: saved.loginUserId,
-    //         ownerProfile: saved.ownerProfile // 絵文字や名前を戻す
-    //     };
-    // } else if (saved.loginUserId) {
-    //     AppData.Owner.SystemInfo = { login_user_id: saved.loginUserId };
-    // }
         // URLパラメータ解析
         const params = new URLSearchParams(location.search);
         const targetId = $Util.DecodeId(params.get("encodedId"));
@@ -66,15 +60,16 @@ const _AppCore = {
     // 設定とIDの永続化
     save(Owner) {
         localStorage.setItem(this.settingsKey, JSON.stringify({
-            theme: Owner.Theme,
-            mapStyleKey: Owner.MapStyle?.key,
-            isMapGrayscale: Owner.IsMapGrayscale,
-            gpsTrackingSec: Owner.GpsTrackingSec,
-            token: Owner.Token,
-            currency_unit: Owner.Currency_unit,
-            fontSize: Owner.FontSize,
-            lastLoginDate: Owner.LastLoginDate,
-            loginUserId: Owner.SystemInfo?.login_user_id
+            theme: Owner.Theme, // テーマ
+            mapStyleKey: Owner.MapStyle?.key, // 地図
+            isMapGrayscale: Owner.IsMapGrayscale, // 白黒
+            gpsTrackingSec: Owner.GpsTrackingSec, // GPS
+            token: Owner.Token, // トークン
+            currency_unit: Owner.Currency_unit, // 通貨
+            fontSize: Owner.FontSize, // 文字サイズ
+            lastLoginDate: Owner.LastLoginDate, // ログイン日
+            loginUserId: Owner.SystemInfo?.login_user_id, // ユーザID
+            ownerProfile: Owner.SystemInfo?.ownerProfile // プロフィール情報を追加
         }));
     },
     // オフライン監視・GPS追従・データ同期などのポーリング処理をまとめて登録する
@@ -197,7 +192,38 @@ const _AppCore = {
         navigator.serviceWorker
             .register(`./sw.js?v=${$Const.APP_INFO.VERSION}`)
             .catch(e => console.error(e));
-    }
+    },
+    // ユーザ情報の整合性チェックとローカル補完（同期処理追加版）
+    ensureUserInfo(AppData) {
+        console.log("★ensureUserInfo:", AppData);
+        // ローカルストレージから設定読み込み
+        const saved = JSON.parse(localStorage.getItem(this.settingsKey) || '{}'); // JSON解析
+        // メモリ上のプロフ情報が欠落しているかチェック
+        if (!AppData.Owner.SystemInfo || !AppData.Owner.SystemInfo.ownerProfile) {
+            // ローカルにキャッシュがあるか判定
+            if (saved.loginUserId && saved.ownerProfile) {
+                console.log("◆ユーザ復元");
+                // ローカルキャッシュから復元
+                AppData.Owner.SystemInfo = {
+                    login_user_id: saved.loginUserId, // ID復元
+                    ownerProfile: saved.ownerProfile  // プロフ復元
+                };
+            } else {
+                console.log("◆ユーザなし");
+                // キャッシュも無い場合はゲスト情報を生成
+                AppData.Owner.SystemInfo = {
+                    login_user_id: 'anonymous', // ゲストID
+                    ownerProfile: {
+                        nick_name: 'Guest', // 名前
+                        icon: '👤' // アイコン
+                    }
+                };
+            }
+            // 決定した情報を他コンポーネントに反映させる
+            $Data.Store.Restore(); // データストアへ同期（ダイアログ用）
+        }
+        $Bar.UpdateUserIcon(); // バーのアイコンを更新（メニュー用）
+    },
 };
 // --- 公開窓口 ---
 const AppManager = {
@@ -236,19 +262,24 @@ const AppManager = {
     },
     // アプリ起動時の一連の初期化処理（描画基盤 → ローカル復元 → ログイン確認 → 画面描画 → ポーリング開始 → SW登録）をまとめて実行する
     async Init() {
+        console.log("★$Const.APP_INFO.VERSION", $Const.APP_INFO.VERSION);
         try {
             // 描画基盤とローカル設定の復元
             {
-                await _AppCore.setupShell();
-                await _AppCore.restoreLocal(this.AppData);
-                // トークンがあればログイン済みとして扱い、オンラインならサーバと同期
+                await _AppCore.setupShell(); // UI準備
+                await _AppCore.restoreLocal(this.AppData); // 基本設定復元
+                // トークンがある場合のログイン維持処理
                 if (this.AppData.Owner.Token) {
-                    this.AppData.Context.IsLoggedIn = true;
+                    this.AppData.Context.IsLoggedIn = true; // ログインフラグ
+                    // オンライン時のみサーバから最新情報を取得
                     if (navigator.onLine) {
-                        await _AppCore.syncActivityLog();
-                        await $Data.Access.GetSystemInfo();
-                        _AppCore.save(this.AppData.Owner);
+                        await _AppCore.syncActivityLog(); // 最終日同期
+                        await $Data.Access.GetSystemInfo(); // 最新プロフ取得
                     }
+                    // サーバ取得の成否に関わらず、最終的な情報の整合性を確保する
+                    _AppCore.ensureUserInfo(this.AppData); // 情報補完実行
+                    // // 確定した情報をローカルへ書き戻す
+                    // _AppCore.save(this.AppData.Owner); // 永続化
                 }
             }
             // 見た目設定（テーマ・地図スタイル・フォントサイズ）を復元・適用
@@ -270,10 +301,10 @@ const AppManager = {
                     $Polling.Start($Polling.TASKS.GPS_FOLLOW);
                 }
             }
-            // 未ログイン・共有リンクでもない・オンラインの場合はログインダイアログを表示
-            if (!this.AppData.Context.TargetArchiveId && !this.AppData.Context.IsLoggedIn && navigator.onLine) {
-                $Dialog.ShowLoginDialog();
-            }
+            // // 未ログイン・共有リンクでもない・オンラインの場合はログインダイアログを表示
+            // if (!this.AppData.Context.TargetArchiveId && !this.AppData.Context.IsLoggedIn && navigator.onLine) {
+            //     $Dialog.ShowLoginDialog();
+            // }
             // その他
             _AppCore.registerSW();
             _AppCore.refreshLegalConfigs();
