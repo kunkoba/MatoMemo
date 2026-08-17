@@ -56,6 +56,15 @@ const _AppCore = {
         }
         // 身分確定後にDB接続
         await $LocalDb.Init();
+        // 起動時にローカルDBから法的情報をメモリへロード
+        const legalData = await $LocalDb.Legal.GetAll(); // 全取得
+        legalData.forEach(d => { // 取得データをループ
+            if (AppData.Legal.hasOwnProperty(d.id)) { // 定義済みキーか確認
+                AppData.Legal[d.id] = d; // メモリに展開
+            }
+        });
+        // 初期ロード後に未読バッジ状態を確認
+        await $Data.LocalDb.CheckLegalUnread(); // 未読チェック
     },
     // 設定とIDの永続化
     save(Owner) {
@@ -163,29 +172,6 @@ const _AppCore = {
     },
     // 法的情報（利用規約・プライバシーポリシー等）の差分更新
     async refreshLegalConfigs_2() {
-        const localData = await $LocalDb.Legal.GetAll();
-        // ローカルの最終更新日時を各項目ごとに算出
-        const items = Object.values($Const.LEGAL_TYPE).map(key => ({
-            key: key,
-            last_sync_tim: localData.find(d => d.id === key)?.update_tim || "1900-01-01T00:00:00"
-        }));
-        if (!await $Data.Access.GetLegalConfigs({ items })) {
-            return;
-        }
-        const results = $Data.resData.results || [];
-        let hasUpdate = false;
-        for (const res of results) {
-            if (res.value !== null) {
-                await $LocalDb.Legal.Save(res.key, res.value, res.update_tim, true);
-                hasUpdate = true;
-            }
-        }
-        if (hasUpdate) {
-            await $Data.LocalDb.CheckLegalUnread();
-        }
-    },
-    // 法的情報（利用規約・プライバシーポリシー等）の差分更新
-    async refreshLegalConfigs() {
         // ローカルDBから全件取得
         const localData = await $LocalDb.Legal.GetAll(); // 全ドキュメント取得
         // 取得データをメモリ(AppData)に同期（オフライン表示用）
@@ -219,6 +205,41 @@ const _AppCore = {
             await $Data.LocalDb.CheckLegalUnread(); // UIバッジを再計算
         }
     },
+    async refreshLegalConfigs() {
+        const localData = await $LocalDb.Legal.GetAll(); // DBから全件取得
+        // サーバー通信用の差分リスト作成
+        const items = Object.values($Const.LEGAL_TYPE).map(key => ({
+            key: key, // 規約の識別キー
+            last_sync_tim: localData.find(d => d.id === key)?.update_tim || "1900-01-01T00:00:00"
+        }));
+        // サーバーに最新情報を問い合わせ
+        if (!await $Data.Access.GetLegalConfigs({ items })) {
+            return; // 失敗時は現在のメモリデータで続行
+        }
+        const results = $Data.resData.results || []; // サーバーからの返却リスト
+        let hasUpdate = false; // 更新有無フラグ
+        for (const res of results) { // 受信データをループ
+            if (res.value !== null) { // 内容が更新されている場合
+                // 1. 物理保存（IndexedDB）
+                await $LocalDb.Legal.Save(res.key, res.value, res.update_tim, true);
+                // 2. メモリ反映（実行中の AppData）
+                const newRecord = { 
+                    id: res.key, 
+                    body: res.value, 
+                    update_tim: res.update_tim, 
+                    is_unread: true 
+                };
+                if (AppManager.AppData.Legal.hasOwnProperty(res.key)) {
+                    AppManager.AppData.Legal[res.key] = newRecord; // オブジェクト更新
+                }
+                hasUpdate = true; // フラグオン
+            }
+        }
+        // 更新があった場合のみ未読バッジを再計算
+        if (hasUpdate) {
+            await $Data.LocalDb.CheckLegalUnread();
+        }
+    },
     // サービスワーカー登録
     registerSW() {
         if (!('serviceWorker' in navigator)) {
@@ -230,7 +251,7 @@ const _AppCore = {
     },
     // ユーザ情報の整合性チェックとローカル補完（同期処理追加版）
     ensureUserInfo(AppData) {
-        console.log("★ensureUserInfo:", AppData);
+        // console.log("★ensureUserInfo:", AppData);
         // ローカルストレージから設定読み込み
         const saved = JSON.parse(localStorage.getItem(this.settingsKey) || '{}'); // JSON解析
         // メモリ上のプロフ情報が欠落しているかチェック
@@ -290,9 +311,11 @@ const AppManager = {
             UserMailList: []
         },
         Legal: {
-            TermsOfService: null,
-            PrivacyPolicy: null,
-            License: null
+            TermsOfService: null, // 利用規約
+            PrivacyPolicy: null,  // プライバシーポリシー
+            SctLaw: null,         // 特定商取引法
+            Disclaimer: null,     // 免責事項
+            License: null         // ライセンス
         }
     },
     // アプリ起動時の一連の初期化処理（描画基盤 → ローカル復元 → ログイン確認 → 画面描画 → ポーリング開始 → SW登録）をまとめて実行する
@@ -302,6 +325,7 @@ const AppManager = {
             // 描画基盤とローカル設定の復元
             {
                 await _AppCore.setupShell(); // UI準備
+                $Auth.Init(); // ★認証基盤を事前初期化（ポップアップブロック対策）
                 await _AppCore.restoreLocal(this.AppData); // 基本設定復元
                 // トークンがある場合のログイン維持処理
                 if (this.AppData.Owner.Token) {

@@ -292,6 +292,10 @@ const _DetailFrameCore = {
         const isMobile = window.innerWidth < 768;
         // メイン処理
         if (isShow) {
+            // パネル表示時にエフェクトの重なり順を調整
+            if (typeof Atmosphere !== 'undefined' && Atmosphere.canvas) {
+                Atmosphere.canvas.style.zIndex = '1001'; // 背面に移動
+            }
             $Map.LockMap(true);
             // バリアを展開（マーカーへのタッチを防ぐ）
             if (this.mapBarrier) $Dom.ToggleShow(this.mapBarrier, true);

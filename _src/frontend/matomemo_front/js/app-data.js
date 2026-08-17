@@ -1,6 +1,3 @@
-// const BaseUrl = "https://eminently-meet-terrapin.ngrok-free.app";  // ngrok　※外部に公開
-// const BaseUrl = "https://localhost:7292";
-// const BaseUrl = "http://localhost:5000";   // Docker環境のapi_server（5000番ポート）に向けた接続先URL
 const API_ENDPOINTS = {
     // Account
     LoginFirebase:          { method: 'post', url: '/api/Account/LoginFirebase' },
@@ -587,13 +584,20 @@ window.$Data = {
         },
         // リーガル情報の未読判定
         async CheckLegalUnread() {
-            // 1. ローカルDBから全件取得
+            // 1. ローカルDBから全件（全規約タイプ）取得
             const allLegals = await $LocalDb.Legal.GetAll();
-            // 2. 一つでも未読（is_unread: true）があるか判定
+            // 2. DBの状態をメモリ(AppData)へ同期
+            allLegals.forEach(d => {
+                // AppData.Legal に定義されているキーであれば同期
+                if ($App.AppData.Legal.hasOwnProperty(d.id)) {
+                    $App.AppData.Legal[d.id] = d; // DBの内容でメモリを上書き（重要）
+                }
+            });
+            // 3. 一つでも未読（is_unread: true）があるか判定
             const hasUpdate = allLegals.some(item => item.is_unread === true);
-            // 3. 判定結果をコンテキストに保持
+            // 4. 判定結果をコンテキスト（バッジ用フラグ）に保持
             $App.AppData.Context.HasLegalUpdate = hasUpdate;
-            // 4. UIのバッジ描画を更新
+            // 5. UIのバッジ描画（下段バーやダイアログ）を更新
             $UI.UpdateNoticeBadge();
         },
     },

@@ -1,6 +1,9 @@
 // firebase設定（google）
 const FirebaseConfig = window.ENV_CONFIG.FIREBASE_CONFIG;
 
+// Firebaseの初期化状態を管理するフラグ
+let _isAuthInitialized = false; // 初期化済みフラグ
+
 // 認証マネージャー（外部にPublicする窓口）
 const AuthManager_2 = {
     // 外部(Firebase)ログインを実行し、確実な身分（メールアドレス）だけを返す
@@ -22,20 +25,22 @@ const AuthManager_2 = {
         return user.email;
     }
 };
+// 認証マネージャー（外部にPublicする窓口）
 const AuthManager = {
-    // Firebase初期化ヘルパー
-    _ensureInit() {
-        if (!firebase.apps.length) {
-            firebase.initializeApp(window.ENV_CONFIG.FIREBASE_CONFIG);
+    // 認証基盤を事前準備（ブラウザのポップアップブロック対策）
+    Init() {
+        if (firebase.apps.length === 0) { // インスタンス未生成なら
+            firebase.initializeApp(window.ENV_CONFIG.FIREBASE_CONFIG); // 初期化
         }
+        firebase.auth(); // ★一度実行して通信用iframeを裏でロードさせる
     },
-    // Googleログイン
+    // Googleログインを実行
     async GetVerifiedEmailByGoogle() {
-        this._ensureInit();
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        const result = await firebase.auth().signInWithPopup(provider);
-        return result.user?.email;
+        this.Init(); // 念のため初期化を確認
+        const provider = new firebase.auth.GoogleAuthProvider(); // プロバイダ
+        provider.setCustomParameters({ prompt: 'select_account' }); // 選択画面
+        const result = await firebase.auth().signInWithPopup(provider); // ポップアップ
+        return result.user?.email; // アドレス返却
     },
     // メールログイン
     async SignInEmail(email, password) {

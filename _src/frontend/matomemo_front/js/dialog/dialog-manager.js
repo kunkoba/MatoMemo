@@ -193,6 +193,7 @@ const _DialogCore = {
     },
     // 新着バッヂ更新
     updateNoticeBadge() {
+        // console.log("★updateNoticeBadge:", $App.AppData.Context);
         this.stack.forEach(frame => {
             // システム通知
             const btnNotice = frame.querySelector('#btn-sys-notice');

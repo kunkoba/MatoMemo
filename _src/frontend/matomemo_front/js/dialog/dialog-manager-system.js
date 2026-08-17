@@ -26,6 +26,7 @@ export default {
     },
     ShowLoginDialog() {
         console.trace("ShowLoginDialog CALL TRACE"); 
+        $Auth.Init(); // ★画面表示と同時に認証エンジンの準備を開始
         const el = $Dom.GenerateTemplate("tpl-login");
         const inEmail = $Dom.QuerySelector("#input-login-email", el);
         const inPass = $Dom.QuerySelector("#input-login-password", el);
@@ -958,7 +959,7 @@ export default {
         });
     },
     // リーガル・ドキュメントのメニュー画面（5つのボタンリスト）
-    async ShowLegalDocuments() {
+    async ShowLegalDocuments_2() {
         // 初回のNEWバッジ表示用に全体を取得
         const docs = await $LocalDb.Legal.GetAll();
         const LT = $Const.LEGAL_TYPE;
@@ -992,6 +993,7 @@ export default {
             btn.onclick = async () => {
                 // ★ 修正：ボタン押下時に、ローカルDBから常に最新の1件を取得し直す
                 const latestData = await $LocalDb.Legal.Get(item.key);
+                console.log("★$LocalDb.Legal", latestData);
                 this.ShowLegalDocumentDetail(
                     item.key, 
                     item.label, 
@@ -1008,6 +1010,69 @@ export default {
             };
             el.appendChild(btn);
         });
+        this._core.open({
+            title: "利用規約とポリシー",
+            content: el,
+            help: "各種リーガル情報を確認できます。",
+            buttons: []
+        });
+    },
+    // dialog-manager-system.js 内の ShowLegalDocuments メソッドの修正
+    // リーガル・ドキュメントのメニュー画面を表示
+    async ShowLegalDocuments() {
+        const LT = $Const.LEGAL_TYPE; // リーガル種別定数
+        const menuItems = [
+            { key: LT.TERMS,      label: "利用規約",               icon: "📜" },
+            { key: LT.PRIVACY,    label: "プライバシーポリシー",   icon: "🛡️" },
+            { key: LT.SCTLAW,     label: "特定商取引法に基づく表記",icon: "⚖️" },
+            { key: LT.DISCLAIMER, label: "免責事項",               icon: "⚠️" },
+            { key: LT.LICENSE,    label: "ライセンス・権利表記",   icon: "📄" }
+        ];
+        const el = document.createElement("div"); // コンテナ生成
+        el.className = "w-full flex flex-col bg-brand-0";
+        menuItems.forEach(item => {
+            // 1. メモリ(AppData)から最新の状態を取得
+            const currentData = $App.AppData.Legal[item.key]; // 該当データの取得
+            const isUnread = currentData ? !!currentData.is_unread : false; // 未読判定
+            const btn = document.createElement("button"); // ボタン生成
+            btn.className = "w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900 relative";
+            btn.innerHTML = `
+                <span class="col-span-1 kb-icon-emoji-lg flex justify-center">${item.icon}</span>
+                <span class="col-span-1"></span>
+                <span class="col-span-8 text-left font-bold text-[1rem] uppercase">${item.label}</span>
+            `;
+            // 未読バッジ（NEW）の追加
+            if (isUnread) {
+                const badge = document.createElement("span");
+                badge.className = "js-new-label absolute right-4 bg-red-500 text-white text-[0.8rem] px-2 py-0.5 rounded-full font-bold";
+                badge.textContent = "NEW";
+                btn.appendChild(badge);
+            }
+            // ボタンクリック時の処理
+            btn.onclick = async () => {
+                // 2. 詳細ダイアログを表示
+                this.ShowLegalDocumentDetail(
+                    item.key, 
+                    item.label, 
+                    currentData ? currentData.body : null,
+                    currentData ? currentData.update_tim : null
+                );
+                // 3. 未読だった場合のみ既読化処理を実行
+                if (currentData && currentData.is_unread) {
+                    // メモリ上のフラグを既読に更新
+                    currentData.is_unread = false; 
+                    // 物理DBのフラグを既読(false)にして保存
+                    await $LocalDb.Legal.Save(currentData.id, currentData.body, currentData.update_tim, false);
+                    // 全体の未読数・バッジ状態を再計算
+                    await $Data.LocalDb.CheckLegalUnread(); 
+                    // メニュー上の「NEW」ラベルを即座に消す
+                    const badge = btn.querySelector('.js-new-label');
+                    if (badge) badge.remove();
+                }
+            };
+            el.appendChild(btn);
+        });
+        // メニュー画面を開く
         this._core.open({
             title: "利用規約とポリシー",
             content: el,

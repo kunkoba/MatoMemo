@@ -6,7 +6,7 @@ export default {
         const appInfo = sysInfo?.app_info; // アプリ統計データ
         // データの存在チェック（未取得時は画面を開かない）
         if (!appInfo) { // 統計情報が空の場合
-            $Notice.Warn("現在、サーバに接続できません"); // 警告通知
+            $Notice.Warn("アプリ情報が読み込まれていません"); // 警告通知
             return; // 処理を中断
         }
         const el = $Dom.GenerateTemplate("tpl-app-info");

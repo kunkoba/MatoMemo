@@ -204,7 +204,7 @@ const _DetailContentCore = {
         }
         // 環境エフェクトをオンにする
         if (typeof Atmosphere !== 'undefined') {
-            if (Atmosphere.canvas) Atmosphere.canvas.style.zIndex = '1005'; // 詳細パネル(1002)より手前
+            if (Atmosphere.canvas) Atmosphere.canvas.style.zIndex = '1001'; // 詳細パネル(1002)より手前
             const code = detail?.weather_code || "0000";
             Atmosphere.show(code);
         }
