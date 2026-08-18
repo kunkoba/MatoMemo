@@ -11,7 +11,7 @@ const getUserId = () => {
 // IndexedDBの低レイヤー操作を担当する現場作業員（Core）
 const _LocalDbCore = {
     db: null,
-    DB_NAME: "littleTripMemoDb",
+    DB_NAME: "MatoMemoDb",
     VERSION: 5,
     // トランザクションモード定義
     TRANSACTION_MODES: {

@@ -940,20 +940,34 @@ export default {
                 {
                     label: "save",
                     handler: async () => {
-                        const newBody = textarea.value.trim();
-                        if (!newBody) return $Notice.Warn("本文を入力してください");
-                        if (!await $Util.CheckAdminAuth()) return;
-                        // 4. 専用エンドポイントへ送信
+                        const newBody = textarea.value.trim(); // 入力値取得
+                        if (!newBody) return $Notice.Warn("本文を入力してください"); // 空チェック
+                        if (!await $Util.CheckAdminAuth()) return; // 管理者認証
+                        // API送信用パラメータ
                         const params = {
                             key: key,
                             value: newBody
                         };
+                        // サーバーへ更新をリクエスト
                         if (await $Data.Access.UpdateLegalConfig(params)) {
-                            $Notice.Info(`${title}を更新しました`);
-                            this._core.close(); // ★ 修正：エディタだけを閉じる
-                            const nowStr = new Date().toISOString();
+                            $Notice.Info(`${title}を更新しました`); // 成功通知
+                            const nowStr = new Date().toISOString(); // 現在日時を生成
+                            // 1. 物理DB（IndexedDB）を更新
                             await $LocalDb.Legal.Save(key, newBody, nowStr, false);
-                            // ★ 追加：裏の画面を再描画するためのコールバックを実行
+                            // 2. 実行メモリ（AppData）を更新（★ここを追加）
+                            if ($App.AppData.Legal.hasOwnProperty(key)) {
+                                $App.AppData.Legal[key] = {
+                                    id: key,
+                                    body: newBody,
+                                    update_tim: nowStr,
+                                    is_unread: false
+                                };
+                            }
+                            // 3. 全体の未読状態を再計算（バッジ消去のため）
+                            await $Data.LocalDb.CheckLegalUnread();
+                            // エディタを閉じる
+                            this._core.close(); 
+                            // 呼び出し元の表示（詳細画面など）を更新
                             if (onUpdate) onUpdate(newBody, nowStr); 
                         }
                     }
