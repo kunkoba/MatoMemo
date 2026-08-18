@@ -583,7 +583,7 @@ window.$Data = {
             $UI.UpdateNoticeBadge();
         },
         // リーガル情報の未読判定
-        async CheckLegalUnread() {
+        async CheckLegalUnread_2() {
             // 1. ローカルDBから全件（全規約タイプ）取得
             const allLegals = await $LocalDb.Legal.GetAll();
             // 2. DBの状態をメモリ(AppData)へ同期
@@ -598,6 +598,27 @@ window.$Data = {
             // 4. 判定結果をコンテキスト（バッジ用フラグ）に保持
             $App.AppData.Context.HasLegalUpdate = hasUpdate;
             // 5. UIのバッジ描画（下段バーやダイアログ）を更新
+            $UI.UpdateNoticeBadge();
+        },
+        async CheckLegalUnread() {
+            // 1. ローカルDBから全件取得
+            const allLegals = await $LocalDb.Legal.GetAll();
+            // 現在有効なキーのリスト（定数から取得）
+            const activeKeys = Object.values($Const.LEGAL_TYPE); // 有効な規約キー一覧
+            // 2. 有効なデータのみをメモリ(AppData)へ同期
+            allLegals.forEach(d => {
+                // 定数に定義されており、かつ AppData にプロパティがある場合のみ同期
+                if (activeKeys.includes(d.id) && $App.AppData.Legal.hasOwnProperty(d.id)) {
+                    $App.AppData.Legal[d.id] = d; 
+                }
+            });
+            // 3. 「定数に定義されている項目の中」で未読があるか判定（★ここが重要）
+            const hasUpdate = allLegals.some(item => {
+                return activeKeys.includes(item.id) && item.is_unread === true;
+            });
+            // 4. 判定結果を反映
+            $App.AppData.Context.HasLegalUpdate = hasUpdate;
+            // 5. UI更新
             $UI.UpdateNoticeBadge();
         },
     },

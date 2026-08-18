@@ -30,7 +30,7 @@ window.$Const = {
     LEGAL_TYPE: {
         TERMS:      "TermsOfService",   // 利用規約
         PRIVACY:    "PrivacyPolicy",    // プライバシーポリシー
-        SCTLAW:     "SctLaw",           // 特定商取引法に基づく表記
+        // SCTLAW:     "SctLaw",           // 特定商取引法に基づく表記
         DISCLAIMER: "Disclaimer",       // 免責事項
         LICENSE:    "License",          // ライセンス
     },

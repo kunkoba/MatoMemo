@@ -959,72 +959,12 @@ export default {
         });
     },
     // リーガル・ドキュメントのメニュー画面（5つのボタンリスト）
-    async ShowLegalDocuments_2() {
-        // 初回のNEWバッジ表示用に全体を取得
-        const docs = await $LocalDb.Legal.GetAll();
-        const LT = $Const.LEGAL_TYPE;
-        const menuItems = [
-            { key: LT.TERMS,      label: "利用規約",               icon: "📜" },
-            { key: LT.PRIVACY,    label: "プライバシーポリシー",   icon: "🛡️" },
-            { key: LT.SCTLAW,     label: "特定商取引法に基づく表記",icon: "⚖️" },
-            { key: LT.DISCLAIMER, label: "免責事項",               icon: "⚠️" },
-            { key: LT.LICENSE,    label: "ライセンス・権利表記",   icon: "📄" }
-        ];
-        const el = document.createElement("div");
-        el.className = "w-full flex flex-col bg-brand-0";
-        menuItems.forEach(item => {
-            // 初期描画時のNEWバッジ判定用
-            const initData = docs.find(d => d.id === item.key);
-            const isUnread = initData ? !!initData.is_unread : false;
-            const btn = document.createElement("button");
-            btn.className = "w-full h-14 grid grid-cols-10 items-center px-4 border-b border-brand-2 hover:bg-brand-1 active:bg-brand-2 transition-colors text-slate-900 relative";
-            btn.innerHTML = `
-                <span class="col-span-1 kb-icon-emoji-lg flex justify-center">${item.icon}</span>
-                <span class="col-span-1"></span>
-                <span class="col-span-8 text-left font-bold text-[1rem] uppercase">${item.label}</span>
-            `;
-            // NEWバッジの追加（未読時のみ表示）
-            if (isUnread) {
-                const badge = document.createElement("span");
-                badge.className = "absolute right-4 bg-red-500 text-white text-[0.8rem] px-2 py-0.5 rounded-full font-bold";
-                badge.textContent = "NEW";
-                btn.appendChild(badge);
-            }
-            btn.onclick = async () => {
-                // ★ 修正：ボタン押下時に、ローカルDBから常に最新の1件を取得し直す
-                const latestData = await $LocalDb.Legal.Get(item.key);
-                console.log("★$LocalDb.Legal", latestData);
-                this.ShowLegalDocumentDetail(
-                    item.key, 
-                    item.label, 
-                    latestData ? latestData.body : null,
-                    latestData ? latestData.update_tim : null
-                );
-                // 既読化処理も最新データに基づいて行う
-                if (latestData && latestData.is_unread) {
-                    await $LocalDb.Legal.Save(latestData.id, latestData.body, latestData.update_tim, false);
-                    await $Data.LocalDb.CheckLegalUnread();
-                    const badge = btn.querySelector('.bg-red-500');
-                    if (badge) badge.remove();
-                }
-            };
-            el.appendChild(btn);
-        });
-        this._core.open({
-            title: "利用規約とポリシー",
-            content: el,
-            help: "各種リーガル情報を確認できます。",
-            buttons: []
-        });
-    },
-    // dialog-manager-system.js 内の ShowLegalDocuments メソッドの修正
-    // リーガル・ドキュメントのメニュー画面を表示
     async ShowLegalDocuments() {
         const LT = $Const.LEGAL_TYPE; // リーガル種別定数
         const menuItems = [
             { key: LT.TERMS,      label: "利用規約",               icon: "📜" },
             { key: LT.PRIVACY,    label: "プライバシーポリシー",   icon: "🛡️" },
-            { key: LT.SCTLAW,     label: "特定商取引法に基づく表記",icon: "⚖️" },
+            // { key: LT.SCTLAW,     label: "特定商取引法に基づく表記",icon: "⚖️" },
             { key: LT.DISCLAIMER, label: "免責事項",               icon: "⚠️" },
             { key: LT.LICENSE,    label: "ライセンス・権利表記",   icon: "📄" }
         ];
