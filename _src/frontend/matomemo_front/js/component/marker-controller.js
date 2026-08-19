@@ -191,7 +191,7 @@ const _MarkerCore = {
             const marker = this._markerList[index];
             const el = $Dom.GenerateTemplate("tpl-marker-popup");
             $Dom.QuerySelector(".index", el).textContent = (index + 1);
-            $Dom.QuerySelector(".js-face", el).textContent = detail.face_emoji || '😀'; // ★追加
+            // $Dom.QuerySelector(".js-face", el).textContent = detail.face_emoji || '😀'; // ★追加
             const dateContainer = $Dom.QuerySelector(".js-date-container", el);
             $UI.Generator.MemoDateFormatter(dateContainer, detail); // デフォルトサイズで呼び出し
             $Dom.QuerySelector(".title", el).textContent = detail.title || "";

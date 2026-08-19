@@ -29,7 +29,7 @@ const _BarCore = {
         this.btnOpen = $Dom.GetElementById('btn-bot-move-open');
         this.btnNext = $Dom.GetElementById('btn-bot-move-next');
         this.btnLast = $Dom.GetElementById('btn-bot-move-last');
-        this.btnMainToggle = $Dom.GetElementById('main-menu-btn');
+        this.btnMainToggle = $Dom.GetElementById('btn-menu');
         this.btnListBtn = $Dom.GetElementById('point-list-btn');
         // 4. マップスイッチ要素（ON/OFF完全体）の取得
         this.btnSwitchOn = $Dom.GetElementById('btn-map-switch-on');
@@ -39,12 +39,9 @@ const _BarCore = {
         [this.btnMarkerEmoji, this.btnMarkerFeel].forEach(btn => {
             btn.onclick = () => this.updateMarkerMode(btn.dataset.mode);
         });
-        this.sortField.onclick = (e) => {
-            const btn = e.target.closest("button");
-            if (!btn) return;
-            $Dom.QuerySelectorAll("button", this.sortField).forEach(b => b.classList.replace("bg-brand-3", "bg-brand-0"));
-            btn.classList.replace("bg-brand-0", "bg-brand-3");
-            const v = btn.dataset.value;
+        this.sortField.onchange = (e) => {
+            const v = e.target.value; // 選択された値を取得
+            // 関連する入力エリアの表示/非表示を切り替え
             if (this.sortReaction) $Dom.ToggleShow(this.sortReaction, v === '3');
             if (this.sortWord) $Dom.ToggleShow(this.sortWord, v === '4');
             if (this.sortFeel) $Dom.ToggleShow(this.sortFeel, v === '5');
@@ -145,10 +142,10 @@ const _BarCore = {
         const isArc = (mode === $Const.SCREEN_MODE.ARCHIVE || mode === $Const.SCREEN_MODE.ARCHIVE_PUB);
         // タイトル表示の連動
         if (isArc) $Dom.ToggleShow(this.btnArchiveTitle, isOn);
-        // 共通操作バー（メニュー）の連動
-        if (this.btnSysMenu) {
-            $Dom.ToggleShow(this.btnSysMenu.parentElement, isOn);
-        }
+        // // 共通操作バー（メニュー）の連動
+        // if (this.btnSysMenu) {
+        //     $Dom.ToggleShow(this.btnSysMenu.parentElement, isOn);
+        // }
     },
     // 画面モード変更：上下バーのレイアウト一括更新
     changeScreenMode() {
@@ -158,7 +155,7 @@ const _BarCore = {
         $Dom.ToggleShow(this.uiSortGroup, false);
         // 下部状態リセット
         $Dom.ToggleShow(this.groupMove, false);
-        $Dom.ToggleShow(this.groupAction, false);
+        // $Dom.ToggleShow(this.groupAction, false);
         const actOn = ["w-14", "h-14", "text-[1.5rem]", "bg-brand-1", "active:scale-95", "z-10"];
         const actOff = ["w-10", "h-10", "text-[1rem]", "bg-white", "opacity-70", "z-0"];
         // モード別分岐
@@ -226,7 +223,9 @@ const _BarCore = {
     },
     // 値取得ヘルパー
     _getSelectedValue(el) {
-        return $Dom.QuerySelector("button.bg-brand-3", el)?.dataset.value;
+        // select要素を直接探して値を取得
+        const select = el.querySelector('select');
+        return select ? select.value : '1';
     },
     // 新着バッジ更新
     updateNoticeBadge() {

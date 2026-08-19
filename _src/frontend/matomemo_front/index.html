@@ -86,12 +86,12 @@
                 <!-- UI表示切替 -->
                 <div id="ui-map-switch-root" class="z-[1000] pointer-events-auto">
                     <!-- ON状態の完全体ボタン -->
-                    <button id="btn-map-switch-on" class="hidden w-16 h-8 rounded-full bg-brand-5 relative shadow-md outline-none active:scale-95 transition-transform">
+                    <button id="btn-map-switch-on" class="hidden w-[60px] h-8 rounded-full bg-brand-5 relative shadow-md outline-none active:scale-95 transition-transform">
                         <div class="absolute top-1 right-1 w-6 h-6 bg-white rounded-full shadow-sm"></div>
                         <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[0.7rem] font-black text-white">ON</span>
                     </button>
                     <!-- OFF状態の完全体ボタン -->
-                    <button id="btn-map-switch-off" class="hidden w-16 h-8 rounded-full bg-slate-300 relative shadow-md outline-none active:scale-95 transition-transform">
+                    <button id="btn-map-switch-off" class="hidden w-[60px] h-8 rounded-full bg-slate-300 relative shadow-md outline-none active:scale-95 transition-transform">
                         <div class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-sm"></div>
                         <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[0.7rem] font-black text-white">OFF</span>
                     </button>
@@ -386,129 +386,73 @@
             </div>
         </div>
         <!-- ■　アプリ下部 -->
-        <div class="absolute bottom-4 w-full z-[1001] pointer-events-none mb-4">
-            <div id="ui-bottom-bar" class="w-full flex flex-col gap-6">
-                <!-- スマホ用広告スペース（PCでは非表示） -->
-                <div id="ad-space-mobile-1" class="hidden lg:hidden mt-6 mx-auto max-w-[320px] h-[50px] pointer-events-auto">
-                    <div class="bg-white w-full h-full border border-brand-2 shadow-md">
-                        AD SPACE
-                    </div>
+        <div class="absolute bottom-4 w-full z-[1001] pointer-events-none mb-2">
+            <div id="ui-bottom-bar" class="w-full flex flex-col justify-end gap-4">
+                <!-- スマホ用広告スペース：最上部に維持 -->
+                <div id="ad-space-mobile-1" class="hidden lg:hidden mx-auto max-w-[320px] h-[50px] pointer-events-auto">
+                    <div class="bg-white w-full h-full border border-brand-2 shadow-md flex items-center justify-center text-[0.7rem] text-slate-400">AD SPACE</div>
                 </div>
-                <!-- スマホ用広告スペース（PCでは非表示）2 -->
-                <div id="ad-space-mobile-2" class="hidden lg:hidden mx-auto mb-4 w-[320px] h-[50px] pointer-events-auto">
-                    <div class="bg-white w-full h-full border border-brand-2 shadow-md">
-                        AD SPACE2
-                    </div>
+                <div id="ad-space-mobile-2" class="hidden lg:hidden mx-auto max-w-[320px] h-[50px] pointer-events-auto">
+                    <div class="bg-white w-full h-full border border-brand-2 shadow-md flex items-center justify-center text-[0.7rem] text-slate-400">AD SPACE2</div>
                 </div>
-                <!-- 地点検索・まとめタイトル -->
-                <div class="mx-2 bg-transparent flex justify-center">
-                    <div class="flex-1 min-w-0 w-10">
-                        <!-- まとめタイトル -->
-                        <div class="p-0 flex justify-center">
-                            <!-- 初期状態を黒背景にし、内部にアイコンとテキストの要素を分割 -->
-                            <button id="ui-archive-title" 
-                                class="hidden max-w-[95%] h-12 py-1 px-4 flex items-center gap-2 bg-slate-800/50 rounded-full text-white text-[0.9rem] font-bold shadow-md transition-colors pointer-events-auto">
-                                <span class="js-icon shrink-0 kb-icon-emoji-sm">🔒</span>
-                                <span class="js-text truncate text-[1rem]">タイトル</span>
-                            </button>
-                        </div>
-                        <!-- 地点検索関連 -->
-                        <div id="ui-sort-group" class="hidden flex flex-col items-center ">
-                            <!-- リアクション種別 -->
-                            <div id="sort-reaction" class="hidden shadow-md w-fit mb-2 h-10 flex text-[1.5rem] rounded-full overflow-hidden pointer-events-auto"></div>
-                            <!-- 評価（Feel）種別 -->
-                            <div id="sort-feel" class="hidden shadow-md w-fit mb-2 h-10 flex rounded-full overflow-hidden bg-white pointer-events-auto"></div>
-                            <!-- 検索キーワード入力欄 -->
-                            <div id="sort-word" class="hidden shadow-md w-fit mb-2 h-10 flex rounded-full overflow-hidden bg-white pointer-events-auto">
-                                <input type="text" id="input-sort-word" class="h-full px-3 text-[1rem] text-slate-900 outline-none bg-transparent w-40 placeholder-slate-300" placeholder="Keyword...">
+                <!-- 【右下集約カラム】フィルタ・アクション・メニュー・メインボタンを縦に並べる -->
+                <div class="flex flex-col items-end px-4 gap-4 w-full pointer-events-none">
+                    <!-- 2. アクションボタン（新規・検索：縦並び） -->
+                    <div id="bot-group-action" class="hidden flex flex-col items-end gap-3 pointer-events-none">
+                        <!-- メインメニュー -->
+                        <button id="btn-menu" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">🌟</button>
+                        <!-- まとめリスト -->
+                        <button id="btn-app-archive-list_2" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">📚</button>
+                        <!-- データリスト -->
+                        <button id="point-list-btn" class="_hidden w-10 h-10 bg-brand-1 text-slate-700 rounded-full shadow-md flex justify-center items-center active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">☰</button>
+                        <!-- 地点検索フィルタ（右寄せ） -->
+                        <div id="ui-sort-group" class="hidden flex flex-col items-end gap-2">
+                            <!-- 各種フィルタ行 -->
+                            <div id="sort-reaction" class="hidden shadow-md w-fit h-10 flex text-[1.5rem] rounded-full overflow-hidden bg-white/90 pointer-events-auto"></div>
+                            <div id="sort-feel" class="hidden shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto"></div>
+                            <div id="sort-word" class="hidden shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto">
+                                <input type="text" id="input-sort-word" class="h-full px-3 text-[1rem] text-slate-900 outline-none bg-transparent w-40 placeholder-slate-400" placeholder="Keyword...">
                             </div>
-                            <!-- 検索種別 -->
-                            <div id="sort-field" class="shadow-md w-fit mb-2 h-8 flex rounded-full overflow-hidden pointer-events-auto">
-                                <button data-value="1" class="ui-btn h-full px-3 text-[0.8rem] font-bold bg-brand-3 transition-colors">Created</button>
-                                <button data-value="2" class="ui-btn h-full px-3 text-[0.8rem] font-bold bg-brand-0 transition-colors">Updated</button>
-                                <button data-value="3" class="ui-btn h-full px-3 text-[0.8rem] font-bold bg-brand-0 transition-colors">Reaction</button>
-                                <button data-value="5" class="ui-btn h-full px-5 text-[0.8rem] font-bold bg-brand-0 transition-colors px-2">Feel</button>
-                                <button data-value="4" class="ui-btn h-full px-4 text-[0.8rem] font-bold bg-brand-0 transition-colors">Word</button>
+                            <div id="sort-field" class="shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto px-2">
+                                <!-- select要素に変更。デザインを合わせるため背景透明、枠線なしに設定 -->
+                                <select id="select-sort-field" class="bg-transparent h-full text-[0.9rem] font-bold text-slate-700 outline-none cursor-pointer px-2">
+                                    <option value="1">作成順で表示</option>
+                                    <option value="2">更新順で表示</option>
+                                    <option value="3">リアクション別</option>
+                                    <option value="5">評価別（Feel）</option>
+                                    <option value="4">キーワード検索</option>
+                                </select>
                             </div>
                         </div>
+                        <!-- 検索ボタン -->
+                        <button id="btn-search" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">🔎</button>
+                        <!-- 新規生成ボタン -->
+                        <button id="btn-create" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">➕</button>
+                    </div>
+                    <!-- 4. アイコンバー（メニュー：右下集約） -->
+                    <div id="bot-group-menu" class="hidden h-12 w-fit gap-6 flex items-center bg-brand-1 rounded-full px-6 py-1 shadow-md pointer-events-auto">
+                        <button id="btn-sys-menu" class="relative kb-icon-emoji-lg">⚙️</button>
+                        <button id="btn-user-menu" class="relative kb-icon-emoji-lg">👤</button>
+                        <button id="btn-data-menu" class="kb-icon-emoji-lg">🗺️</button>
+                        <button id="btn-app-menu" class="kb-icon-emoji-lg">👆</button>
                     </div>
                 </div>
-                <!-- メニューグループ -->
-                <div class="flex justify-center">
-                    <div id="bot-group-menu" 
-                        class="h-12 gap-16 flex items-center justify-center bg-brand-1 rounded-full px-6 py-1 shadow-md pointer-events-auto">
-                        <!-- システムメニュー -->
-                        <button id="btn-sys-menu" class="relative kb-icon-emoji-lg">
-                            ⚙️
-                        </button>
-                        <!-- ユーザメニュー -->
-                        <button id="btn-user-menu" class="relative kb-icon-emoji-lg">
-                            👤
-                        </button>
-                        <!-- データメニュー― -->
-                        <button id="btn-data-menu" class="kb-icon-emoji-lg">
-                            🗺️
-                        </button>
-                        <!-- アクションメニュー -->
-                        <button id="btn-app-menu" class="kb-icon-emoji-lg">
-                            👆
-                        </button>
-                    </div>
-                </div>
-                <!-- 移動ボタン・メイン -->
-                <div id="bot-dynamic-area" class="w-full flex justify-center items-end">
-                    <!-- 移動ボタン -->
-                    <div id="bot-group-move" class="hidden h-12 max-w-[90%] w-[500px] flex items-center justify-between bg-black/70 rounded-full px-6 py-1 shadow-md pointer-events-auto">
-                        <button id="btn-bot-move-first" class="w-10 h-10 flex items-center justify-center text-white font-bold text-[1rem] active:scale-95 transition-transform hover:bg-white/20 rounded-full">
-                            |＜
-                        </button>
-                        <button id="btn-bot-move-prev" class="w-10 h-10 flex items-center justify-center text-white font-bold text-[1rem] active:scale-95 transition-transform hover:bg-white/20 rounded-full">
-                            ＜
-                        </button>
-                        <button id="btn-bot-move-open" class="w-10 h-10 flex items-center justify-center text-brand-5 font-bold text-[1.2rem] active:scale-95 transition-transform hover:bg-white/20 rounded-full drop-shadow-md">
-                            ●
-                        </button>
-                        <button id="btn-bot-move-next" class="w-10 h-10 flex items-center justify-center text-white font-bold text-[1rem] active:scale-95 transition-transform hover:bg-white/20 rounded-full">
-                            ＞
-                        </button>
-                        <button id="btn-bot-move-last" class="w-10 h-10 flex items-center justify-center text-white font-bold text-[1rem] active:scale-95 transition-transform hover:bg-white/20 rounded-full">
-                            ＞|
-                        </button>
-                    </div>
-                    <!-- 地図検索・新規登録 -->
-                    <div id="bot-group-action" class="h-16 hidden items-center justify-center flex gap-4 pointer-events-auto">
-                        <button id="btn-search" class="items-center justify-center shadow-md rounded-full transition-all duration-300 focus:outline-none shrink-0">
-                            🔎
-                        </button>
-                        <button id="btn-create" class="items-center justify-center shadow-md rounded-full transition-all duration-300 focus:outline-none shrink-0">
-                            ➕
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <!-- （仮）メインメニュー、地点リスト -->
-            <div class="hidden">
-                <!-- メインメニュー -->
-                <div class="absolute bottom-32 right-0 m-4 hidden">
-                    <button id="main-menu-btn" class="pointer-events-auto h-12 w-12 bg-brand-1 rounded-[1rem] shadow-md flex justify-center items-center focus:outline-none active:scale-95">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-dots-vertical">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
-                            <path d="M11 19a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
-                            <path d="M11 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
-                        </svg>
+                <!-- 【最下部ベースエリア】タイトル・移動バー -->
+                <div id="bot-dynamic-area" class="w-full flex flex-col items-center gap-2">
+                    <!-- まとめタイトル -->
+                    <button id="ui-archive-title" 
+                        class="hidden max-w-[95%] min-w-[60%] h-12 py-1 px-5 flex items-center justify-center gap-2 bg-slate-800/60 backdrop-blur-sm rounded-full text-white shadow-md pointer-events-auto active:scale-95 transition-all">
+                        <span class="js-icon shrink-0 kb-icon-emoji-sm">🔒</span>
+                        <span class="js-text truncate text-[1rem] font-bold">タイトル</span>
                     </button>
-                </div>
-                <!-- 地点リスト -->
-                <div class="absolute bottom-32 left-0 m-4 hidden">
-                    <button id="point-list-btn" class="pointer-events-auto h-12 w-12 bg-brand-1 rounded-[1rem] shadow-md flex justify-center items-center focus:outline-none active:scale-95">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-menu-2">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M4 6l16 0" />
-                            <path d="M4 12l16 0" />
-                            <path d="M4 18l16 0" />
-                        </svg>
-                    </button>
+                    <!-- 移動ナビゲーションバー -->
+                    <div id="bot-group-move" class="hidden h-12 w-[90%] max-w-[500px] flex items-center justify-between bg-black/70 backdrop-blur-md rounded-full px-6 py-1 shadow-lg pointer-events-auto">
+                        <button id="btn-bot-move-first" class="w-10 h-10 flex items-center justify-center text-white font-bold text-[1rem] active:scale-95 transition-all hover:bg-white/20 rounded-full">|＜</button>
+                        <button id="btn-bot-move-prev" class="w-10 h-10 flex items-center justify-center text-white font-bold text-[1rem] active:scale-95 transition-all hover:bg-white/20 rounded-full">＜</button>
+                        <button id="btn-bot-move-open" class="w-10 h-10 flex items-center justify-center text-brand-5 font-bold text-[1.4rem] active:scale-95 transition-all hover:bg-white/20 rounded-full drop-shadow-md">●</button>
+                        <button id="btn-bot-move-next" class="w-10 h-10 flex items-center justify-center text-white font-bold text-[1rem] active:scale-95 transition-all hover:bg-white/20 rounded-full">＞</button>
+                        <button id="btn-bot-move-last" class="w-10 h-10 flex items-center justify-center text-white font-bold text-[1rem] active:scale-95 transition-all hover:bg-white/20 rounded-full">＞|</button>
+                    </div>
                 </div>
             </div>
         </div>

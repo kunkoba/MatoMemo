@@ -141,14 +141,14 @@
             <span class="index"></span>
         </div>
         <!-- 追加：絵文字（Noバッジの下に配置） -->
-        <div class="absolute top-4 right-14 js-face kb-icon-emoji-xlg z-20"></div>
+        <!-- <div class="absolute top-4 right-14 js-face kb-icon-emoji-xlg z-20"></div> -->
         <div class="flex-1 overflow-y-auto max-h-[200px]">
             <div class="text-[0.9rem] mb-2 font-bold text-slate-600 italic">
                 <!-- 【変更】個別spanを廃止し、コンテナを設置 -->
                 <div class="js-date-container"></div>
             </div>
             <div class="text-[1rem] border-l-4 border-brand-3 pl-3 pr-8 py-2 mb-2 font-bold text-slate-900 relative z-10">
-                <span class="title line-clamp-1"></span>
+                <span class="title line-clamp-2"></span>
             </div>
             <div class="text-[0.9rem] text-slate-700 _line-clamp-4 _overflow-y-auto px-2 leading-[1.5]">
                 <span class="body"></span>
@@ -310,11 +310,11 @@
 <template id="tpl-marker-icon">
     <div class="custom-marker-wrapper">
         <div class="marker-diamond-base">
-            <span class="js-emoji leading-none"></span>
+            <!-- インラインブロック化して変形を有効にし、上へ2px移動 -->
+            <span class="js-emoji leading-none inline-block -translate-y-[5px]"></span>
         </div>
     </div>
 </template>
-
 
 <!-- ⚙️ システムメニュー用 -->
 <template id="tpl-menu-sys">
