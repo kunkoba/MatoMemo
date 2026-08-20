@@ -7,6 +7,7 @@ const _MapCore = {
     currentTileLayer: null,
     // 物理的な初期化処理
     init() {
+        console.log("map -> init");
         if (!this._map) {
             // DOM要素の取得
             this.root = $Dom.GetElementById(this._elementId);
@@ -17,6 +18,8 @@ const _MapCore = {
                 this._generateMap();
                 // スライダーの初期化
                 this._initZoomSlider();
+                // ズームボタンの初期化
+                this._initZoomButtons();
             })();
             $Marker.Init(this._map);
         }
@@ -45,10 +48,38 @@ const _MapCore = {
         // 初期値を地図に合わせる
         slider.value = this._map.getZoom();
     },
+    // 自作ズームボタンのイベント登録
+    _initZoomButtons() {
+        console.log("_initZoomButtons");
+        const slider = document.getElementById('ui-map-zoom-slider');
+        const btnIn = document.getElementById('btn-zoom-in');
+        const btnOut = document.getElementById('btn-zoom-out');
+        if (!slider || !btnIn || !btnOut) return;
+        // 【追加】Leafletによるイベント擬似発火（_simulateEvent）の対象から外す
+        L.DomEvent.disableClickPropagation(btnIn);
+        L.DomEvent.disableClickPropagation(btnOut);
+        // ボタンクリック時にスライダーの値を動かし、inputイベントを強制的に発生させる
+        btnIn.onclick = () => {
+            const current = parseInt(slider.value);
+            if (current < parseInt(slider.max)) {
+                slider.value = current + 1;
+                slider.dispatchEvent(new Event('input')); // スライダーを動かしたことにする
+            }
+            console.log("zoomIn->", current);
+        };
+        btnOut.onclick = () => {
+            const current = parseInt(slider.value);
+            if (current > parseInt(slider.min)) {
+                slider.value = current - 1;
+                slider.dispatchEvent(new Event('input')); // スライダーを動かしたことにする
+            }
+            console.log("zoomOut->", current);
+        };
+    },
     // Leafletの具体的な構築処理
     _generateMap(){
         this._map = L.map(this.root, {
-            zoomControl: true,
+            zoomControl: false,
             attributionControl: false,
             minZoom: $Const.MAP_CONFIG.MIN_ZOOM,
             maxZoom: $Const.MAP_CONFIG.MAX_ZOOM,

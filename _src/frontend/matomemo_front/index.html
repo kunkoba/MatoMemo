@@ -102,13 +102,19 @@
         <div class="absolute bottom-0 flex h-full w-full overflow-hidden flex-col md:flex-row">
             <!-- ■　地図エリア -->
             <div id="ui-map-id" class="w-full h-full z-0">
-                <!-- 左側の縦ズームスライダー -->
-                <div id="ui-map-zoom-slider-root" class="absolute left-4 top-1/2 -translate-y-1/2 z-[1000] flex flex-col items-center gap-2 pointer-events-none">
-                    <div class="h-[80%] w-8 bg-white rounded-full flex items-center justify-center p-2 pointer-events-auto shadow-md shadow-black/50">
+                <!-- ズーム関連 -->
+                <div class="absolute left-4 top-1/2 -translate-y-1/2 z-[1000] flex flex-col items-center gap-2 pointer-events-none">
+                    <!-- ① 縦ズームスライダー -->
+                    <div id="ui-map-zoom-slider-root" class="h-[200px] w-10 bg-white rounded-full flex items-center justify-center p-2 pointer-events-auto shadow-md">
                         <input type="range" id="ui-map-zoom-slider" 
                             min="1" max="18" step="1" 
                             orient="vertical"
-                            class="w-1.5 h-full accent-white appearance-none bg-white/30 rounded-full outline-none cursor-pointer">
+                            class="w-2 h-[90%] accent-brand-2 appearance-none bg-slate-200 rounded-full outline-none cursor-pointer">
+                    </div>
+                    <!-- ② 自作ズームボタン（縦並び） -->
+                    <div class="flex flex-col gap-1 pointer-events-auto">
+                        <button id="btn-zoom-out" class="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-[1.5rem] font-black text-slate-800 active:scale-90 transition-transform">－</button>
+                        <button id="btn-zoom-in" class="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-[1.5rem] font-black text-slate-800 active:scale-90 transition-transform">＋</button>
                     </div>
                 </div>
                 <!-- 明細閉じる用パネル -->

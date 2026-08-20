@@ -24,31 +24,6 @@
     animation: dots 10s steps(1) infinite;
 }
 
-/* Leaflet の固定位置を解除 */
-.leaflet-top,
-.leaflet-bottom,
-.leaflet-left,
-.leaflet-right {
-    position: static !important;
-}
-/* ズームボタンを左中央へ */
-.leaflet-control-zoom {
-    position: absolute !important;
-    right: 16px; /* 右端からの距離 */
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    z-index: 1000;
-    pointer-events: auto;
-    margin: 0 !important; /* Leaflet既定のマージンをリセット */
-    /* ボタンの順序を反転（標準は In, Out の順なので reverse で Out, In にする） */
-    display: flex !important;
-    flex-direction: column-reverse; 
-    gap: 2px; /* ボタン間の隙間（任意） */
-    border: none !important;
-    /* shadow-md */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)) !important;
-}
 /* 著作権表記は非表示 */
 .leaflet-control-attribution {
     display: none !important;
