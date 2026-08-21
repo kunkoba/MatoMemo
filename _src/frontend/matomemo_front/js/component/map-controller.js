@@ -65,7 +65,6 @@ const _MapCore = {
                 slider.value = current + 1;
                 slider.dispatchEvent(new Event('input')); // スライダーを動かしたことにする
             }
-            console.log("zoomIn->", current);
         };
         btnOut.onclick = () => {
             const current = parseInt(slider.value);
@@ -73,7 +72,6 @@ const _MapCore = {
                 slider.value = current - 1;
                 slider.dispatchEvent(new Event('input')); // スライダーを動かしたことにする
             }
-            console.log("zoomOut->", current);
         };
     },
     // Leafletの具体的な構築処理

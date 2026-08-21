@@ -149,14 +149,6 @@ const _DetailFrameCore = {
                     // バリデーション実行 ---
                     const isValid = $DetailContent.Validate(detail);
                     if (!isValid) return; // 失敗時はここで中断（NoticeはValidate内で出している）
-                    // 確認ダイアログ
-                    const isOk = await $Dialog.ShowConfirm({
-                        title: "保存前確認",
-                        message: "保存してもよろしいですか？",
-                        help: "",
-                        label: "OK"
-                    });
-                    if (!isOk) return;
                     // 保存処理
                     await $Warn.CatchAsync(async () => {
                         if (detail.seq > 0) {
@@ -178,14 +170,15 @@ const _DetailFrameCore = {
                         } else {
                             // 未同期（seq = 0）のデータはローカルへ新規更新（バックグラウンドで同期される）
                             await $LocalDb.Detail.Save(detail);
+                            // 通知
+                            $Notice.Info("変更しました。");
                         }
                         // API更新(メモリの更新)
                         await $Data.Store.UpdateDetail(detail);
                         // 描画更新
                         $Marker.RefreshPointMarker();
-                        // $Marker.RefreshCurrentLocation();
                         // パネルを閉じる
-                        this.toggleDetailPanel(false);
+                        this.handleCloseOrCancel();
                         // 通知
                         $Notice.Info("保存しました。");
                     })();
@@ -232,6 +225,8 @@ const _DetailFrameCore = {
         } else {
             this.toggleDetailPanel(false);
         }
+        // UI表示切替
+        $Bar.UpdateMainSwitchUI(true);
     },
     // 画面モード変更時
     changeScreenMode(){
@@ -455,6 +450,7 @@ const DetailFrameController = {
 	},
     // 開く
     Open(detail) {
+        $Bar.UpdateMainSwitchUI(false);
         $App.PauseGpsTracking(); // ★パネルを開く際にGPSを止める
         // ▼ 画面を開く前にポップアップを閉じる
         $Marker.ClosePopup();
@@ -526,10 +522,10 @@ const DetailFrameController = {
             }
         }
     },
-    // 閉じる
-    Close() {
-        _DetailFrameCore.toggleDetailPanel(false);
-    },
+    // // 閉じる
+    // Close() {
+    //     _DetailFrameCore.toggleDetailPanel(false);
+    // },
     // 外部から安全に閉じる（または戻す）ための窓口
     HandleClose() {
         _DetailFrameCore.handleCloseOrCancel();

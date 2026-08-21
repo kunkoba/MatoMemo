@@ -115,141 +115,11 @@ export default {
             const dateContainer = $Dom.QuerySelector(".js-date-container", child);
             // dateContainer.innerHTML = "";
             $UI.Generator.MemoDateFormatter(dateContainer, item);
-            // // --- 3. リアクション統計の反映 ---
-            // $Dom.QuerySelector(".js-icon-funny", child).textContent = rt.FUNNY.emoji;
-            // $Dom.QuerySelector(".js-count-funny", child).textContent = item.count_funny || 0;
-            // $Dom.QuerySelector(".js-icon-love", child).textContent = rt.LOVE.emoji;
-            // $Dom.QuerySelector(".js-count-love", child).textContent = item.count_love || 0;
-            // $Dom.QuerySelector(".js-icon-surprise", child).textContent = rt.SURPRISE.emoji;
-            // $Dom.QuerySelector(".js-count-surprise", child).textContent = item.count_surprise || 0;
-            // $Dom.QuerySelector(".js-icon-sad", child).textContent = rt.SAD.emoji;
-            // $Dom.QuerySelector(".js-count-sad", child).textContent = item.count_sad || 0;
-            // // --- 4. 金額エリアの制御（既存ロジック） ---
-            // const priceWrapper = $Dom.QuerySelector(".js-price-wrapper", child);
-            // const priceEl = $Dom.QuerySelector(".js-memo-price", child);
-            // const currencyEl = $Dom.QuerySelector(".js-memo-currency", child);
-            // const price = Number(item.memo_price || 0);
-            // if (price !== 0) {
-            //     // $Dom.ToggleShow(priceWrapper, true);
-            //     let displayCurrency = item.currency_unit || 'JPY';
-            //     if (item.archive_id > 0) {
-            //         const arc = $Data.Store.GetArchiveList()?.find(a => a.archive_id === item.archive_id) || $Data.Store.GetArchive();
-            //         if (arc?.currency_unit) displayCurrency = arc.currency_unit;
-            //     }
-            //     currencyEl.textContent = displayCurrency;
-            //     if (price > 0) {
-            //         priceEl.textContent = `+${price.toLocaleString()}`; priceEl.classList.add("text-blue-500");
-            //     } else {
-            //         priceEl.textContent = price.toLocaleString(); priceEl.classList.add("text-red-500");
-            //     }
-            // }
             // マーカー選択イベント
             child.onclick = () => { this._core.closeAll(); $Marker.SelectMarker(index); };
             el.appendChild(child);
         });
         this._core.open({ title: "検索の結果", content: el });
-    },
-    async ShowArchiveList_2() {
-        const isSuccess = await $Data.Access.GetArchiveList();
-        if (!isSuccess) return;
-        const archives = $Data.Store.GetArchiveList() || [];
-        if (archives.length == 0) {
-            $Notice.Warn("データはありません");
-            return;
-        }
-        const root = document.createElement("div");
-        root.className = "w-full flex flex-col";
-        const searchBar = $Dom.GenerateTemplate("tpl-dialog-search-bar", "ui-template-root", false);
-        const input = $Dom.QuerySelector(".js-input", searchBar);
-        const clearBtn = $Dom.QuerySelector(".js-clear", searchBar);
-        root.appendChild(searchBar);
-        const listContainer = document.createElement("div");
-        root.appendChild(listContainer);
-        const render = (filterText = "") => {
-            listContainer.innerHTML = "";
-            const query = filterText.toLowerCase().trim();
-            const filtered = archives.filter(item => {
-                const target = (item.title || "") + (item.memo || "");
-                return target.toLowerCase().includes(query);
-            });
-            if (filtered.length === 0) {
-                listContainer.innerHTML = `<div class="text-center text-[0.9rem] font-bold text-slate-600 py-10">合致するまとめがありません</div>`;
-                return;
-            }
-            const pvt = filtered.filter(item => !item.is_public);
-            const pub = filtered.filter(item => item.is_public);
-            const draw = (title, list, isPub) => {
-                if (list.length === 0) return;
-                const header = $Dom.GenerateTemplate("tpl-list-group-header");
-                const badge = $Dom.QuerySelector(".js-header-badge", header);
-                $Dom.QuerySelector(".js-header-title", header).textContent = title;
-                if (isPub) {
-                    badge.classList.add("bg-brand-5");
-                    $Dom.QuerySelector(".js-header-icon", header).textContent = "◎";
-                } else {
-                    badge.classList.add("bg-slate-800");
-                    $Dom.QuerySelector(".js-header-icon", header).textContent = "🔒";
-                }
-                listContainer.appendChild(header);
-                list.forEach(item => {
-                    const child = $Dom.GenerateTemplate("tpl-list-child-archive");
-                    $Dom.QuerySelector(".js-update-tim", child).textContent = $Util.FormatDate(item.update_tim);
-                    $Dom.QuerySelector(".js-title", child).textContent = item.title;
-                    $Dom.QuerySelector(".js-memo", child).textContent = item.memo || "";
-                    $Dom.QuerySelector(".js-count", child).textContent = item.detail_count || "0";
-                    const border = $Dom.QuerySelector(".js-item-border", child);
-                    const countBadge = $Dom.QuerySelector(".js-count-badge", child);
-                    if (isPub) {
-                        const isCls = !!item.closed_flg;
-                        border.classList.add(isCls ? "bg-slate-400" : "bg-brand-5");
-                        countBadge.classList.add(isCls ? "bg-slate-400" : "bg-brand-5");
-                    } else {
-                        border.classList.add("bg-slate-800");
-                        countBadge.classList.add("bg-slate-800");
-                    }
-                    child.onclick = () => {
-                        this._core.closeAll();
-                        $App.AppData.Context.ScreenMode = isPub ? $Const.SCREEN_MODE.ARCHIVE_PUB : $Const.SCREEN_MODE.ARCHIVE;
-                        $App.AppData.Context.TargetArchiveId = item.archive_id;
-                        $App.RefreshScreen();
-                    };
-                    listContainer.appendChild(child);
-                });
-            };
-            draw("Private", pvt, false);
-            draw("Pbulic", pub, true);
-        };
-        input.oninput = (e) => {
-            const val = e.target.value;
-            $Dom.ToggleShow(clearBtn, val.length > 0);
-            render(val);
-        };
-        clearBtn.onclick = () => {
-            input.value = "";
-            $Dom.ToggleShow(clearBtn, false);
-            render("");
-            input.focus();
-        };
-        render("");
-        // 画面を開く
-        const help = [
-            "まとめ（旅行記）の一覧です",
-            "● まとめには「非公開」と「公開用」があります",
-            "●「公開用」には「公開中」と「非公開中」があります",
-            "【まとめ】",
-            "　├─公開用（Private）[黒]",
-            "　└─公開用（Public）",
-            "　　　├─非公開中（Close）[グレー]",
-            "　　　└─公開中（Open）[テーマカラー]",
-            "　　　　　├─限定公開（LimitedOpen）",
-            "　　　　　└─完全公開（Open）",
-        ].join('\n');
-        this._core.open({
-            title: "まとめ一覧", 
-            size: "lg",
-            content: root, 
-            help: help, 
-        });
     },
     // まとめ一覧表示
     async ShowArchiveList() {
@@ -280,9 +150,7 @@ export default {
             $Dom.QuerySelectorAll('.js-filter-btn', filterToggle).forEach(btn => {
                 const isActive = (btn.dataset.pub === "true") === isShowPublic;
                 btn.classList.toggle('opacity-100', isActive);
-                btn.classList.toggle('opacity-20', !isActive);
-                // // 影も不要であれば toggle('shadow-md', isActive) も削除
-                // btn.classList.toggle('shadow-md', isActive);
+                btn.classList.toggle('opacity-50', !isActive);
                 btn.style.pointerEvents = isActive ? 'none' : 'auto'; // 選択中を再度押せなくする
             });
             // フィルタ実行

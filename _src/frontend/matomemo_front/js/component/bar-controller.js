@@ -16,10 +16,6 @@ const _BarCore = {
         this.btnMarkerEmoji = $Dom.GetElementById('btn-marker-mode-emoji');
         this.btnMarkerFeel = $Dom.GetElementById('btn-marker-mode-feel');
         // 3. 下部バー要素の取得
-        this.btnSysMenu = $Dom.GetElementById('btn-sys-menu');
-        this.btnUserMenu = $Dom.GetElementById('btn-user-menu');
-        this.btnDataMenu = $Dom.GetElementById('btn-data-menu');
-        this.btnAppMenu = $Dom.GetElementById('btn-app-menu');
         this.groupAction = $Dom.GetElementById('bot-group-action');
         this.btnCreate = $Dom.GetElementById('btn-create');
         this.btnSearch = $Dom.GetElementById('btn-search');
@@ -30,10 +26,13 @@ const _BarCore = {
         this.btnNext = $Dom.GetElementById('btn-bot-move-next');
         this.btnLast = $Dom.GetElementById('btn-bot-move-last');
         this.btnMainToggle = $Dom.GetElementById('btn-menu');
+        this.btnArchiveList = $Dom.GetElementById('btn-app-archive-list2');
         this.btnListBtn = $Dom.GetElementById('point-list-btn');
         // 4. マップスイッチ要素（ON/OFF完全体）の取得
         this.btnSwitchOn = $Dom.GetElementById('btn-map-switch-on');
         this.btnSwitchOff = $Dom.GetElementById('btn-map-switch-off');
+        //
+        this.sliderRoot = $Dom.GetElementById('ui-map-zoom-slider-root');
         // 5. イベント登録：上部バー
         this.btnArchiveTitle.onclick = () => $Dialog.ShowArchiveInfo();
         [this.btnMarkerEmoji, this.btnMarkerFeel].forEach(btn => {
@@ -74,10 +73,6 @@ const _BarCore = {
             };
         }
         // 8. イベント登録：下部バー
-        this.btnSysMenu.onclick = () => $Dialog.ShowSystemMenu();
-        this.btnUserMenu.onclick = () => $Dialog.ShowUserMenu();
-        this.btnDataMenu.onclick = () => $Dialog.ShowDataMenu();
-        this.btnAppMenu.onclick = () => $Dialog.ShowActionMenu();
         this.btnMainToggle.onclick = () => $Dialog.ShowMainMenu();
         if (this.btnListBtn) {
             this.btnListBtn.onclick = () => ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH) 
@@ -108,7 +103,8 @@ const _BarCore = {
                 $App.AppData.Context.ScreenMode = $Const.SCREEN_MODE.CREATE;
                 $App.RefreshScreen(); return;
             }
-            $Marker.RefreshCurrentArrow(); $Marker.FocusToLocationMarker();
+            $Marker.RefreshCurrentArrow();
+            $Marker.FocusToLocationMarker();
             setTimeout(() => $DetailFrame.Open(), 100);
         };
         this.btnSearch.onclick = async () => {
@@ -131,9 +127,12 @@ const _BarCore = {
         this.btnSwitchOn.onclick = toggleMap;
         this.btnSwitchOff.onclick = toggleMap;
         this._updateMainSwitchUI($App.AppData.Context.IsMapSwitchOn);
+        // 
+        this.btnArchiveList.onclick = () => $Dialog.ShowArchiveList();
     },
     // スイッチ表示とUI連動の更新
     _updateMainSwitchUI(isOn) {
+        console.log("_updateMainSwitchUI:", isOn);
         // 1. ボタン自体の表示切替（完全体ボタンの出し分けのみ行う）
         $Dom.ToggleShow(this.btnSwitchOn, isOn);
         $Dom.ToggleShow(this.btnSwitchOff, !isOn);
@@ -142,10 +141,9 @@ const _BarCore = {
         const isArc = (mode === $Const.SCREEN_MODE.ARCHIVE || mode === $Const.SCREEN_MODE.ARCHIVE_PUB);
         // タイトル表示の連動
         if (isArc) $Dom.ToggleShow(this.btnArchiveTitle, isOn);
-        // // 共通操作バー（メニュー）の連動
-        // if (this.btnSysMenu) {
-        //     $Dom.ToggleShow(this.btnSysMenu.parentElement, isOn);
-        // }
+        $Dom.ToggleShow(this.groupAction, isOn);
+        $Dom.ToggleShow(this.groupAction, isOn);
+        $Dom.ToggleShow(this.sliderRoot, isOn);
     },
     // 画面モード変更：上下バーのレイアウト一括更新
     changeScreenMode() {
@@ -232,14 +230,14 @@ const _BarCore = {
         const unreadN = $App.AppData.Context.UnreadNoticeCount || 0;
         const unreadM = $App.AppData.Context.UnreadMailCount || 0;
         const hasL = !!$App.AppData.Context.HasLegalUpdate;
-        $UI.Generator.ApplyNewBadge(this.btnSysMenu, (unreadN + (hasL ? 1 : 0)) > 0, 'dot');
-        $UI.Generator.ApplyNewBadge(this.btnUserMenu, unreadM > 0, 'dot');
+        // $UI.Generator.ApplyNewBadge(this.btnSysMenu, (unreadN + (hasL ? 1 : 0)) > 0, 'dot');
+        // $UI.Generator.ApplyNewBadge(this.btnUserMenu, unreadM > 0, 'dot');
     },
     // ユーザアイコン更新
     updateUserIcon() {
         // console.trace("★updateUserIcon:");
         const icon = $App.AppData.Owner.SystemInfo?.ownerProfile?.icon;
-        if (icon) this.btnUserMenu.textContent = icon;
+        // if (icon) this.btnUserMenu.textContent = icon;
     }
 };
 
@@ -254,7 +252,8 @@ const BarController = {
     ChangeTitle(title) { _BarCore.changeTitle(title); },
     GetSortSetting() { return _BarCore.getSortSetting(); },
     UpdateNoticeBadge() { _BarCore.updateNoticeBadge(); },
-    UpdateUserIcon() { _BarCore.updateUserIcon(); }
+    UpdateUserIcon() { _BarCore.updateUserIcon(); },
+    UpdateMainSwitchUI(isOn){ _BarCore._updateMainSwitchUI(isOn); },
 };
 
 export default BarController;

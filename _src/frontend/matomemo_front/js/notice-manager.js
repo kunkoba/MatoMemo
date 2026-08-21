@@ -48,15 +48,6 @@ const Notice = {
     // オフライン通知
     Offline: {
         el: null,
-        Show_2() {
-            if (!this.el) {
-                this.el = $Dom.GenerateTemplate("tpl-offline");
-            }
-            // 既存の opacity-100 クラスを消して、直接操作するように変更
-            this.el.style.opacity = "1";
-            // $Dom.ToggleShow($Dom.GetElementById('ad-space-mobile-1'), false);
-            // $Dom.ToggleShow($Dom.GetElementById('ad-space-mobile-2'), false);
-        },
         // メッセージを引数で受け取る
         Show(msg) {
             if (!this.el) { // 要素未生成なら作成
