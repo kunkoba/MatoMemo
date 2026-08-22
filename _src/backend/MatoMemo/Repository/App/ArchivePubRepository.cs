@@ -270,10 +270,16 @@ public class ArchivePubRepository : _BaseRepository
     /// </summary>
     /// <param name="ids"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<TMemoArchivePub>> GetAllByIdsAsync(IEnumerable<int> ids)
+    public async Task<IEnumerable<DtoArchive>> GetAllByIdsAsync(IEnumerable<int> ids)
     {
-        const string sql = "SELECT * FROM t_memo_archive_pub WHERE archive_id = ANY(@ids)";
-        return await QueryAsync<TMemoArchivePub>(sql, new { ids = ids.ToArray() });
+        const string sql = @"
+            SELECT a.*, u.icon, u.nick_name 
+            FROM t_memo_archive_pub a
+            INNER JOIN t_app_user u
+            ON a.user_id = u.user_id 
+            WHERE a.archive_id = ANY(@ids)
+        ";
+        return await QueryAsync<DtoArchive>(sql, new { ids = ids.ToArray() });
     }
 
     /// <summary>

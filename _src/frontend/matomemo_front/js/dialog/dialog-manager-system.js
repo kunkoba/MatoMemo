@@ -88,6 +88,12 @@ export default {
         $Dom.ToggleShow(b.saveCrd, archive?.is_owner && mode === $Const.SCREEN_MODE.ARCHIVE); // オーナーのみ「座標一括保存」表示
         $Dom.ToggleShow(b.history, profile?.view_history?.length > 0); // 履歴がある場合のみ表示
         $Dom.ToggleShow(b.admin, isAdmin); // 管理者のみ表示
+        if (isLoggedIn && profile?.icon) {
+            const iconSpan = b.profile.querySelector('span:first-child');
+            if (iconSpan) {
+                iconSpan.textContent = profile.icon;
+            }
+        }
         // ログインしていない場合、ユーザ/データ系の一部を半透明にするなどの視覚制御
         if (!isLoggedIn) {
             [b.profile, b.mail, b.reports, b.arcList, b.merge, b.create, b.search].forEach(btn => {
@@ -198,7 +204,6 @@ export default {
     ShowUserMenu() {
         if (!$App.AppData.Context.IsLoggedIn) return this.ShowLoginDialog();
         const el = $Dom.GenerateTemplate('tpl-menu-user');
-        // const profile = $App.AppData.Owner.SystemInfo.ownerProfile; // プロフィール取得
         const profile = $App.AppData.Owner.SystemInfo?.ownerProfile;
         const b = {
             profile: $Dom.QuerySelector('#btn-sys-user-profile', el),
@@ -1133,8 +1138,15 @@ export default {
         const PDS = $Const.PUBLIC_DATA_STATUS; // Nothing, Open, Close, Delete
         archives.forEach(item => {
             const child = $Dom.GenerateTemplate("tpl-list-child-archive");
+            // --- 1. 更新日時の反映を削除し、ユーザーバッジを注入 ---
+            const userContainer = $Dom.QuerySelector(".js-update-tim", child);
+            userContainer.textContent = ""; // 既存のテキスト（日時用）をクリア
+            // Generatorを使用して、ボタンではない「バッジ形式」でユーザー情報を表示
+            $UI.Generator.UserBadge(userContainer, {
+                nick_name: item.nick_name,
+                icon: item.icon
+            }, { type: 'badge' }); 
             // 基本情報の流し込み
-            $Dom.QuerySelector(".js-update-tim", child).textContent = $Util.FormatDate(item.update_tim);
             $Dom.QuerySelector(".js-title", child).textContent = item.title;
             $Dom.QuerySelector(".js-memo", child).textContent = item.memo || "";
             $Dom.QuerySelector(".js-count", child).textContent = item.detail_count || "0";
@@ -1177,7 +1189,7 @@ export default {
             root.appendChild(child);
         });
         this._core.open({
-            title: "最近チェックしたまとめ",
+            title: "閲覧履歴",
             content: root,
             size: "lg",
             help: "最近閲覧した「公開まとめ」の一覧です。\n※現在公開を停止しているものは開くことができません。"

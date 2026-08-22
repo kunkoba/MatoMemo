@@ -154,8 +154,8 @@ const _BarCore = {
         // 下部状態リセット
         $Dom.ToggleShow(this.groupMove, false);
         // $Dom.ToggleShow(this.groupAction, false);
-        const actOn = ["w-14", "h-14", "text-[1.5rem]", "bg-brand-1", "active:scale-95", "z-10"];
-        const actOff = ["w-10", "h-10", "text-[1rem]", "bg-white", "opacity-70", "z-0"];
+        const actOn = ["w-14", "h-14", "text-[1.5rem]", "active:scale-95", "z-10"];
+        const actOff = ["w-10", "h-10", "text-[1rem]", "opacity-70", "z-0"];
         // モード別分岐
 		if (mode === $Const.SCREEN_MODE.CREATE) {
             $Dom.ToggleShow(this.groupAction, true);

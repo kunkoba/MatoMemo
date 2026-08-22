@@ -254,6 +254,8 @@ public class DtoArchive
     public int detail_count { get; set; } = 0;
     public int report_count { get; set; } = 0;
     public string has_public_status { get; set; } = PublicStatus.Nothing.ToString();
+    public string? icon { get; set; } = string.Empty;
+    public string? nick_name { get; set; } = string.Empty;
 }
 
 /// <summary>

@@ -35,7 +35,9 @@ public class GetArchiveListByIdsService(UserContext u, ArchivePubRepository repo
                         : (x.closed_flg ? PublicStatus.Close : PublicStatus.Open)
                     ).ToString(),
                     detail_count =x.detail_count,
-                    update_tim = x.update_tim
+                    user_id = x.user_id,
+                    nick_name = x.nick_name,
+                    icon = x.icon,
                 };
             }
 
