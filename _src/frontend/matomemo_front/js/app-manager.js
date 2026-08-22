@@ -134,26 +134,6 @@ const _AppCore = {
         }, activityCheckSec);
         $Polling.Start($Polling.TASKS.OFFLINE_CHECK);
     },
-    // 最終利用日の同期
-    async syncActivityLog_2() {
-        if (!$App.AppData.Context.IsLoggedIn || !navigator.onLine) {
-            return true;
-        }
-        const today = new Date().setHours(0, 0, 0, 0);
-        const last = $App.AppData.Owner.LastLoginDate
-            ? new Date($App.AppData.Owner.LastLoginDate).setHours(0, 0, 0, 0)
-            : 0;
-        // 既に当日分を同期済みなら何もしない
-        if (today <= last) {
-            return true;
-        }
-        if (await $Data.Access.EnsureLoginUser()) {
-            $App.AppData.Owner.LastLoginDate = $Util.FormatDate(today, 'YYYY-MM-DD');
-            this.save($App.AppData.Owner);
-            return true;
-        }
-        return false;
-    },
     // 最終利用日の同期およびサーバ復帰確認
     async syncActivityLog() {
         if (!navigator.onLine) return true; // ネット断時は上位で判定するためスルー
@@ -171,40 +151,6 @@ const _AppCore = {
         return false; // 復帰失敗
     },
     // 法的情報（利用規約・プライバシーポリシー等）の差分更新
-    async refreshLegalConfigs_2() {
-        // ローカルDBから全件取得
-        const localData = await $LocalDb.Legal.GetAll(); // 全ドキュメント取得
-        // 取得データをメモリ(AppData)に同期（オフライン表示用）
-        localData.forEach(d => { // 取得したデータをループ
-            if (AppManager.AppData.Legal.hasOwnProperty(d.id)) { // 定義済みキーか確認
-                AppManager.AppData.Legal[d.id] = d; // メモリに格納
-            }
-        });
-        // サーバー通信前に、現在のローカル状態で未読バッジを判定
-        await $Data.LocalDb.CheckLegalUnread(); // 未読フラグをUIに反映
-        // サーバーとの差分チェック用リスト作成
-        const items = Object.values($Const.LEGAL_TYPE).map(key => ({ // 各定数キーに対して
-            key: key, // 規約の識別子
-            last_sync_tim: localData.find(d => d.id === key)?.update_tim || "1900-01-01T00:00:00" // 最終更新日
-        }));
-        // サーバーに最新情報を問い合わせ
-        if (!await $Data.Access.GetLegalConfigs({ items })) { // 通信失敗時はここで終了
-            return; // オフライン等の場合は現在のメモリデータで続行
-        }
-        // サーバーから差分が返ってきた場合の更新処理
-        const results = $Data.resData.results || []; // 結果リスト取得
-        let hasUpdate = false; // 更新有無フラグ
-        for (const res of results) { // 更新分をループ
-            if (res.value !== null) { // 内容が更新されている場合
-                await $LocalDb.Legal.Save(res.key, res.value, res.update_tim, true); // DB保存（未読として保存）
-                hasUpdate = true; // 更新ありにセット
-            }
-        }
-        // 新しいデータが保存された場合のみ、再度未読チェックを実行
-        if (hasUpdate) { // 更新があったら
-            await $Data.LocalDb.CheckLegalUnread(); // UIバッジを再計算
-        }
-    },
     async refreshLegalConfigs() {
         const localData = await $LocalDb.Legal.GetAll(); // DBから全件取得
         // サーバー通信用の差分リスト作成
@@ -409,33 +355,6 @@ const AppManager = {
         }
         $UI.ChangeScreenMode();
         $Marker.ChangeScreenMode();
-    },
-    // サーバ通信エラー処理
-    async HandleServerFailure_2(response) {
-        $Notice.Loading.Hide();
-        // オフラインの場合はその旨だけ通知
-        if (!navigator.onLine) {
-            $Notice.Warn("オフライン中は機能が制限されます");
-            return false;
-        }
-        // 認証切れ（401）の場合はログアウト状態にしてログインダイアログを表示
-        if (response?.status === 401) {
-            this.AppData.Context.IsLoggedIn = false;
-            this.AppData.Owner.Token = null;
-            $Dialog.ShowLoginDialog();
-            return false;
-        }
-        // それ以外のエラー：レスポンス本文からメッセージを取得（失敗時はデフォルト文言）
-        let msg = "サーバが稼働していません";
-        if (response) {
-            try {
-                msg = (await response.json()).message || "通信エラー";
-            } catch (e) {
-                msg = "解析エラー";
-            }
-        }
-        $Notice.Error(msg);
-        return false;
     },
     // サーバ通信エラー処理（画面を中断せず通知のみに留める）
     async HandleServerFailure(response) {

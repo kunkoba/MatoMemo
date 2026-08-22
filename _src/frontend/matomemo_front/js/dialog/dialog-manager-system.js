@@ -1,29 +1,5 @@
 export default {
     // ログイン処理
-    ShowLoginDialog_2() {
-        console.log(">> ShowLoginDialog");
-        console.trace();
-        const el = $Dom.GenerateTemplate("tpl-login");
-        // Googleログインボタン
-        $Dom.QuerySelector("#btn-login-google", el).onclick = $Err.CatchAsync(async () => {
-            // 認証処理を実行
-            const isLoginSuccess = await $App.ExecuteLoginFlow();
-            if (!isLoginSuccess) {
-                // 失敗時はコンソールにエラーを出力して中断
-                console.error("ログイン失敗");
-                return;
-            }
-            // 表示されているすべてのダイアログを破棄
-            this._core.closeAll();
-            // Init()で全初期化するのではなく、現在の画面モードを維持して再描画する
-            await $App.Init();
-        });
-        this._core.open({
-            title: "ログイン",
-            content: el,
-            help: "aaaa",
-        });
-    },
     ShowLoginDialog() {
         console.trace("ShowLoginDialog CALL TRACE"); 
         $Auth.Init(); // ★画面表示と同時に認証エンジンの準備を開始
@@ -68,16 +44,111 @@ export default {
     },
     // 【📱 メインメニュー】
     ShowMainMenu() {
-        const el = $Dom.GenerateTemplate('tpl-menu-main');
-        // 各メニューボタンへの遷移設定
-        $Dom.QuerySelector('#btn-main-sys', el).onclick = () => this.ShowSystemMenu();
-        $Dom.QuerySelector('#btn-main-user', el).onclick = () => this.ShowUserMenu();
-        $Dom.QuerySelector('#btn-main-data', el).onclick = () => this.ShowDataMenu();
-        $Dom.QuerySelector('#btn-main-action', el).onclick = () => this.ShowActionMenu();
+        // 未ログインでもメニュー自体は見せる（ログインボタンで誘導するため）
+        const el = $Dom.GenerateTemplate('tpl-menu-all-in-one');
+        const isLoggedIn = $App.AppData.Context.IsLoggedIn;
+        const isAdmin = isLoggedIn && $App.AppData.Owner.Plan === "Admin";
+        const mode = $App.AppData.Context.ScreenMode;
+        const profile = $App.AppData.Owner.SystemInfo?.ownerProfile;
+        const archive = $Data.Store.GetArchive();
+        // 1. 各ボタン要素の取得と、ログイン状態による無効化・非表示制御
+        const b = {
+            // --- Group 1: Actions ---
+            reload:  $Dom.QuerySelector('#btn-all-reload', el),
+            refresh: $Dom.QuerySelector('#btn-all-refresh', el),
+            restore: $Dom.QuerySelector('#btn-all-restore', el),
+            current: $Dom.QuerySelector('#btn-all-current', el),
+            pntSrch: $Dom.QuerySelector('#btn-all-pnt-srch', el),
+            // --- Group 2: Data ---
+            create:  $Dom.QuerySelector('#btn-all-mode-create', el),
+            search:  $Dom.QuerySelector('#btn-all-mode-search', el),
+            merge:   $Dom.QuerySelector('#btn-all-merge', el),
+            arcList: $Dom.QuerySelector('#btn-all-arc-list', el),
+            arcInfo: $Dom.QuerySelector('#btn-all-arc-info', el),
+            pntList: $Dom.QuerySelector('#btn-all-pnt-list', el),
+            jumpUrl: $Dom.QuerySelector('#btn-all-jump-url', el),
+            saveCrd: $Dom.QuerySelector('#btn-all-save-coords', el),
+            // --- Group 3: User ---
+            profile: $Dom.QuerySelector('#btn-all-profile', el),
+            mail:    $Dom.QuerySelector('#btn-all-mail', el),
+            reports: $Dom.QuerySelector('#btn-all-my-report', el),
+            history: $Dom.QuerySelector('#btn-all-history', el),
+            settings:$Dom.QuerySelector('#btn-all-settings', el),
+            // --- Group 4: System ---
+            sysNotice: $Dom.QuerySelector('#btn-all-sys-notice', el),
+            appInfo:   $Dom.QuerySelector('#btn-all-app-info', el),
+            legal:     $Dom.QuerySelector('#btn-all-legal', el),
+            admin:     $Dom.QuerySelector('#btn-all-admin', el),
+            loginTgl:  $Dom.QuerySelector('#btn-all-login-toggle', el),
+        };
+        // 2. 表示・活性の動的制御
+        const isArchive = (mode === $Const.SCREEN_MODE.ARCHIVE || mode === $Const.SCREEN_MODE.ARCHIVE_PUB);
+        $Dom.ToggleShow(b.arcInfo, isArchive); // まとめ表示中のみ「まとめ詳細」表示
+        $Dom.ToggleShow(b.merge, isLoggedIn && mode === $Const.SCREEN_MODE.CREATE); // 作成モードのみ「まとめる」表示
+        $Dom.ToggleShow(b.saveCrd, archive?.is_owner && mode === $Const.SCREEN_MODE.ARCHIVE); // オーナーのみ「座標一括保存」表示
+        $Dom.ToggleShow(b.history, profile?.view_history?.length > 0); // 履歴がある場合のみ表示
+        $Dom.ToggleShow(b.admin, isAdmin); // 管理者のみ表示
+        // ログインしていない場合、ユーザ/データ系の一部を半透明にするなどの視覚制御
+        if (!isLoggedIn) {
+            [b.profile, b.mail, b.reports, b.arcList, b.merge, b.create, b.search].forEach(btn => {
+                btn.style.opacity = "0.4";
+            });
+        }
+        // ログイン/ログアウトボタンのラベル
+        const labelEl = el.querySelector('#txt-all-login-label');
+        labelEl.textContent = isLoggedIn ? "ログアウトする" : "ログイン / 新規登録";
+        // 3. バッジの反映
+        $UI.Generator.ApplyNewBadge(b.sysNotice, $App.AppData.Context.UnreadNoticeCount > 0, 'dot');
+        $UI.Generator.ApplyNewBadge(b.mail, $App.AppData.Context.UnreadMailCount > 0, 'dot');
+        $UI.Generator.ApplyNewBadge(b.legal, !!$App.AppData.Context.HasLegalUpdate, 'dot');
+        // 4. イベント登録
+        // Group 1: Actions
+        b.reload.onclick  = () => { this._core.closeAll(); if (!$App.AppData.Context.IsOnline) return $Notice.Warn("オフラインです"); $Util.ReloadApp(); };
+        b.refresh.onclick = () => { this._core.closeAll(); $App.RefreshScreen(); };
+        b.restore.onclick = () => { this._core.closeAll(); $Marker.RestoreMarkers(); };
+        b.current.onclick = () => { this._core.closeAll(); $Marker.RefreshCurrentLocation(); $Marker.FocusToLocationMarker(1000); };
+        b.pntSrch.onclick = () => this.PointSearchGoogle((p) => { $Map.MoveMap(p.lat, p.lng, 18); if(isAdmin) $Marker.SetLocationMarkerPos(p.lat, p.lng); });
+        // Group 2: Data
+        const requireLogin = (fn) => { if(!isLoggedIn) return this.ShowLoginDialog(); fn(); };
+        b.create.onclick  = () => requireLogin(() => { this._core.closeAll(); $App.AppData.Context.ScreenMode = $Const.SCREEN_MODE.CREATE; $App.RefreshScreen(); });
+        b.search.onclick  = () => requireLogin(() => { this._core.closeAll(); $App.AppData.Context.ScreenMode = $Const.SCREEN_MODE.SEARCH; $App.RefreshScreen(); });
+        b.merge.onclick   = () => this.ShowMultiSelectTimeline();
+        b.arcList.onclick = () => requireLogin(() => this.ShowArchiveList());
+        b.arcInfo.onclick = () => this.ShowArchiveInfo();
+        b.pntList.onclick = () => (mode === $Const.SCREEN_MODE.SEARCH) ? this.ShowDetailsSearchResult() : this.ShowDetailsTimeLine();
+        b.jumpUrl.onclick = () => this.ShowJumpByUrl();
+        b.saveCrd.onclick = async () => {
+            const details = $Data.Store.GetDetails();
+            if (!details.length || !await this.ShowConfirm({ title: "SAVE", message: "全地点の座標を保存しますか？" })) return;
+            const payload = { archive_id: $App.AppData.Context.TargetArchiveId, items: details.map(d => ({ seq: d.seq, latitude: d.latitude, longitude: d.longitude })) };
+            if (await $Data.Access.BulkUpdateCoordinates(payload)) { $Notice.Info("更新完了"); this._core.closeAll(); await $App.RefreshScreen(); }
+        };
+        // Group 3: User
+        b.profile.onclick = () => requireLogin(() => this.ShowUserProfile(profile, true));
+        b.mail.onclick    = () => requireLogin(() => this.ShowUserMailList());
+        b.reports.onclick = () => requireLogin(() => this.ShowMyReportList());
+        b.history.onclick = () => this.ShowViewHistory(profile.view_history);
+        b.settings.onclick= () => this.ShowUserSettingsMenu();
+        // Group 4: System
+        b.sysNotice.onclick = () => this.ShowNoticeList();
+        b.appInfo.onclick   = () => this.ShowAppInfo();
+        b.legal.onclick     = () => this.ShowLegalDocuments();
+        b.admin.onclick     = () => this.ShowAdminMenu();
+        b.loginTgl.onclick  = async () => {
+            if (isLoggedIn) {
+                if (await this.ShowConfirm({ title: "LOGOUT", message: "ログアウトしますか？" })) {
+                    this._core.closeAll(); $App.Logout(); setTimeout(() => location.reload(), 500);
+                }
+            } else {
+                this.ShowLoginDialog();
+            }
+        };
+        // 5. 表示
         this._core.open({ 
-            title: "メインメニュー", 
+            title: "メニュー", 
             content: el,
-            help: "全てのメニューにアクセスできます。" 
+            size: "lg",
+            help: "アプリの全22機能にアクセスできます。" 
         });
     },
     // 【⚙️ システムメニュー】

@@ -370,27 +370,6 @@ window.$Data = {
         GetMyReactions() {
             return this._myReactions;
         },
-        UpdateDetail_2(detail) {
-            if (!detail) return;
-            const list = this._details;
-            let idx = -1;
-            if (detail.seq > 0) {
-                idx = list.findIndex(x => x.seq === Number(detail.seq));
-            } else {
-                idx = list.findIndex(x => x.dbid === Number(detail.dbid));
-            }
-            if (idx !== -1) {
-                list[idx] = { ...list[idx], ...detail };
-            } else {
-                list.push(detail);
-            }
-            // this.Restore();
-        },
-        UpdateArchive_2(updatedFields) {
-            if (!this._archive) return;
-            // メモリ上のデータ更新
-            Object.assign(this._archive, updatedFields);
-        },
         // 詳細データを更新（作業用と復元用の両方を同期）
         UpdateDetail(detail) {
             if (!detail) return;
@@ -583,23 +562,6 @@ window.$Data = {
             $UI.UpdateNoticeBadge();
         },
         // リーガル情報の未読判定
-        async CheckLegalUnread_2() {
-            // 1. ローカルDBから全件（全規約タイプ）取得
-            const allLegals = await $LocalDb.Legal.GetAll();
-            // 2. DBの状態をメモリ(AppData)へ同期
-            allLegals.forEach(d => {
-                // AppData.Legal に定義されているキーであれば同期
-                if ($App.AppData.Legal.hasOwnProperty(d.id)) {
-                    $App.AppData.Legal[d.id] = d; // DBの内容でメモリを上書き（重要）
-                }
-            });
-            // 3. 一つでも未読（is_unread: true）があるか判定
-            const hasUpdate = allLegals.some(item => item.is_unread === true);
-            // 4. 判定結果をコンテキスト（バッジ用フラグ）に保持
-            $App.AppData.Context.HasLegalUpdate = hasUpdate;
-            // 5. UIのバッジ描画（下段バーやダイアログ）を更新
-            $UI.UpdateNoticeBadge();
-        },
         async CheckLegalUnread() {
             // 1. ローカルDBから全件取得
             const allLegals = await $LocalDb.Legal.GetAll();

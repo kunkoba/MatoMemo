@@ -189,9 +189,7 @@ const _DetailFrameCore = {
                 // 移動ボタン
                 this.btnMoveFirst.addEventListener("click", () => this._moveAndRender(() => $Marker.FocusFirst()));
                 this.btnMovePrev.addEventListener("click",  () => this._moveAndRender(() => $Marker.FocusPrev()));
-                // this.btnMoveNext.addEventListener("click",  () => this._moveAndRender(() => $Marker.FocusNext()));
                 this.btnMoveNext.addEventListener("click", async () => {
-                    if ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.CREATE) return;
                     const details = $Data.Store.GetDetails();
                     const isLast = ($Marker._currentIndex >= details.length - 1);
                     if (isLast) {
@@ -256,15 +254,6 @@ const _DetailFrameCore = {
         }
     },
     // 移動して詳細画面表示
-    _moveAndRender_2(callback) {
-        // 引数として渡された実行処理（アロー関数）を呼び出す
-        callback();
-        // 移動後のデータを取得して反映
-        const detail = $Marker.GetDataWithCurrentIndex();
-        $DetailContent.RenderDetail(detail);
-        // リアクションも再描画する
-        this.renderReactions(detail);
-    },
     _moveAndRender(callback) {
         // 1. マーカーのインデックス更新と地図移動
         callback();
@@ -289,7 +278,7 @@ const _DetailFrameCore = {
         if (isShow) {
             // パネル表示時にエフェクトの重なり順を調整
             if (typeof Atmosphere !== 'undefined' && Atmosphere.canvas) {
-                Atmosphere.canvas.style.zIndex = '1001'; // 背面に移動
+                Atmosphere.canvas.style.zIndex = '1100'; // 背面に移動
             }
             $Map.LockMap(true);
             // バリアを展開（マーカーへのタッチを防ぐ）
@@ -333,43 +322,6 @@ const _DetailFrameCore = {
         }
         // アイコン表示切替
         $UI.ToggleIconBar(!isShow);
-    },
-    // リアクションのカウントと状態を反映する
-    async renderReactions_2(detail) {
-        if (!detail) return;
-        const isSearch = $App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH;
-        // 検索時はローカルDBを参照せず、読み取り専用として扱う
-        const myLocal = isSearch ? {} : (await $LocalDb.Reaction.Get(detail.archive_id, detail.seq) || {});
-        Object.values($Const.REACTION_TYPE).forEach(type => {
-            const btn = this.reactionButtons[type.id];
-            if (!btn) return;
-            const countProp = type.prop.replace('has_', 'count_'); // 'count_funny' 等
-            let displayCount = 0;
-            if (isSearch) {
-                // 検索モード：サーバーから届いた累計値をそのまま表示
-                displayCount = Number(detail[countProp] || 0);
-            } else {
-                // 通常モード：[表示数] = [サーバー総数] - [サーバー時の自分の状態] + [ローカルの自分の状態]
-                const prop = type.prop;
-                const serverProp = prop.replace('has_', 'server_has_');
-                const serverTotal = Number(detail[countProp] || 0);
-                const serverMe = detail[serverProp] ? 1 : 0;
-                const localMe = myLocal[prop] ? 1 : 0;
-                displayCount = serverTotal - serverMe + localMe;
-            }
-            const countEl = $Dom.QuerySelector('.js-count', btn);
-            countEl.textContent = displayCount;
-            // 自分の選択状態を反映（検索時は常に未選択色）
-            const isActive = !isSearch && !!myLocal[type.prop];
-            btn.classList.toggle('bg-white', isActive);
-            btn.classList.toggle('border-brand-5', isActive);
-            btn.classList.toggle('shadow-md', isActive);
-            btn.classList.toggle('bg-slate-50', !isActive);
-            btn.classList.toggle('border-transparent', !isActive);
-            btn.classList.toggle('shadow-sm', !isActive);
-            countEl.classList.toggle('text-brand-5', isActive);
-            countEl.classList.toggle('text-slate-400', !isActive);
-        });
     },
     // リアクションのカウントと状態を反映する
     async renderReactions(detail) {

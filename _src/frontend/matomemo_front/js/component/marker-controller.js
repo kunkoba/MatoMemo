@@ -96,21 +96,6 @@ const _MarkerCore = {
             row.marker = marker;
         });
     },
-    // 現在地マーカーの更新
-    async refreshCurrentLocation_2() {
-        $Warn.CatchAsync(async () => {
-            const pos = await $Util.GetCurrentPosition();
-            const p = [pos.coords.latitude, pos.coords.longitude];
-            // 明細画面に反映（開いている時だけ）
-            $DetailContent.SetPos(pos.coords.latitude, pos.coords.longitude);
-            // 現在地マーカー移動
-            if (this.locationMarker) this.locationMarker.setLatLng(p);
-            if ($App.AppData.Context.ScreenMode == $Const.SCREEN_MODE.CREATE) {
-                // 現在地まで線を引く
-                this.generateArrowToCurrent();
-            }
-        })();
-    },
     // 現在地マーカーの更新（同期対応版）
     async refreshCurrentLocation() {
         // return await を追加し、呼び出し元が完了を待てるようにする
