@@ -96,8 +96,8 @@ export default {
         }
         // ログインしていない場合、ユーザ/データ系の一部を半透明にするなどの視覚制御
         if (!isLoggedIn) {
-            [b.profile, b.mail, b.reports, b.arcList, b.merge, b.create, b.search].forEach(btn => {
-                btn.style.opacity = "0.4";
+            [b.profile, b.mail, b.reports, b.arcList, b.merge, b.create, b.search, b.history, b.sysNotice].forEach(btn => {
+                btn.style.opacity = "0.2";
             });
         }
         // ログイン/ログアウトボタンのラベル

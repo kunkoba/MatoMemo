@@ -364,7 +364,7 @@ const AppManager = {
         if (response && response.status === 401) {
             this.AppData.Context.IsLoggedIn = false;
             this.AppData.Owner.Token = null;
-            $Notice.Warn("ログインセッションが切れました。再度ログインが必要です。");
+            $Notice.Warn("引き続き利用される際は、ログインをしてください。");
             return false;
         }
         {
