@@ -94,6 +94,7 @@ public static class ServiceExtensions
         services.AddScoped<GetMyReportService>();
         services.AddScoped<DeleteMyReportService>();
         services.AddScoped<GetMyUserNotificationsService>();
+        services.AddScoped<GetAppInfoService>();
 
         // Admin
         services.AddScoped<GetAdminAllInfoService>();

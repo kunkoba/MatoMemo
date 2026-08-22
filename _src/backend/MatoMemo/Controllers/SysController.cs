@@ -2,6 +2,7 @@
 using LittleTripMemo.JWT;
 using LittleTripMemo.Repository;
 using LittleTripMemo.Services.Sys;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LittleTripMemo.Controllers;
@@ -22,7 +23,8 @@ public class SysController(
     UpsertReportService upsertReportService,
     GetMyReportService getMyReportService,
     DeleteMyReportService deleteMyReportService,
-    GetMyUserNotificationsService getMyUserNotificationsService
+    GetMyUserNotificationsService getMyUserNotificationsService,
+    GetAppInfoService getAppInfoService
 ) : _BaseController(userContext, jwtService, provider)
 {
     /// <summary>
@@ -73,5 +75,13 @@ public class SysController(
     [HttpPost("GetMyUserNotifications")]
     public async Task<IActionResult> GetMyUserNotifications()
         => OkWithBase(await getMyUserNotificationsService.ExecuteAsync());
+
+    /// <summary>
+    /// アプリ情報（mgr_app_info）を取得する
+    /// </summary>
+    [AllowAnonymous]
+    [HttpPost("GetAppInfo")]
+    public async Task<IActionResult> GetAppInfo()
+        => OkWithBase(await getAppInfoService.ExecuteAsync());
 
 }

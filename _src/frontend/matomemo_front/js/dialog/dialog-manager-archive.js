@@ -135,6 +135,8 @@ export default {
                 const isActive = (btn.dataset.pub === "true") === isShowPublic;
                 btn.classList.toggle('opacity-100', isActive);
                 btn.classList.toggle('opacity-50', !isActive);
+                btn.classList.toggle('border-2', isActive);
+                btn.classList.toggle('border-red-500', isActive);
                 btn.style.pointerEvents = isActive ? 'none' : 'auto'; // 選択中を再度押せなくする
             });
             // フィルタ実行

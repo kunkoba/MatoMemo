@@ -104,9 +104,12 @@ export default {
         const labelEl = el.querySelector('#txt-all-login-label');
         labelEl.textContent = isLoggedIn ? "ログアウトする" : "ログイン / 新規登録";
         // 3. バッジの反映
-        $UI.Generator.ApplyNewBadge(b.sysNotice, $App.AppData.Context.UnreadNoticeCount > 0, 'dot');
-        $UI.Generator.ApplyNewBadge(b.mail, $App.AppData.Context.UnreadMailCount > 0, 'dot');
-        $UI.Generator.ApplyNewBadge(b.legal, !!$App.AppData.Context.HasLegalUpdate, 'dot');
+        // $UI.Generator.ApplyNewBadge(b.sysNotice, $App.AppData.Context.UnreadNoticeCount > 0, 'dot');
+        // $UI.Generator.ApplyNewBadge(b.mail, $App.AppData.Context.UnreadMailCount > 0, 'dot');
+        // $UI.Generator.ApplyNewBadge(b.legal, !!$App.AppData.Context.HasLegalUpdate, 'dot');
+        $UI.Generator.ApplyNewBadge(b.sysNotice, $App.AppData.Context.UnreadNoticeCount > 0, 'label');
+        $UI.Generator.ApplyNewBadge(b.mail, $App.AppData.Context.UnreadMailCount > 0, 'label');
+        $UI.Generator.ApplyNewBadge(b.legal, !!$App.AppData.Context.HasLegalUpdate, 'label');
         // 4. イベント登録
         // Group 1: Actions
         b.reload.onclick  = () => { this._core.closeAll(); if (!$App.AppData.Context.IsOnline) return $Notice.Warn("オフラインです"); $Util.ReloadApp(); };

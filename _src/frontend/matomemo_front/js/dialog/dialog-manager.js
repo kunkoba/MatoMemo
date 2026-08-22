@@ -195,18 +195,18 @@ const _DialogCore = {
     updateNoticeBadge() {
         // console.log("★updateNoticeBadge:", $App.AppData.Context);
         this.stack.forEach(frame => {
-            // システム通知
-            const btnNotice = frame.querySelector('#btn-sys-notice');
+            // 1. システム通知（新旧両方のIDを検索）
+            const btnNotice = frame.querySelector('#btn-all-sys-notice') || frame.querySelector('#btn-sys-notice');
             if (btnNotice) {
                 $UI.Generator.ApplyNewBadge(btnNotice, $App.AppData.Context.UnreadNoticeCount > 0, 'label');
             }
-            // 受信メール
-            const btnMail = frame.querySelector('#btn-user-mail');
+            // 2. 受信メール（新旧両方のIDを検索）
+            const btnMail = frame.querySelector('#btn-all-mail') || frame.querySelector('#btn-user-mail');
             if (btnMail) {
                 $UI.Generator.ApplyNewBadge(btnMail, $App.AppData.Context.UnreadMailCount > 0, 'label');
             }
-            // 利用規約
-            const btnLegal = frame.querySelector('#btn-sys-legal');
+            // 3. 利用規約（新旧両方のIDを検索）
+            const btnLegal = frame.querySelector('#btn-all-legal') || frame.querySelector('#btn-sys-legal');
             if (btnLegal) {
                 $UI.Generator.ApplyNewBadge(btnLegal, $App.AppData.Context.HasLegalUpdate, 'label');
             }

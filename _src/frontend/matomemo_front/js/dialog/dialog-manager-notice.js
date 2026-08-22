@@ -1,23 +1,34 @@
 export default {
     // （システム）アプリ情報
-    ShowAppInfo() {
-        // システム情報と統計情報の取得
-        const sysInfo = $App.AppData.Owner.SystemInfo; // システム全体情報
-        const appInfo = sysInfo?.app_info; // アプリ統計データ
-        // データの存在チェック（未取得時は画面を開かない）
-        if (!appInfo) { // 統計情報が空の場合
-            $Notice.Warn("アプリ情報が読み込まれていません"); // 警告通知
-            return; // 処理を中断
+    async ShowAppInfo() {
+        // 1. データ取得
+        if (!$App.AppData.Owner.SystemInfo?.app_info) {
+            const isSuccess = await $Data.Access.GetAppInfo();
+            if (isSuccess) {
+                // ★ ここで「詰め込み」を行う
+                // SystemInfo自体がなければ器を作る
+                if (!$App.AppData.Owner.SystemInfo) $App.AppData.Owner.SystemInfo = {};
+                const res = $Data.resData;
+                // 統計データ(app_info)と評価リスト(feedbacks)を共通の場所に格納
+                $App.AppData.Owner.SystemInfo.app_info = res?.app_info || res;
+                $App.AppData.Owner.SystemInfo.feedbacks = res?.feedbacks || [];
+            }
+        }
+        // 2. 詰め込んだ後の値を参照（これ以降、どこからでも SystemInfo でアクセス可能）
+        const appInfo = $App.AppData.Owner.SystemInfo?.app_info;
+        // 3. 取得を試みてもなおデータがない場合のみ、例外としてエラーを出力
+        if (!appInfo) {
+            $Notice.Error("アプリ情報を取得できませんでした");
+            return;
         }
         const el = $Dom.GenerateTemplate("tpl-app-info");
         // アイコン・基本情報
         $Dom.QuerySelector('#js-app-icon', el).src = "img/ico/icon-512.png";
         $Dom.QuerySelector('.js-app-name', el).textContent = $Const.APP_INFO.NAME;
         $Dom.QuerySelector('.js-app-version', el).textContent = $Const.APP_INFO.VERSION;
+        $Dom.QuerySelector('.js-app-description', el).textContent = $Const.APP_INFO.DESCRIPTION;
         $Dom.QuerySelector('.js-app-developer', el).textContent = $Const.APP_INFO.DEVELOPER;
         // 統計データ
-        // const sysInfo = $App.AppData.Owner.SystemInfo || {};
-        // const appInfo = sysInfo.app_info || {};
         $Dom.QuerySelector('.js-stat-users', el).textContent = (appInfo.total_user_count || 0).toLocaleString();
         $Dom.QuerySelector('.js-stat-archives', el).textContent = (appInfo.total_archive_pub_count || 0).toLocaleString();
         $Dom.QuerySelector('.js-stat-memos', el).textContent = (appInfo.total_detail_pub_count || 0).toLocaleString();

@@ -175,8 +175,7 @@ public class TableStatisticsTaskRepository : _BaseRepository
             )
             UPDATE t_memo_archive_pub a
             SET 
-                report_count = COALESCE(ra.cnt, 0),
-                update_tim   = CURRENT_TIMESTAMP
+                report_count = COALESCE(ra.cnt, 0)
             FROM (SELECT archive_id FROM t_memo_archive_pub) target
             LEFT JOIN ReportAgg ra ON target.archive_id = ra.archive_id
             WHERE a.archive_id = target.archive_id;

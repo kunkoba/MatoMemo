@@ -42,6 +42,7 @@ const API_ENDPOINTS = {
     DeleteMyReport:         { method: 'post', url: '/api/Sys/DeleteMyReport' },
     GetSystemInfo:          { method: 'post', url: '/api/Sys/GetSystemInfo' },
     GetMyUserNotifications: { method: 'post', url: '/api/Sys/GetMyUserNotifications' },
+    GetAppInfo:             { method: 'post', url: '/api/Sys/GetAppInfo' },
     // Admin
     GetAdminAllInfo:        { method: 'post', url: '/api/Admin/GetAdminAllInfo' },
     UpsertNotification:     { method: 'post', url: '/api/Admin/UpsertNotification' },

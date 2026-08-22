@@ -32,7 +32,7 @@
                 </div>
             </div>
             <!-- コンテンツエリア：基本の背景色が必要な場合はここもJSで指定 -->
-            <div id="dialog-content" class="flex-1 overflow-y-auto pr-2 flex flex-col m-4 relative p-1"></div>
+            <div id="dialog-content" class="flex-1 overflow-y-auto pr-2 flex flex-col m-4 relative px-1"></div>
             <!-- フッター：背景色と枠線のクラスを削除 -->
             <div id="dialog-button-container" class="z-[900] shrink-0 flex flex-col gap-3 p-4"></div>
         </div>
@@ -562,12 +562,12 @@
     <div class="flex gap-2 px-1 py-1 pt-3 bg-white">
         <!-- PRIVATE: 最初から黒背景・影付きで定義 -->
         <button id="btn-list-filter-pvt" data-pub="false" 
-            class="js-filter-btn flex-1 flex items-center justify-center gap-2 h-10 rounded-full font-black text-[0.9rem] transition-all active:scale-95 border-2 shadow-md bg-slate-900 text-white border-slate-900">
+            class="js-filter-btn flex-1 flex items-center justify-center gap-2 h-10 rounded-full font-black text-[0.9rem] transition-all active:scale-95 shadow-md bg-slate-900 text-white">
             <span>🔒</span> PRIVATE
         </button>
         <!-- PUBLIC: 最初からブランドカラー・影付きで定義 -->
         <button id="btn-list-filter-pub" data-pub="true" 
-            class="js-filter-btn flex-1 flex items-center justify-center gap-2 h-10 rounded-full font-black text-[0.9rem] transition-all active:scale-95 border-2 shadow-md bg-brand-5 text-white border-brand-5">
+            class="js-filter-btn flex-1 flex items-center justify-center gap-2 h-10 rounded-full font-black text-[0.9rem] transition-all active:scale-95 shadow-md bg-brand-5 text-white">
             <span>◎</span> PUBLIC
         </button>
     </div>
@@ -594,63 +594,63 @@
 <template id="tpl-menu-all-in-one">
     <div class="w-full flex flex-col bg-brand-0 pb-10">
         <!-- ■ 1. 操作・ツール（操作アクション設定） -->
-        <div class="px-4 pt-4 pb-2 flex items-center gap-2 text-slate-700">
+        <div class="bg-brand-2 px-4 pt-2 pb-2 flex items-center gap-2 text-slate-700">
             <span class="text-[1.2rem]">👆</span>
             <span class="font-bold text-[1.2rem] uppercase tracking-wider">アクションメニュー</span>
         </div>
         <div class="ml-7 mb-4 flex flex-col">
-            <button id="btn-all-reload" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-reload" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">🌐</span>
                 <span class="font-bold text-slate-800">アプリ再起動</span>
             </button>
-            <button id="btn-all-refresh" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-refresh" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">🔄</span>
                 <span class="font-bold text-slate-800">画面を再読み込み</span>
             </button>
-            <button id="btn-all-restore" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-restore" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">♻️</span>
                 <span class="font-bold text-slate-800">マーカーを元に戻す</span>
             </button>
-            <button id="btn-all-current" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-current" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">📍</span>
                 <span class="font-bold text-slate-800">現在地へ移動</span>
             </button>
-            <button id="btn-all-pnt-srch" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-pnt-srch" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">👇</span>
                 <span class="font-bold text-slate-800">ワードで地点移動</span>
             </button>
         </div>
         <!-- ■ 2. データ管理（データ設定） -->
-        <div class="px-4 pt-2 pb-2 flex items-center gap-2 text-slate-700">
+        <div class="bg-brand-2 px-4 pt-2 pb-2 flex items-center gap-2 text-slate-700">
             <span class="text-[1.2rem]">🗺️</span>
             <span class="font-bold text-[1.2rem] uppercase tracking-wider">データメニュー</span>
         </div>
         <div class="ml-7 mb-4 flex flex-col">
-            <button id="btn-all-mode-create" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-mode-create" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">➕</span>
                 <span class="font-bold text-slate-800">地点メモを作成する</span>
             </button>
-            <button id="btn-all-mode-search" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-mode-search" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">🔎</span>
                 <span class="font-bold text-slate-800">公開データを検索</span>
             </button>
-            <button id="btn-all-merge" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-merge" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">📦</span>
                 <span class="font-bold text-slate-800">地点メモをまとめる</span>
             </button>
-            <button id="btn-all-arc-list" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-arc-list" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">📚</span>
                 <span class="font-bold text-slate-800">まとめ一覧</span>
             </button>
-            <button id="btn-all-arc-info" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-arc-info" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">📖</span>
                 <span class="font-bold text-slate-800">まとめ詳細表示</span>
             </button>
-            <button id="btn-all-pnt-list" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-pnt-list" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">☰</span>
                 <span class="font-bold text-slate-800">地点メモ一覧</span>
             </button>
-            <button id="btn-all-jump-url" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-jump-url" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">🔗</span>
                 <span class="font-bold text-slate-800">共有URLから開く</span>
             </button>
@@ -660,47 +660,47 @@
             </button>
         </div>
         <!-- ■ 3. ユーザーメニュー -->
-        <div class="px-4 pt-2 pb-2 flex items-center gap-2 text-slate-700">
+        <div class="bg-brand-2 px-4 pt-2 pb-2 flex items-center gap-2 text-slate-700">
             <span class="text-[1.2rem]">👤</span>
             <span class="font-bold text-[1.2rem] uppercase tracking-wider">ユーザーメニュー</span>
         </div>
         <div class="ml-7 mb-4 flex flex-col">
-            <button id="btn-all-profile" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-profile" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">👤</span>
                 <span class="font-bold text-slate-800">ユーザ情報</span>
             </button>
-            <button id="btn-all-mail" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-mail" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">📩</span>
                 <span class="font-bold text-slate-800">受信メール一覧</span>
             </button>
-            <button id="btn-all-my-report" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-my-report" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">🚫</span>
                 <span class="font-bold text-slate-800">通報まとめ一覧</span>
             </button>
-            <button id="btn-all-history" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-history" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">🕒</span>
                 <span class="font-bold text-slate-800">閲覧履歴</span>
             </button>
-            <button id="btn-all-settings" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-settings" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">⚙️</span>
                 <span class="font-bold text-slate-800">利用端末の設定</span>
             </button>
         </div>
         <!-- ■ 4. システム設定 -->
-        <div class="px-4 pt-2 pb-2 flex items-center gap-2 text-slate-700">
+        <div class="bg-brand-2 px-4 pt-2 pb-2 flex items-center gap-2 text-slate-700">
             <span class="text-[1.2rem]">🔧</span>
             <span class="font-bold text-[1.2rem] uppercase tracking-wider">システムメニュー</span>
         </div>
         <div class="ml-7 flex flex-col">
-            <button id="btn-all-sys-notice" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-sys-notice" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">📢</span>
                 <span class="font-bold text-slate-800">システム通知一覧</span>
             </button>
-            <button id="btn-all-app-info" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-app-info" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">ℹ️</span>
                 <span class="font-bold text-slate-800">アプリの詳細情報</span>
             </button>
-            <button id="btn-all-legal" class="w-full h-12 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
+            <button id="btn-all-legal" class="w-full h-14 flex items-center px-4 hover:bg-brand-1 active:bg-brand-2 transition-colors">
                 <span class="w-8 text-center mr-2">📜</span>
                 <span class="font-bold text-slate-800">利用規約とポリシー</span>
             </button>
