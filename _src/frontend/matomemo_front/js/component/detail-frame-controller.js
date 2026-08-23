@@ -171,8 +171,6 @@ const _DetailFrameCore = {
                         } else {
                             // 未同期（seq = 0）のデータはローカルへ新規更新（バックグラウンドで同期される）
                             await $LocalDb.Detail.Save(detail);
-                            // 通知
-                            // $Notice.Info("変更しました。");
                         }
                         // API更新(メモリの更新)
                         await $Data.Store.UpdateDetail(detail);

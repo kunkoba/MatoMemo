@@ -132,7 +132,6 @@ const _BarCore = {
     },
     // スイッチ表示とUI連動の更新
     _updateMainSwitchUI(isOn) {
-        console.log("_updateMainSwitchUI:", isOn);
         // 1. ボタン自体の表示切替（完全体ボタンの出し分けのみ行う）
         $Dom.ToggleShow(this.btnSwitchOn, isOn);
         $Dom.ToggleShow(this.btnSwitchOff, !isOn);

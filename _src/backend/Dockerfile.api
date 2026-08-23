@@ -3,9 +3,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 # コンテナ内の作業フォルダを設定
 WORKDIR /app
 
-# プロジェクトファイルをコピーして依存関係を復元
-COPY *.csproj ./
-RUN dotnet restore
+# .csproj を正しい場所からコピー
+COPY MatoMemo/*.csproj ./MatoMemo/
+
+# restore
+RUN dotnet restore MatoMemo/*.csproj
 
 # すべてのソースコードをコピーしてビルドを実行
 COPY . ./

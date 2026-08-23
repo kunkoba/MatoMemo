@@ -388,7 +388,7 @@ const AppManager = {
         this.AppData.Context.IsOnline = false;
         $Notice.Offline.Show(); // オフラインバーを表示
 
-        let msg = "サーバ接続が切断されました。オフラインモードへ移行します。";
+        let msg = "サーバ接続が切断されました。";
         $Notice.Error(msg);
         return false;
     },

@@ -2,6 +2,7 @@
 services:
   # 1. フロントエンド (HTML/JS)
   web:
+    image: mato_memo-web
     build:
       context: ./frontend
       dockerfile: Dockerfile.web
@@ -13,8 +14,9 @@ services:
 
   # 2. バックエンド (ASP.NET Core API)
   api:
+    image: mato_memo-api
     build:
-      context: ./backend
+      context: ./backend/MatoMemo
       dockerfile: Dockerfile.api
     container_name: mato_memo-api
     ports:
@@ -47,3 +49,5 @@ services:
 
 volumes:
   postgres_data:
+    external: true
+    name: matomemo_postgres_data
