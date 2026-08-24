@@ -49,10 +49,10 @@ window.$Const = {
     },
     // リアクション種別（ID, 絵文字, DBプロパティ名, ボタンID を統合）
     REACTION_TYPE: {
-        FUNNY:    { id: 1, emoji: '🤣', text: 'わらえる', prop: 'has_funny',    btnId: 'detail-btn-funny' },
-        LOVE:     { id: 2, emoji: '😍', text: 'だいすき', prop: 'has_love',     btnId: 'detail-btn-love' },
-        SURPRISE: { id: 3, emoji: '😲', text: 'びっくり', prop: 'has_surprise', btnId: 'detail-btn-surprise' },
-        SAD:      { id: 4, emoji: '😢', text: 'かなしい', prop: 'has_sad',      btnId: 'detail-btn-sad' },
+        FUNNY:    { id: 1, emoji: '🤣', text: 'ｗｗｗｗ', prop: 'has_funny',    btnId: 'detail-btn-funny' },
+        LOVE:     { id: 2, emoji: '😍', text: 'いいね！', prop: 'has_love',     btnId: 'detail-btn-love' },
+        SURPRISE: { id: 3, emoji: '😲', text: 'わおっ！', prop: 'has_surprise', btnId: 'detail-btn-surprise' },
+        SAD:      { id: 4, emoji: '😢', text: '泣きそう', prop: 'has_sad',      btnId: 'detail-btn-sad' },
     },
     // 全体通知種別
     NOTICE_KIND: {

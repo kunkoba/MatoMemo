@@ -207,7 +207,7 @@ const _BarCore = {
         }
     },
     // 検索設定取得
-    getSortSetting() {
+    getSortSetting_2() {
         const field = this._getSelectedValue(this.sortField);
         const input = $Dom.GetElementById('input-sort-word');
         return {
@@ -218,11 +218,32 @@ const _BarCore = {
             feelType: field === '5' ? parseInt(this._getSelectedValue(this.sortFeel), 10) : null
         };
     },
+    // 検索設定取得
+    getSortSetting() {
+        const field = this._getSelectedValue(this.sortField); // select要素から取得
+        const input = $Dom.GetElementById('input-sort-word');
+        return {
+            isPublic: true,
+            sortField: parseInt(field || '1', 10),
+            // ★修正：_getActiveButtonValue を使用するように変更
+            reactionType: field === '3' ? this._getActiveButtonValue(this.sortReaction) : null,
+            keyword: field === '4' ? input?.value.trim() : null,
+            // ★修正：こちらも同様にボタン形式なので修正
+            feelType: field === '5' ? this._getActiveButtonValue(this.sortFeel) : null
+        };
+    },
     // 値取得ヘルパー
     _getSelectedValue(el) {
         // select要素を直接探して値を取得
         const select = el.querySelector('select');
         return select ? select.value : '1';
+    },
+    // ★【新規追加】アクティブなボタン（bg-brand-3 クラスを持つもの）から値を取得するヘルパー
+    _getActiveButtonValue(container) {
+        if (!container) return null;
+        // 現在「選択中」の色（bg-brand-3）がついているボタンを探す
+        const activeBtn = container.querySelector('.bg-brand-3');
+        return activeBtn ? parseInt(activeBtn.dataset.value, 10) : null;
     },
     // 新着バッジ更新
     updateNoticeBadge() {
