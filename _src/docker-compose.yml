@@ -1,4 +1,5 @@
 ## docker-compose.yml
+name: mato-memo-compose  # ← 一番上のグループ名になります
 services:
   # 1. フロントエンド (HTML/JS)
   web:

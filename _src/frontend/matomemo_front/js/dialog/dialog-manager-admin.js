@@ -99,7 +99,7 @@ export default {
         Object.values($Const.NOTICE_KIND).forEach(type => {
             const btn = document.createElement("button");
             // 基本スタイル（メール送信画面と同様）
-            btn.className = "flex-1 rounded-lg py-2 flex flex-col items-center justify-center active:scale-95 transition-all bg-slate-50 border-2 border-transparent shadow-sm";
+            btn.className = "flex-1 rounded-lg py-2 flex flex-col items-center justify-center active:scale-95 transition-all bg-slate-50 border-2 border-transparent";
             btn.innerHTML = `
                 <span class="text-[1.5rem] mb-1">${type.emoji}</span>
                 <span class="text-[0.8rem] font-bold text-slate-600">${type.label}</span>
@@ -507,7 +507,7 @@ export default {
         kindGroup.innerHTML = "";
         Object.values($Const.USER_NOTICE_KIND).forEach(type => {
             const btn = document.createElement("button");
-            btn.className = "flex-1 rounded-lg py-2 flex flex-col items-center justify-center active:scale-95 transition-all bg-slate-50 border-2 border-transparent shadow-sm";
+            btn.className = "flex-1 rounded-lg py-2 flex flex-col items-center justify-center active:scale-95 transition-all bg-slate-50 border-2 border-transparent";
             btn.innerHTML = `
                 <span class="text-[1.5rem] mb-1">${type.emoji}</span>
                 <span class="text-[0.8rem] font-bold text-slate-600">${type.label}</span>

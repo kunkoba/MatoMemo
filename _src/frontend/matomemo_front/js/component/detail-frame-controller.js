@@ -36,7 +36,7 @@ const _DetailFrameCore = {
                     const btn = document.createElement("button");
                     btn.id = type.btnId;
                     // デフォルトは未選択（目立たない）状態
-                    btn.className = "flex-1 rounded-[1rem] py-2 flex flex-col items-center justify-center active:scale-95 transition-all disabled:opacity-50 bg-slate-50 border-2 border-transparent shadow-sm";
+                    btn.className = "flex-1 rounded-[1rem] py-2 flex flex-col items-center justify-center active:scale-95 transition-all disabled:opacity-50 bg-slate-50 border-2 border-transparent";
                     btn.innerHTML = `
                         <span class="text-[0.7rem] font-bold text-slate-500 mb-1 leading-none">${type.text}</span>
                         <span class="kb-icon-emoji-lg mb-1">${type.emoji}</span>

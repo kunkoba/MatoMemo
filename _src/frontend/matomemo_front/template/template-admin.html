@@ -497,7 +497,7 @@
 <template id="tpl-admin-core-version">
     <div class="w-full text-slate-900 space-y-4 pt-4 px-2">
         <!-- 最新バージョン (LATEST)：表示のみ -->
-        <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+        <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100 space-y-4">
             <label class="block text-[0.8rem] font-bold text-slate-500 uppercase tracking-wider">最新バージョン (LATEST)</label>
             <div class="grid grid-cols-3 gap-3 opacity-80">
                 <div id="v-lat-0" class="h-14 bg-slate-100 rounded-xl border-2  flex items-center justify-center text-[1.5rem] font-black italic text-slate-400">0</div>
@@ -513,7 +513,7 @@
             </button>
         </div>
         <!-- 必須バージョン (MIN) -->
-        <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+        <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100 space-y-4">
             <label class="block text-[0.8rem] font-bold text-slate-500 uppercase tracking-wider">必須バージョン (MIN)</label>
             <div class="grid grid-cols-3 gap-3">
                 <!-- 桁ごとの操作：リセット or プラス -->
@@ -521,21 +521,21 @@
                     <div id="v-min-0" class="h-14 bg-white rounded-xl border-2 border-brand-2 flex items-center justify-center text-[1.5rem] font-black italic">0</div>
                     <div class="grid grid-cols-2 gap-1">
                         <button data-idx="0" data-op="reset" class="js-v-min-btn h-8 bg-slate-100 rounded-md flex items-center justify-center font-bold text-slate-400 active:scale-90">R</button>
-                        <button data-idx="0" data-op="plus"  class="js-v-min-btn h-8 bg-brand-5 rounded-md flex items-center justify-center font-bold text-white shadow-sm active:scale-90">＋</button>
+                        <button data-idx="0" data-op="plus"  class="js-v-min-btn h-8 bg-brand-5 rounded-md flex items-center justify-center font-bold text-white active:scale-90">＋</button>
                     </div>
                 </div>
                 <div class="flex flex-col gap-2">
                     <div id="v-min-1" class="h-14 bg-white rounded-xl border-2 border-brand-2 flex items-center justify-center text-[1.5rem] font-black italic">0</div>
                     <div class="grid grid-cols-2 gap-1">
                         <button data-idx="1" data-op="reset" class="js-v-min-btn h-8 bg-slate-100 rounded-md flex items-center justify-center font-bold text-slate-400 active:scale-90">R</button>
-                        <button data-idx="1" data-op="plus"  class="js-v-min-btn h-8 bg-brand-5 rounded-md flex items-center justify-center font-bold text-white shadow-sm active:scale-90">＋</button>
+                        <button data-idx="1" data-op="plus"  class="js-v-min-btn h-8 bg-brand-5 rounded-md flex items-center justify-center font-bold text-white active:scale-90">＋</button>
                     </div>
                 </div>
                 <div class="flex flex-col gap-2">
                     <div id="v-min-2" class="h-14 bg-white rounded-xl border-2 border-brand-2 flex items-center justify-center text-[1.5rem] font-black italic">0</div>
                     <div class="grid grid-cols-2 gap-1">
                         <button data-idx="2" data-op="reset" class="js-v-min-btn h-8 bg-slate-100 rounded-md flex items-center justify-center font-bold text-slate-400 active:scale-90">R</button>
-                        <button data-idx="2" data-op="plus"  class="js-v-min-btn h-8 bg-brand-5 rounded-md flex items-center justify-center font-bold text-white shadow-sm active:scale-90">＋</button>
+                        <button data-idx="2" data-op="plus"  class="js-v-min-btn h-8 bg-brand-5 rounded-md flex items-center justify-center font-bold text-white active:scale-90">＋</button>
                     </div>
                 </div>
             </div>
@@ -546,7 +546,7 @@
 <!-- 3. メンテナンス編集 -->
 <template id="tpl-admin-core-maint">
     <div class="w-full text-slate-900 space-y-6 pt-2 px-2">
-        <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-brand-2 shadow-sm">
+        <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-brand-2">
             <span class="font-bold text-[1rem]">メンテナンスモード</span>
             <button id="btn-cfg-maint-toggle" class="w-16 h-8 rounded-full bg-slate-300 relative transition-colors shrink-0">
                 <div class="js-dot absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all"></div>

@@ -73,7 +73,7 @@
             <!-- マーカー切替スイッチ -->
             <div class="pointer-events-none w-full flex p-2 justify-between">
                 <!-- マーカー切替 -->
-                <div id="ui-marker-mode-switch" class="pointer-events-auto shadow-md w-fit h-8 flex overflow-hidden bg-white/90 backdrop-blur-sm">
+                <div id="ui-marker-mode-switch" class="pointer-events-auto shadow-md w-fit h-8 flex overflow-hidden bg-white/90 backdrop-blur-sm rounded-full">
                     <button id="btn-marker-mode-emoji" data-mode="emoji" 
                         class="px-4 transition-colors bg-brand-3 text-[0.8rem] flex items-center justify-center font-bold">
                         絵文字
@@ -350,21 +350,21 @@
                             </div>
                             <div class="grid grid-cols-3 gap-4" id="detail-edit-feel-group">
                                 <!-- data-val を -1 に -->
-                                <button type="button" data-val="-1" class="eval-btn flex flex-col items-center justify-center py-3 rounded-[1rem] border-2 transition-all outline-none active:scale-95 bg-slate-50 border-transparent shadow-sm">
+                                <button type="button" data-val="-1" class="eval-btn flex flex-col items-center justify-center py-3 rounded-[1rem] border-2 transition-all outline-none active:scale-95 bg-slate-50 border-transparent">
                                     <span class="eval-icon text-[2rem] leading-none mb-1 drop-shadow-sm grayscale opacity-30">
                                         <img src="img/face/face_bad.png" alt="bad">
                                     </span>
                                     <span class="eval-label text-[0.8rem] font-bold tracking-wider text-slate-400">Bad</span>
                                 </button>
                                 <!-- data-val を 0 に -->
-                                <button type="button" data-val="0" class="eval-btn flex flex-col items-center justify-center py-3 rounded-[1rem] border-2 transition-all outline-none active:scale-95 bg-slate-50 border-transparent shadow-sm">
+                                <button type="button" data-val="0" class="eval-btn flex flex-col items-center justify-center py-3 rounded-[1rem] border-2 transition-all outline-none active:scale-95 bg-slate-50 border-transparent">
                                     <span class="eval-icon text-[2rem] leading-none mb-1 drop-shadow-sm grayscale opacity-30">
                                         <img src="img/face/face_normal.png" alt="normal">
                                     </span>
                                     <span class="eval-label text-[0.8rem] font-bold tracking-wider text-slate-400">Normal</span>
                                 </button>
                                 <!-- data-val を 1 に -->
-                                <button type="button" data-val="1" class="eval-btn flex flex-col items-center justify-center py-3 rounded-[1rem] border-2 transition-all outline-none active:scale-95 bg-slate-50 border-transparent shadow-sm">
+                                <button type="button" data-val="1" class="eval-btn flex flex-col items-center justify-center py-3 rounded-[1rem] border-2 transition-all outline-none active:scale-95 bg-slate-50 border-transparent">
                                     <span class="eval-icon text-[2rem] leading-none mb-1 drop-shadow-sm grayscale opacity-30">
                                         <img src="img/face/face_good.png" alt="good">
                                     </span>

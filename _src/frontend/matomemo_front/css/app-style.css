@@ -161,7 +161,7 @@ button:active {
 
 /* マーカーアイコン関連 */
 :root {
-    --marker-size: 12px; /* ここが基準サイズ */
+    --marker-size: 28px; /* ここが基準サイズ */
 }
 .custom-marker-wrapper {
     /* 重要：Leafletが作るアイコン枠（60px）を flex で埋め尽くして中央に寄せる */
@@ -177,9 +177,9 @@ button:active {
         ;
 }
 .marker-diamond-base {
-    width:  var(--marker-size);
-    height: var(--marker-size);
-    background-color: rgba(255, 255, 255, 0.8) !important;
+    width:  calc(var(--marker-size) * 1);
+    height: calc(var(--marker-size) * 1);
+    /* background-color: rgba(255, 255, 255, 0.8) !important; */
     /* border: 2px solid var(--brand-lvl5); */
     transform: rotate(45deg);
     display: flex;
@@ -189,11 +189,15 @@ button:active {
 }
 .marker-diamond-base .js-emoji {
     transform: rotate(-45deg);
-    /* font-size: calc(var(--marker-size) * 0.75); */
-    font-size: calc(var(--marker-size) * 2);
+    font-size: calc(var(--marker-size) * 1);
     line-height: 1;
     display: block;
     filter: 
+        /* 1. 白い縁取り（上下左右に1pxずつ配置） */
+        drop-shadow(1px 0 0 #fff) 
+        drop-shadow(-1px 0 0 #fff) 
+        drop-shadow(0 1px 0 #fff) 
+        drop-shadow(0 -1px 0 #fff)
         drop-shadow(0 1px 1px rgba(0,0,0,0.7))
         drop-shadow(0 1px 1px rgba(0,0,0,0.7))
         /* drop-shadow(0 0px 1px var(--brand-lvl3)) */

@@ -49,7 +49,6 @@
     filter: grayscale(100%) brightness(1.1) contrast(0.9);
 }
 
-
 /* リスト項目（アクティブ状態） */
 .list-item-active {
     border-color: var(--brand-lvl3) !important;

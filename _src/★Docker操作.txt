@@ -13,3 +13,8 @@ docker compose up -d --build api
 docker compose up -d --build web
 docker compose up -d --build db
 docker compose up -d --build --no-deps api
+
+
+# SSH接続
+ssh root@163.44.124.155
+apt update && apt install -y language-pack-ja

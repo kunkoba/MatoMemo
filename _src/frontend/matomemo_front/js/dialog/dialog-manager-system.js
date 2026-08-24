@@ -318,7 +318,7 @@ export default {
         el.className = "w-full flex flex-col bg-brand-0";
         // --- 1. 上部固定：グレースケール設定エリア ---
         const stickyTop = document.createElement('div');
-        stickyTop.className = "sticky top-0 z-20 bg-white border-b-2 border-brand-2 p-5 mb-1 shadow-sm";
+        stickyTop.className = "sticky top-0 z-20 bg-white border-b-2 border-brand-2 p-5 mb-1";
         stickyTop.innerHTML = `
             <label class="flex items-center gap-4 cursor-pointer group">
                 <input type="checkbox" id="cfg-map-gray" class="w-6 h-6 accent-brand-5" ${currentGrayscale ? 'checked' : ''}>
