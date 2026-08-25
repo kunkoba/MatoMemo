@@ -302,7 +302,7 @@ const AppManager = {
                 if (!navigator.onLine || !this.AppData.Context.IsOnline) {
                     $Notice.Offline.Show();
                 }
-                if (this.AppData.Owner.GpsTrackingSec > 0 && navigator.onLine) {
+                if (this.AppData.Owner.GpsTrackingSec > 0) {
                     $Polling.Start($Polling.TASKS.GPS_FOLLOW);
                 }
             }
@@ -476,7 +476,7 @@ const AppManager = {
     ChangeGpsTracking(sec) {
         this.AppData.Owner.GpsTrackingSec = parseInt(sec || 0);
         $Polling.Stop($Polling.TASKS.GPS_FOLLOW);
-        if (this.AppData.Owner.GpsTrackingSec > 0 && navigator.onLine) {
+        if (this.AppData.Owner.GpsTrackingSec > 0) {
             $Polling.Add(
                 $Polling.TASKS.GPS_FOLLOW,
                 () => $Marker.RefreshCurrentLocation(),
@@ -503,7 +503,7 @@ const AppManager = {
     },
     // GPS追従を再開する（設定が有効かつオンライン時のみ）
     ResumeGpsTracking() {
-        if (this.AppData.Owner.GpsTrackingSec > 0 && navigator.onLine) {
+        if (this.AppData.Owner.GpsTrackingSec > 0) {
             $Polling.Start($Polling.TASKS.GPS_FOLLOW);
         }
     }
