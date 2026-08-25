@@ -2,7 +2,7 @@
 FROM nginx:alpine
 
 # index.html がある現在のフォルダの中身を、Nginxの公開フォルダに丸ごとコピー
-COPY . /usr/share/nginx/html
+COPY matomemo_front/ /usr/share/nginx/html
 
 # 80番ポートで待ち受け
 EXPOSE 80

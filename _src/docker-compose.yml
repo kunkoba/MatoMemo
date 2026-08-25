@@ -17,7 +17,7 @@ services:
   api:
     image: mato_memo-api
     build:
-      context: ./backend/MatoMemo
+      context: ./backend
       dockerfile: Dockerfile.api
     container_name: mato_memo-api
     ports:
