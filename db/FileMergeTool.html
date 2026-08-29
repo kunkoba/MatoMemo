@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テキストマージ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white border-b border-slate-800 shadow-sm sticky top-0 z-10">
+        <div class="w-[90%] mx-auto h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                    <i class="fa-solid fa-paste text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">テキストマージ</h1>
+                    <p class="text-xs text-slate-400">複数ファイルを1つに結合（ローカル高速処理）</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 text-xs bg-slate-800 px-3 py-1.5 rounded-full text-emerald-400 border border-slate-700">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>完全ローカル処理（サーバー送信なし）</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content (50:50 Split) -->
+    <main class="flex-1 w-[90%] mx-auto py-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Left Column: File Selection & Sorting (50%) -->
+        <section class="flex flex-col space-y-6">
+            
+            <!-- File Select Area -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 flex-shrink-0">
+                        <i class="fa-solid fa-folder-open text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-sm">結合するファイルを選択</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">複数ファイルをまとめて選択できます (.sql, .txt, .log など)</p>
+                    </div>
+                </div>
+                <label class="w-full sm:w-auto px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl cursor-pointer transition shadow-sm flex items-center justify-center space-x-2 flex-shrink-0">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>ファイルを追加</span>
+                    <input type="file" id="fileInput" multiple class="hidden">
+                </label>
+            </div>
+
+            <!-- File List Header & Action Bar -->
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex-1 flex flex-col">
+                <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                            <span>結合対象ファイル</span>
+                            <span id="fileCountBadge" class="bg-slate-100 text-slate-600 text-xs px-2.5 py-0.5 rounded-full font-semibold">0件</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5" id="totalSizeText">合計サイズ: 0 KB</p>
+                    </div>
+
+                    <!-- Sorting Options -->
+                    <div class="flex items-center space-x-2">
+                        <button id="sortAscBtn" title="ファイル名で昇順ソート" class="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition font-medium flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-down-a-z"></i>
+                            <span>名前昇順</span>
+                        </button>
+                        <button id="sortDescBtn" title="ファイル名で降順ソート" class="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition font-medium flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-down-z-a"></i>
+                            <span>名前降順</span>
+                        </button>
+                        <button id="clearAllBtn" title="一覧をクリア" class="text-xs px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition font-medium flex items-center gap-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span>全消去</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- File List Items -->
+                <div id="fileList" class="divide-y divide-slate-100 flex-1 overflow-y-auto max-h-[420px] my-2 min-h-[200px]">
+                    <!-- Empty State -->
+                    <div id="emptyState" class="h-full flex flex-col items-center justify-center py-12 text-slate-400">
+                        <i class="fa-regular fa-folder-open text-4xl mb-3 opacity-50"></i>
+                        <p class="text-sm">ファイルが選択されていません</p>
+                        <p class="text-xs mt-1 text-slate-400">上のボタンからファイルを選択してください</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Column: Merge Settings & Download (50%) -->
+        <section class="flex flex-col space-y-6">
+            
+            <!-- Output Settings -->
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 space-y-5">
+                <h2 class="font-bold text-slate-800 text-base border-b border-slate-100 pb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-blue-600"></i>
+                    <span>マージ設定</span>
+                </h2>
+
+                <!-- Filename Input -->
+                <div>
+                    <label for="outputFilename" class="block text-xs font-semibold text-slate-700 mb-1.5">出力ファイル名</label>
+                    <div class="relative">
+                        <input type="text" id="outputFilename" value="" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition pr-10">
+                        <i class="fa-solid fa-file-code absolute right-3.5 top-3 text-slate-400 text-sm"></i>
+                    </div>
+                </div>
+
+                <!-- Newline Separator Settings -->
+                <div>
+                    <label for="newlineCount" class="block text-xs font-semibold text-slate-700 mb-1.5">ファイル間の改行数</label>
+                    <div class="flex items-center space-x-3">
+                        <input type="number" id="newlineCount" min="0" max="10" value="5" class="w-24 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+                        <span class="text-xs text-slate-500">行 (0 = 直結, 1 = 通常の改行, 5 = デフォルト)</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="pt-2">
+                    <button id="downloadBtn" disabled class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-sm rounded-xl transition-all shadow-sm flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-download"></i>
+                        <span>マージしてダウンロード</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview Box -->
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex-1 flex flex-col">
+                <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                    <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-eye text-slate-400"></i>
+                        <span>結合イメージプレビュー</span>
+                    </h3>
+                    <span class="text-[10px] text-slate-400">※先頭50KB分を表示</span>
+                </div>
+                <div class="flex-1 bg-slate-900 rounded-lg p-3 overflow-x-auto min-h-[160px] max-h-[240px]">
+                    <pre id="previewText" class="code-font text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">ファイルを追加するとプレビューが表示されます...</pre>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white text-xs py-3 px-5 rounded-xl shadow-xl flex items-center space-x-2 transition-all transform translate-y-20 opacity-0 z-50 pointer-events-none">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMessage">メッセージ</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 text-center text-xs text-slate-400 border-t border-slate-200 bg-white">
+        テキストマージ - Client-side Local Processing
+    </footer>
+
+    <script>
+        // State management
+        let selectedFiles = []; // Array of File objects
+        let isFilenameUserModified = false; // Flag to track manual edits by user
+
+        // DOM Elements
+        const fileInput = document.getElementById('fileInput');
+        const fileListContainer = document.getElementById('fileList');
+        const emptyState = document.getElementById('emptyState');
+        const fileCountBadge = document.getElementById('fileCountBadge');
+        const totalSizeText = document.getElementById('totalSizeText');
+        const sortAscBtn = document.getElementById('sortAscBtn');
+        const sortDescBtn = document.getElementById('sortDescBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const outputFilenameInput = document.getElementById('outputFilename');
+        const newlineCountInput = document.getElementById('newlineCount');
+        const previewText = document.getElementById('previewText');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Helper to format current date and time as YYYYMMDD_HHMM
+        function generateDefaultFilename(ext = 'txt') {
+            const now = new Date();
+            const YYYY = now.getFullYear();
+            const MM = String(now.getMonth() + 1).padStart(2, '0');
+            const DD = String(now.getDate()).padStart(2, '0');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            return `merged_${YYYY}${MM}${DD}_${hh}${mm}.${ext}`;
+        }
+
+        // Initialize default filename
+        outputFilenameInput.value = generateDefaultFilename('txt');
+
+        // Track manual changes to output filename
+        outputFilenameInput.addEventListener('input', () => {
+            isFilenameUserModified = true;
+        });
+
+        // File Selection via Standard Input
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            addFiles(files);
+            fileInput.value = ''; // Reset input to allow selecting same files again if needed
+        });
+
+        // Add Files to List
+        function addFiles(files) {
+            if (files.length === 0) return;
+            
+            // Auto update file extension based on first uploaded file if user hasn't manually edited the filename
+            if (!isFilenameUserModified && selectedFiles.length === 0 && files.length > 0) {
+                const firstFileName = files[0].name;
+                const lastDotIndex = firstFileName.lastIndexOf('.');
+                if (lastDotIndex !== -1 && lastDotIndex < firstFileName.length - 1) {
+                    const ext = firstFileName.substring(lastDotIndex + 1);
+                    outputFilenameInput.value = generateDefaultFilename(ext);
+                }
+            }
+
+            selectedFiles = [...selectedFiles, ...files];
+            updateUI();
+            showToast(`${files.length}件のファイルを追加しました`);
+        }
+
+        // Remove single file
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateUI();
+        }
+
+        // Move File Up/Down
+        function moveFile(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= selectedFiles.length) return;
+            const temp = selectedFiles[index];
+            selectedFiles[index] = selectedFiles[newIndex];
+            selectedFiles[newIndex] = temp;
+            updateUI();
+        }
+
+        // Sort Files
+        sortAscBtn.addEventListener('click', () => {
+            selectedFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+            updateUI();
+            showToast('ファイル名で昇順ソートしました');
+        });
+
+        sortDescBtn.addEventListener('click', () => {
+            selectedFiles.sort((a, b) => b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' }));
+            updateUI();
+            showToast('ファイル名で降順ソートしました');
+        });
+
+        // Clear All
+        clearAllBtn.addEventListener('click', () => {
+            if (selectedFiles.length === 0) return;
+            selectedFiles = [];
+            updateUI();
+            showToast('一覧をクリアしました');
+        });
+
+        // Format File Size
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        // Update Entire UI
+        function updateUI() {
+            // Update Badges
+            fileCountBadge.textContent = `${selectedFiles.length}件`;
+            const totalBytes = selectedFiles.reduce((acc, file) => acc + file.size, 0);
+            totalSizeText.textContent = `合計サイズ: ${formatBytes(totalBytes)}`;
+
+            // Enable/Disable Actions
+            const hasFiles = selectedFiles.length > 0;
+            downloadBtn.disabled = !hasFiles;
+
+            // Render File Items
+            if (!hasFiles) {
+                fileListContainer.innerHTML = '';
+                fileListContainer.appendChild(emptyState);
+                previewText.textContent = 'ファイルを追加するとプレビューが表示されます...';
+                return;
+            }
+
+            fileListContainer.innerHTML = '';
+            selectedFiles.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'py-3 px-2 flex items-center justify-between hover:bg-slate-50 rounded-lg group transition';
+                
+                item.innerHTML = `
+                    <div class="flex items-center space-x-3 overflow-hidden mr-2">
+                        <span class="text-xs font-mono text-slate-400 w-6 text-right flex-shrink-0">${index + 1}.</span>
+                        <i class="fa-solid fa-file-lines text-slate-400 group-hover:text-blue-500 transition flex-shrink-0"></i>
+                        <div class="truncate">
+                            <p class="text-xs font-semibold text-slate-700 truncate" title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</p>
+                            <p class="text-[10px] text-slate-400">${formatBytes(file.size)}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-1 flex-shrink-0">
+                        <button onclick="moveFile(${index}, -1)" ${index === 0 ? 'disabled' : ''} class="p-1.5 text-slate-400 hover:text-slate-700 disabled:opacity-20 hover:bg-slate-200 rounded transition" title="上へ移動">
+                            <i class="fa-solid fa-chevron-up text-xs"></i>
+                        </button>
+                        <button onclick="moveFile(${index}, 1)" ${index === selectedFiles.length - 1 ? 'disabled' : ''} class="p-1.5 text-slate-400 hover:text-slate-700 disabled:opacity-20 hover:bg-slate-200 rounded transition" title="下へ移動">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                        <button onclick="removeFile(${index})" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition ml-1" title="削除">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                `;
+                fileListContainer.appendChild(item);
+            });
+
+            generatePreview();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Get newline separator string
+        function getSeparatorString() {
+            let count = parseInt(newlineCountInput.value, 10);
+            if (isNaN(count) || count < 0) count = 0;
+            return '\n'.repeat(count);
+        }
+
+        // Generate Preview (reads top 50KB for responsiveness, skips empty files for separator)
+        async function generatePreview() {
+            if (selectedFiles.length === 0) return;
+
+            const separator = getSeparatorString();
+            let previewContent = '';
+            let bytesRead = 0;
+            let nonZeroCount = 0;
+            const maxPreviewBytes = 50 * 1024; // 50KB limit for preview rendering
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                if (bytesRead >= maxPreviewBytes) {
+                    previewContent += `\n... [以降省略 (全 ${selectedFiles.length} ファイル)] ...`;
+                    break;
+                }
+
+                const file = selectedFiles[i];
+                if (file.size === 0) continue; // Skip separator if file is 0 bytes
+
+                if (nonZeroCount > 0 && separator.length > 0) {
+                    previewContent += separator;
+                    bytesRead += separator.length;
+                }
+
+                const sliceSize = Math.min(file.size, maxPreviewBytes - bytesRead);
+                if (sliceSize > 0) {
+                    const blobSlice = file.slice(0, sliceSize);
+                    const text = await blobSlice.text();
+                    previewContent += text;
+                    bytesRead += text.length;
+                    nonZeroCount++;
+
+                    if (file.size > sliceSize) {
+                        previewContent += `\n... [${file.name} の残りを省略] ...\n`;
+                    }
+                }
+            }
+
+            if (previewContent === '') {
+                previewText.textContent = '(選択されたファイルはすべて空です)';
+            } else {
+                previewText.textContent = previewContent;
+            }
+        }
+
+        // Newline input change re-generates preview
+        newlineCountInput.addEventListener('input', generatePreview);
+
+        // Merge Files efficiently using Blob chunks (skipping separators for empty files)
+        function buildMergedBlob() {
+            const separator = getSeparatorString();
+            const blobParts = [];
+            let nonZeroCount = 0;
+
+            selectedFiles.forEach((file) => {
+                if (file.size > 0) {
+                    if (nonZeroCount > 0 && separator.length > 0) {
+                        blobParts.push(separator);
+                    }
+                    blobParts.push(file);
+                    nonZeroCount++;
+                } else {
+                    // Empty files are included without separators
+                    blobParts.push(file);
+                }
+            });
+
+            return new Blob(blobParts, { type: 'text/plain;charset=utf-8' });
+        }
+
+        // Execute Download
+        downloadBtn.addEventListener('click', () => {
+            if (selectedFiles.length === 0) return;
+
+            const mergedBlob = buildMergedBlob();
+            const downloadUrl = URL.createObjectURL(mergedBlob);
+            
+            let filename = outputFilenameInput.value.trim();
+            if (!filename) filename = generateDefaultFilename('txt');
+
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            setTimeout(() => URL.revokeObjectURL(downloadUrl), 10000);
+            showToast(`${filename} のダウンロードを開始しました`);
+        });
+
+        // Toast Helper
+        function showToast(message, isError = false) {
+            toastMessage.textContent = message;
+            const toastIcon = document.getElementById('toastIcon');
+            
+            if (isError) {
+                toastIcon.className = 'fa-solid fa-circle-exclamation text-rose-400';
+            } else {
+                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

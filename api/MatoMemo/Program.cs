@@ -23,6 +23,10 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 環境変数からポート番号を取得し、取得できない場合はローカル用の 5255 をデフォルトとする
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5255";
+builder.WebHost.UseUrls($"http://*:{port}");
+
 // Dapper の型変換ハンドラーを登録（click_stats の解析に必須）
 SqlMapper.AddTypeHandler(new JsonbTypeHandler<Dictionary<string, ClickCountData>>());
 // Dapper の型変換ハンドラーを登録（Dictionary内の各オブジェクトをJSONBとしてシリアライズ/デシリアライズ可能にする）
@@ -37,7 +41,8 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // 3. DB / Identity 設定
-var connectionString = builder.Configuration.GetConnectionString("LittleTripMemoConnStr")!;
+//var connectionString = builder.Configuration.GetConnectionString("MatoMemoConnStr")!;// 接続文字列セクションではなくルート階層のカスタム設定から値を取得する
+var connectionString = builder.Configuration["ConnectionStrings:MatoMemoConnStr"]!;
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddScoped<ITransactionProvider>(_ => new TransactionProvider(connectionString));
 
