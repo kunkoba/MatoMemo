@@ -21,7 +21,9 @@ using System.Text;
 // 1. 起動前設定（Npgsql タイムスタンプ挙動の固定）
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+Console.WriteLine("DEBUG: Application starting...");
 var builder = WebApplication.CreateBuilder(args);
+Console.WriteLine("DEBUG: WebApplication.CreateBuilder completed.");
 
 // 環境変数からポート番号を取得し、取得できない場合はローカル用の 5255 をデフォルトとする
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5255";
