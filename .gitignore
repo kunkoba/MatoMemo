@@ -19,7 +19,7 @@ obj/
 # ASP.NET Core
 appsettings.Development.json
 appsettings.*.local.json
-*.env
+# *.env
 Migrations/
 
 # Test

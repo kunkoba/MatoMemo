@@ -9,7 +9,8 @@ services:
       dockerfile: Dockerfile.web
     container_name: mato_memo-web
     ports:
-      - "8081:80" # ブラウザで http://localhost でアクセス
+      # - "8081:80" # 外向けが左、内向きが右
+      - "${WEB_PORT}:80" # ホスト側ポートを「.env」から取得
     depends_on:
       - api
 
