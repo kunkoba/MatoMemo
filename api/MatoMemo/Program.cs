@@ -27,7 +27,8 @@ Console.WriteLine("DEBUG: WebApplication.CreateBuilder completed.");
 
 // 環境変数からポート番号を取得し、取得できない場合はローカル用の 5255 をデフォルトとする
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5255";
-builder.WebHost.UseUrls($"http://*:{port}");
+//builder.WebHost.UseUrls($"http://*:{port}");
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Dapper の型変換ハンドラーを登録（click_stats の解析に必須）
 SqlMapper.AddTypeHandler(new JsonbTypeHandler<Dictionary<string, ClickCountData>>());
