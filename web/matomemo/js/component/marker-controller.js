@@ -196,7 +196,7 @@ const _MarkerCore = {
                 $Dom.ToggleShow(priceWrapper, true);
                 priceValEl.textContent = price > 0 ? `+${price.toLocaleString()}` : price.toLocaleString();
                 // 金額の色分け（青/赤）を適用
-                priceValEl.className = "js-price font-bold text-[0.9rem] " + (price > 0 ? "text-blue-500" : "text-red-500");
+                priceValEl.className = "js-price font-bold text-[1rem] " + (price > 0 ? "text-blue-500" : "text-red-500");
                 // 通貨単位
                 const archive = $Data.Store.GetArchive();
                 priceUnitEl.textContent = archive?.currency_unit || $App.AppData.Owner.Currency_unit || "JPY";

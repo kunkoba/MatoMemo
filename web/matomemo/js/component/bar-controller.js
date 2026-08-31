@@ -264,7 +264,8 @@ const BarController = {
     // ポップアップと重なるスイッチUIだけをピンポイントで切り替える
     ToggleSwitches(isShow) {
         $Dom.ToggleShow($Dom.GetElementById('ui-marker-mode-switch'), isShow);
-        $Dom.ToggleShow($Dom.GetElementById('ui-side-map-group'), isShow);
+        // $Dom.ToggleShow($Dom.GetElementById('ui-side-map-group'), isShow);
+        $Dom.ToggleShow($Dom.GetElementById('ui-map-zoom-slider-root'), isShow);
         $Dom.ToggleShow($Dom.GetElementById('ui-side-action-group'), isShow);
     },
     ChangeTitle(title) { _BarCore.changeTitle(title); },
