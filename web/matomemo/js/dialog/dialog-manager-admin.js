@@ -534,7 +534,7 @@ export default {
         inputBody.addEventListener('input', () => countBody.textContent = inputBody.value.length);
         
         inputBody.addEventListener('input', () => countBody.textContent = inputBody.value.length);
-        // 追加：HTML上のボタンに直接イベントをバインド
+        // HTML上のボタンに直接イベントをバインド
         $Dom.QuerySelector('#btn-admin-send-cancel', el).onclick = () => this._core.close();
         $Dom.QuerySelector('#btn-admin-send-submit', el).onclick = async () => {
             const body = inputBody.value.trim();

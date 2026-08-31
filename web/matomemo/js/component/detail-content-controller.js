@@ -21,7 +21,7 @@ const _DetailContentCore = {
                     this.displayPrice = $Dom.GetElementById("detail-display-memo_price");
                     this.displayPriceUnit = $Dom.GetElementById("detail-display-price-unit");
                     this.btnUrlClear = $Dom.GetElementById("btn-detail-edit-url-clear");
-                    // 追加：表示制御用ラッパー
+                    // 表示制御用ラッパー
                     this.displayPriceWrapper = $Dom.GetElementById("detail-display-price-wrapper");
                     this.displayUrlWrapper = $Dom.GetElementById("detail-display-url-wrapper");
                 }
@@ -53,7 +53,7 @@ const _DetailContentCore = {
                     this.countTitle = $Dom.GetElementById("detail-count-title");
                     this.countBody = $Dom.GetElementById("detail-count-body");
                     this.countUrl = $Dom.GetElementById("detail-count-url");
-                    // ▼ 追加：評価エリアの要素取得
+                    // ▼ 評価エリアの要素取得
                     this.editEvalGroup = $Dom.GetElementById("detail-edit-feel-group");
                     this.editEvalInput = $Dom.GetElementById("detail-edit-feel");
                     this.evalBtns = $Dom.QuerySelectorAll(".eval-btn", this.editEvalGroup);
@@ -96,7 +96,7 @@ const _DetailContentCore = {
                     this.editUrl.value = "";
                     this.countUrl.textContent = "0"; // 文字数カウントもリセット
                 });
-                // ▼ 追加：評価ボタンのクリックイベント
+                // ▼ 評価ボタンのクリックイベント
                 if (this.evalBtns) {
                     this.evalBtns.forEach(btn => {
                         btn.addEventListener('click', () => {
@@ -124,7 +124,7 @@ const _DetailContentCore = {
             }
         }
     },
-    // ▼ 追加：評価UIの更新（未選択はグレー、選択時は色・枠線で強調）
+    // ▼ 評価UIの更新（未選択はグレー、選択時は色・枠線で強調）
     _updateEvalUI(val) {
         if (!this.evalBtns) return;
         // 定数を参照
@@ -325,7 +325,7 @@ const _DetailContentCore = {
         this.editDbid.value = detail.dbid || "";
         this.editLat.value = detail.latitude;
         this.editLng.value = detail.longitude;
-        // ▼ 追加：評価値の反映（0 を判定から漏らさないように null/undefined チェック）
+        // ▼ 評価値の反映（0 を判定から漏らさないように null/undefined チェック）
         const evalVal = (detail.feel_type !== undefined && detail.feel_type !== null) 
             ? detail.feel_type
             : $Const.FEEL_TYPE.NORMAL.val;
@@ -365,7 +365,7 @@ const _DetailContentCore = {
         // this.editWeatherEmoji.value = 'はれ'; // 新規時は「はれ」を選択
         this.editWeatherEmoji.value = '0000';
         this.spanAtmospherePreview.textContent = '0000';
-        // ▼ 追加：新規作成時は定数を使って NORMAL を選択状態にする
+        // ▼ 新規作成時は定数を使って NORMAL を選択状態にする
         this.editEvalInput.value = $Const.FEEL_TYPE.NORMAL.val;
         this._updateEvalUI($Const.FEEL_TYPE.NORMAL.val);
         // 文字数カウンターを0にリセット
@@ -403,7 +403,7 @@ const _DetailContentCore = {
         data.latitude = Number(data.latitude || 0);
         data.longitude = Number(data.longitude || 0);
         data.memo_price = Number(data.memo_price || 0);
-        // ▼ 追加：空文字の場合は定数の NORMAL にする
+        // ▼ 空文字の場合は定数の NORMAL にする
         data.feel_type = (data.feel_type !== "" && data.feel_type !== undefined) 
             ? Number(data.feel_type)
             : $Const.FEEL_TYPE.NORMAL.val;

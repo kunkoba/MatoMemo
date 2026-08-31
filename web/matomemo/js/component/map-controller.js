@@ -199,14 +199,14 @@ const MapController = {
         PHOTO: {
             key: 'PHOTO',
             name: '航空写真（Esri）',
-            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            url: 'https://server.arcgIsNetOnline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             maxZoom: 18
         },
         // 世界地形図（Esri）
         WORLD_TOPO: {
             key: 'WORLD_TOPO',
             name: '世界地形図',
-            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+            url: 'https://server.arcgIsNetOnline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
             maxZoom: 18,
             attribution: 'Esri'
         },

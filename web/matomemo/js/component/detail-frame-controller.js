@@ -18,7 +18,7 @@ const _DetailFrameCore = {
                 this.btnSave = $Dom.GetElementById("detail-btn-save");
                 this.footer = $Dom.GetElementById("detail-footer-id");
                 this.groupEdit = $Dom.GetElementById("detail-group-edit");
-                // ★追加：SEARCHモード用アクション
+                // ★SEARCHモード用アクション
                 this.groupSearchAction = $Dom.GetElementById("detail-group-search-action");
                 this.btnJumpArchive = $Dom.GetElementById("detail-btn-jump-archive");
                 this.txtJumpArchiveTitle = $Dom.GetElementById("detail-jump-archive-title"); // タイトル表示用
@@ -88,7 +88,7 @@ const _DetailFrameCore = {
                         $Util.OpenExternalLink(url);
                     }
                 });
-                // ★追加：まとめアーカイブへ飛ぶ（フッターボタン）
+                // ★まとめアーカイブへ飛ぶ（フッターボタン）
                 this.btnJumpArchive.addEventListener("click", async () => {
                     const data = $DetailContent.GetFormEditData();
                     if (!data || !data.archive_id) return;
@@ -154,7 +154,7 @@ const _DetailFrameCore = {
                     await $Warn.CatchAsync(async () => {
                         if (detail.seq > 0) {
                             // サーバ保存されている場合は直接APIをキック
-                            if (!$App.AppData.Context.IsOnline) {
+                            if (!$App.AppData.Context.IsNetOnline) {
                                 $Notice.Warn("オフライン時は、サーバーに保存済みのデータを編集できません。");
                                 return;
                             }
@@ -261,7 +261,7 @@ const _DetailFrameCore = {
         // 3. コンテンツとリアクションを更新
         $DetailContent.RenderDetail(detail);
         this.renderReactions(detail);
-        // ★ 追加：SEARCHモードの場合、ジャンプボタンのタイトルも更新する
+        // ★ SEARCHモードの場合、ジャンプボタンのタイトルも更新する
         if ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH && this.txtJumpArchiveTitle) {
             this.txtJumpArchiveTitle.textContent = detail.a_title || "まとめへ移動";
         }
@@ -367,7 +367,7 @@ const _DetailFrameCore = {
     },
     // リアクションボタンクリック
     async _onReactionClick(type) {
-        // ★追加：検索モード時は一切の操作（DB保存）を遮断
+        // ★検索モード時は一切の操作（DB保存）を遮断
         if ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH) return;
         // 
         const detail = $DetailContent.GetFormEditData();
@@ -449,7 +449,7 @@ const DetailFrameController = {
             $Dom.ToggleShow(_DetailFrameCore.btnEdit, !isSearch && isOwner);
             $Dom.ToggleShow(_DetailFrameCore.btnReport, !isSearch && (!isOwner && isPublic));
             $Dom.ToggleShow(_DetailFrameCore.groupSearchAction, isSearch); // SEARCHモード時のみ表示
-            // ★追加：SEARCHモードならまとめタイトルをボタンにセット
+            // ★SEARCHモードならまとめタイトルをボタンにセット
             if (isSearch && _DetailFrameCore.txtJumpArchiveTitle) {
                 _DetailFrameCore.txtJumpArchiveTitle.textContent = detail.a_title || "まとめへ移動";
             }

@@ -28,9 +28,6 @@ const _BarCore = {
         this.btnMainToggle = $Dom.GetElementById('btn-menu');
         this.btnArchiveList = $Dom.GetElementById('btn-app-archive-list2');
         this.btnListBtn = $Dom.GetElementById('point-list-btn');
-        // 4. マップスイッチ要素（ON/OFF完全体）の取得
-        this.btnSwitchOn = $Dom.GetElementById('btn-map-switch-on');
-        this.btnSwitchOff = $Dom.GetElementById('btn-map-switch-off');
         //
         this.sliderRoot = $Dom.GetElementById('ui-map-zoom-slider-root');
         // 5. イベント登録：上部バー
@@ -124,17 +121,12 @@ const _BarCore = {
             $App.AppData.Context.IsMapSwitchOn = !$App.AppData.Context.IsMapSwitchOn;
             this._updateMainSwitchUI($App.AppData.Context.IsMapSwitchOn);
         };
-        this.btnSwitchOn.onclick = toggleMap;
-        this.btnSwitchOff.onclick = toggleMap;
         this._updateMainSwitchUI($App.AppData.Context.IsMapSwitchOn);
         // 
         this.btnArchiveList.onclick = () => $Dialog.ShowArchiveList();
     },
     // スイッチ表示とUI連動の更新
     _updateMainSwitchUI(isOn) {
-        // 1. ボタン自体の表示切替（完全体ボタンの出し分けのみ行う）
-        $Dom.ToggleShow(this.btnSwitchOn, isOn);
-        $Dom.ToggleShow(this.btnSwitchOff, !isOn);
         // 2. 特定要素の表示切替（①タイトル ②共通操作バー）
         const mode = $App.AppData.Context.ScreenMode;
         const isArc = (mode === $Const.SCREEN_MODE.ARCHIVE || mode === $Const.SCREEN_MODE.ARCHIVE_PUB);
@@ -268,6 +260,12 @@ const BarController = {
     ToggleRoot(isOpen) {
         $Dom.ToggleShow(_BarCore.rootTop, isOpen);
         $Dom.ToggleShow(_BarCore.rootBot, isOpen);
+    },
+    // ポップアップと重なるスイッチUIだけをピンポイントで切り替える
+    ToggleSwitches(isShow) {
+        $Dom.ToggleShow($Dom.GetElementById('ui-marker-mode-switch'), isShow);
+        $Dom.ToggleShow($Dom.GetElementById('ui-side-map-group'), isShow);
+        $Dom.ToggleShow($Dom.GetElementById('ui-side-action-group'), isShow);
     },
     ChangeTitle(title) { _BarCore.changeTitle(title); },
     GetSortSetting() { return _BarCore.getSortSetting(); },

@@ -98,17 +98,21 @@ window.$Data = {
             const BaseUrl = window.ENV_CONFIG.BASE_URL;
             console.log("▼ Access:", BaseUrl + url, params);
             // 通信ガード判定
-            const isHealthCheck = url.includes("EnsureLoginUser");
-            const isLogicOffline = !$App.AppData.Context.IsOnline;
-            // 生存確認以外、かつ論理オフライン時は遮断
-            if (!isHealthCheck && isLogicOffline) {
-                $Notice.Warn("現在、サーバに接続できません");
+            const isHealthCheck = url.includes("EnsureLoginUser") || url.includes("GetAppInfo");
+            // 修正：オフライン時はヘルスチェック以外、即遮断
+            if (!$App.AppData.Context.IsNetOnline && !isHealthCheck) {
+                // $Notice.Warn("ネットワーク未接続のため通信をスキップしました");
+                await $App.HandleServerFailure(); // 共通のエラー処理へ
                 return false;
             }
+            // タイムアウト制御の準備
+            const controller = new AbortController(); // 通信中断用コントローラー
+            const timeoutId = setTimeout(() => controller.abort(), $Const.APP_CONFIG.NETWORK_TIMEOUT_SEC * 1000); // タイマー起動
             // メイン処理
             const token = $App.AppData.Owner.Token;
             const options = {
                 method: method.toUpperCase(),
+                signal: controller.signal, // 中断シグナルを紐付け
                 headers: {
                     "ngrok-skip-browser-warning": "69420", // ngrok対応
                     "X-App-Version": $Const.APP_INFO.VERSION // ★これを追加。すべてのリクエストに載せる
@@ -134,9 +138,13 @@ window.$Data = {
                 response = await fetch(BaseUrl + url, options);
             } catch (err) {
                 console.log("err:", err);
-                // ネットワーク断（オフライン）などの物理エラー
-                await $App.HandleServerFailure();
+                // 修正：中断（AbortError）だった場合はタイムアウトフラグを true にする
+                const isTimeout = (err.name === 'AbortError');
+                // 修正：判定会議へタイムアウト情報を渡す
+                await $App.HandleServerFailure(null, isTimeout);
                 return false;
+            } finally {
+                clearTimeout(timeoutId); // 成功・失敗に関わらずタイマーを解除
             }
             if (!response.ok) {
                 // 401, 500 などのステータスエラーを判定会議へ投げる
@@ -473,7 +481,7 @@ window.$Data = {
             const archiveId = archive.archive_id;
             // ローカルDBの ParseAndSaveMyReactions を呼び出す
             await $Warn.CatchAsync(async () => {
-                // --- 追加：保存前にゴミ掃除を実行 ---
+                // --- 保存前にゴミ掃除を実行 ---
                 await $LocalDb.Reaction.Cleanup(archiveId);
                 // 
                 const details = $Data.Store.GetDetails();

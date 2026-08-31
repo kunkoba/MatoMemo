@@ -88,7 +88,7 @@ export default {
         b.reload.onclick = () => { 
             this._core.closeAll(); 
             // オフラインチェック
-            if (!$App.AppData.Context.IsOnline) {
+            if (!$App.AppData.Context.IsNetOnline) {
                 $Notice.Warn("オフライン中は、機能が制限されます。");
                 return false;
             }

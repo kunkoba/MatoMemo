@@ -23,6 +23,8 @@ const _MarkerCore = {
             this._map = map;
             this.clearAll();
             this.locationMarker = L.marker(this._map.getCenter(), { draggable: true }).addTo(this._map);
+            // 地図クリック時にポップアップを閉じる処理（UIバーの復帰）を実行させる
+            this._map.on('click', () => this.toggleMarkerPopup(false));
         }
         this.locationMarker.on("dragend", (e) => {
             if ($App.AppData.Context.ScreenMode !== $Const.SCREEN_MODE.CREATE) return;
@@ -180,6 +182,28 @@ const _MarkerCore = {
             const dateContainer = $Dom.QuerySelector(".js-date-container", el);
             $UI.Generator.MemoDateFormatter(dateContainer, detail); // デフォルトサイズで呼び出し
             $Dom.QuerySelector(".title", el).textContent = detail.title || "";
+            // 絵文字の反映
+            $Dom.QuerySelector(".js-face", el).textContent = detail.face_emoji || '📍';
+            // 評価アイコンの反映
+            const feelImg = $Dom.QuerySelector(".js-feel-image", el);
+            feelImg.src = $Util.GetFeelIconPath(detail.feel_type);
+            // 金額の表示制御（タイムラインのロジックを継承）
+            const priceWrapper = $Dom.QuerySelector(".js-price-wrapper", el);
+            const priceValEl = $Dom.QuerySelector(".js-price", el);
+            const priceUnitEl = $Dom.QuerySelector(".js-price-unit", el);
+            const price = Number(detail.memo_price || 0);
+            if (price !== 0) {
+                $Dom.ToggleShow(priceWrapper, true);
+                priceValEl.textContent = price > 0 ? `+${price.toLocaleString()}` : price.toLocaleString();
+                // 金額の色分け（青/赤）を適用
+                priceValEl.className = "js-price font-bold text-[0.9rem] " + (price > 0 ? "text-blue-500" : "text-red-500");
+                // 通貨単位
+                const archive = $Data.Store.GetArchive();
+                priceUnitEl.textContent = archive?.currency_unit || $App.AppData.Owner.Currency_unit || "JPY";
+            } else {
+                // 0円の場合は非表示
+                $Dom.ToggleShow(priceWrapper, false);
+            }
             const bodyEl = $Dom.QuerySelector(".body", el);
             if (bodyEl) {
                 bodyEl.textContent = detail.body || "";
@@ -203,6 +227,8 @@ const _MarkerCore = {
         } else {
             this._map.closePopup();
         }
+        // ポップアップの開閉状態に合わせてUIバーの表示/非表示を切り替える
+        $Bar.ToggleSwitches(!isOpen);
     },
     // 指定インデックスのマーカー実体を取得
     getMarker(index) {

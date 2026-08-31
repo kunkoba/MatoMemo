@@ -83,3 +83,20 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
+/* 1. 地図の地面（タイル）は一番下（Top Barより下） */
+.leaflet-pane.leaflet-tile-pane {
+    z-index: 1 !important;
+}
+
+/* 2. マーカーやポップアップは Top Bar(z-100) より上 */
+.leaflet-pane.leaflet-marker-pane {
+    z-index: 500 !important;
+}
+.leaflet-pane.leaflet-popup-pane {
+    z-index: 1000 !important;
+}
+
+/* 3. 地図の影などの余計な重なりをリセット */
+.leaflet-pane {
+    z-index: 400;
+}

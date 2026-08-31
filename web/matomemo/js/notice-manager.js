@@ -48,16 +48,17 @@ const Notice = {
     // オフライン通知
     Offline: {
         el: null,
-        // メッセージを引数で受け取る
         Show(msg) {
-            if (!this.el) { // 要素未生成なら作成
+            if (!this.el) {
                 this.el = $Dom.GenerateTemplate("tpl-offline");
             }
-            const textEl = this.el.querySelector(".js-text"); // テキスト要素取得
-            if (textEl && msg) { // メッセージがあれば上書き
-                textEl.textContent = msg; // 文言反映
+            // メッセージを常に最新の理由（ネット断 or サーバ断）で更新する
+            const textEl = this.el.querySelector(".js-text");
+            if (textEl && msg) {
+                textEl.textContent = msg;
             }
-            this.el.style.opacity = "1"; // 表示
+            this.el.style.opacity = "1";
+            // this.el.style.pointerEvents = "auto"; // 表示中は背後を触らせない
         },
         Hide() {
             if (!this.el) return;

@@ -45,7 +45,7 @@ const UI_Manager = {
             urlText.textContent = url;
 			btn.onclick = (e) => {
                 e.stopPropagation();
-                if (!$App.AppData.Context.IsOnline) {
+                if (!$App.AppData.Context.IsNetOnline) {
 					$Notice.Warn("オフライン中は、機能が制限されます。");
 					return;
 				}

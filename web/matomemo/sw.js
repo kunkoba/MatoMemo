@@ -6,7 +6,7 @@
  * 3. 更新時はユーザーの許可を待たず、自動的にバックグラウンドで最新化
  */
 // --- 設定定数 ---
-const NETWORK_TIMEOUT = 3000; // ネットワークを待つ時間（ミリ秒）
+const NETWORK_TIMEOUT_SEC = 3; // ネットワークを待つ時間（ミリ秒）
 const urlParams = new URL(self.location).searchParams;
 const CACHE_VERSION = urlParams.get('v') || 'manual-v1';
 const CACHE_KEYS = {
@@ -131,7 +131,7 @@ self.addEventListener('fetch', (event) => {
                 const networkResponse = await Promise.race([
                     fetch(req),
                     new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Timeout')), NETWORK_TIMEOUT)
+                        setTimeout(() => reject(new Error('Timeout')), NETWORK_TIMEOUT_SEC * 1000)
                     )
                 ]);
                 // ネットワークが勝った場合：キャッシュを更新して返す

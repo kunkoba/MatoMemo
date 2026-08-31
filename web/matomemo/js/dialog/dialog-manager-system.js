@@ -112,7 +112,7 @@ export default {
         $UI.Generator.ApplyNewBadge(b.legal, !!$App.AppData.Context.HasLegalUpdate, 'label');
         // 4. イベント登録
         // Group 1: Actions
-        b.reload.onclick  = () => { this._core.closeAll(); if (!$App.AppData.Context.IsOnline) return $Notice.Warn("オフラインです"); $Util.ReloadApp(); };
+        b.reload.onclick  = () => { this._core.closeAll(); if (!$App.AppData.Context.IsNetOnline) return $Notice.Warn("オフラインです"); $Util.ReloadApp(); };
         b.refresh.onclick = () => { this._core.closeAll(); $App.RefreshScreen(); };
         b.restore.onclick = () => { this._core.closeAll(); $Marker.RestoreMarkers(); };
         b.current.onclick = () => { this._core.closeAll(); $Marker.RefreshCurrentLocation(); $Marker.FocusToLocationMarker(1000); };
@@ -1104,7 +1104,7 @@ export default {
         const el = $Dom.GenerateTemplate("tpl-view-legal");
         const dateEl = $Dom.QuerySelector(".js-legal-date", el);
         const bodyEl = $Dom.QuerySelector(".js-legal-body", el);
-        // ★ 追加：値を画面に反映する処理を関数化
+        // ★ 値を画面に反映する処理を関数化
         const renderView = (currentBody, currentTim) => {
             dateEl.textContent = currentTim ? $Util.FormatDate(currentTim) : "---";
             bodyEl.textContent = currentBody ? currentBody : "現在、この項目は準備中です。";

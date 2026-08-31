@@ -5,6 +5,10 @@ _del/
 ?コピー?
 
 
+# URLを除外
+*js/config.js
+
+
 # Build
 bin/
 obj/

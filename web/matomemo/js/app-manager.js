@@ -90,14 +90,18 @@ const _AppCore = {
         $Polling.Init();
         // オフライン監視
         $Polling.Add($Polling.TASKS.OFFLINE_CHECK, () => {
-            if (!navigator.onLine) { // インターネット接続なし
-                AppManager.AppData.Context.IsOnline = false; // 論理オフライン
-                $Notice.Offline.Show("インターネットに接続できません"); // 文言指定
-                return; // 終了
+            const isNowNetOnline = navigator.onLine;
+            // 状態が「オンライン」から「オフライン」に変わった瞬間
+            if ($App.AppData.Context.IsNetOnline && !isNowNetOnline) {
+                $App.AppData.Context.IsNetOnline = false;
+                $App.AppData.Context.IsServerOnline = false; // ネットがなければサーバもオフ扱い
+                $Notice.Offline.Show("インターネットに接続できません");
             }
-            // ネットはあるが論理オフライン（サーバ未接続）なら再試行
-            if (!AppManager.AppData.Context.IsOnline) {
-                this.syncActivityLog(); // 疎通確認へ
+            // 状態が「オフライン」から「オンライン」に変わった瞬間
+            else if (!$App.AppData.Context.IsNetOnline && isNowNetOnline) {
+                $App.AppData.Context.IsNetOnline = true;
+                // ネットが復帰したら即座にサーバ疎通チェック（Check ②④）を走らせる
+                this.syncActivityLog();
             }
         }, checkSec);
         // GPS追従（初期登録）
@@ -136,19 +140,41 @@ const _AppCore = {
     },
     // 最終利用日の同期およびサーバ復帰確認
     async syncActivityLog() {
-        if (!navigator.onLine) return true; // ネット断時は上位で判定するためスルー
-        // サーバ疎通確認（前回の修正でUI非干渉化したもの）
-        if (await $Data.Access.EnsureLoginUser()) {
-            AppManager.AppData.Context.IsOnline = true; // オンライン復帰
-            $Notice.Offline.Hide(); // バーを隠す
-            const today = new Date().setHours(0, 0, 0, 0); // 本日開始時刻
-            AppManager.AppData.Owner.LastLoginDate = $Util.FormatDate(today, 'YYYY-MM-DD'); // 日付保存
-            this.save(AppManager.AppData.Owner); // 永続化
-            return true; // 復帰成功
+        // 端末自体がオフラインなら何もしない（監視スレッド側で処理するため）
+        if (!navigator.onLine) return false;
+        let isSuccess = false;
+        // ログイン状態によって、使用するAPIを切り替える（Check ③ の分離）
+        if ($App.AppData.Context.IsLoggedIn && $App.AppData.Owner.Token) {
+            // ログイン中：ユーザチェック ＋ 生存確認
+            isSuccess = await $Data.Access.EnsureLoginUser();
+        } else {
+            // 未ログイン：生存確認のみ（ユーザチェックは行わない）
+            isSuccess = await $Data.Access.GetAppInfo();
         }
-        // ネットはあるがサーバに繋がらない場合
-        $Notice.Offline.Show("サーバに接続できません"); // 文言指定
-        return false; // 復帰失敗
+        if (isSuccess) {
+            // サーバ疎通成功 ＋ アプリ有効
+            $App.AppData.Context.IsServerOnline = true;
+            $Notice.Offline.Hide();
+            // ログイン中の場合は最終利用日を更新
+            if ($App.AppData.Context.IsLoggedIn) {
+                const today = new Date().setHours(0, 0, 0, 0);
+                $App.AppData.Owner.LastLoginDate = $Util.FormatDate(today, 'YYYY-MM-DD');
+                this.save($App.AppData.Owner);
+            }
+            return true;
+        } else {
+            // 修正：失敗した原因が「そもそもネットが切れたから」でないか確認
+            if (!navigator.onLine) {
+                $App.AppData.Context.IsNetOnline = false;
+                $App.AppData.Context.IsServerOnline = false;
+                $Notice.Offline.Show("インターネットに接続できません");
+                return false;
+            }
+            // ネットはあるのに失敗した（サーバダウン・メンテ）場合のみ表示
+            $App.AppData.Context.IsServerOnline = false;
+            $Notice.Offline.Show("サービスに接続できません");
+            return false;
+        }
     },
     // 法的情報（利用規約・プライバシーポリシー等）の差分更新
     async refreshLegalConfigs() {
@@ -233,7 +259,8 @@ const AppManager = {
     AppData: {
         Context: {
             ScreenMode: $Const.SCREEN_MODE.CREATE,
-            IsOnline: navigator.onLine,
+            IsNetOnline: navigator.onLine, // 端末のネット接続状態
+            IsServerOnline: true,          // サーバ疎通 ＋ アプリ有効状態
             IsLoggedIn: false,
             TargetArchiveId: 0,
             TargetSeq: 0,
@@ -299,7 +326,7 @@ const AppManager = {
             {
                 _AppCore.initPollingTasks();
                 // 起動時にすでにオフラインなら即表示
-                if (!navigator.onLine || !this.AppData.Context.IsOnline) {
+                if (!navigator.onLine || !this.AppData.Context.IsNetOnline) {
                     $Notice.Offline.Show();
                 }
                 if (this.AppData.Owner.GpsTrackingSec > 0) {
@@ -313,7 +340,10 @@ const AppManager = {
             // その他
             _AppCore.registerSW();
             _AppCore.refreshLegalConfigs();
-            $Data.Access.EnsureLoginUser();
+            // 修正：ログイン中の場合のみユーザーチェックを実行する
+            if (this.AppData.Context.IsLoggedIn) {
+                $Data.Access.EnsureLoginUser();
+            }
         } catch (e) {
             $Err.Handle(e, 'fatal');
         }
@@ -357,9 +387,14 @@ const AppManager = {
         $Marker.ChangeScreenMode();
     },
     // サーバ通信エラー処理（画面を中断せず通知のみに留める）
-    async HandleServerFailure(response) {
-        console.warn(">> HandleServerFailure", response?.status);
+    async HandleServerFailure(response, isTimeout = false) {
+        console.warn(">> HandleServerFailure", response?.status, "isTimeout:", isTimeout);
         $Notice.Loading.Hide();
+        // タイムアウト時の専用メッセージを表示
+        if (isTimeout) {
+            $Notice.Error("通信がタイムアウトしました。");
+            return false;
+        }
         // 1. ログインエラー (401) は認証をクリアするのみ
         if (response && response.status === 401) {
             this.AppData.Context.IsLoggedIn = false;
@@ -385,7 +420,7 @@ const AppManager = {
             // return false;
         }
         // 接続失敗時は論理オフラインへ移行
-        this.AppData.Context.IsOnline = false;
+        this.AppData.Context.IsNetOnline = false;
         $Notice.Offline.Show(); // オフラインバーを表示
 
         let msg = "サーバ接続が切断されました。";
@@ -394,6 +429,11 @@ const AppManager = {
     },
     // Google認証でメールアドレスを取得し、Firebase経由でログイン処理を行う
     async ExecuteLoginFlow() {
+        // オフラインチェック
+        if (!this.AppData.Context.IsNetOnline) {
+            $Notice.Error("オフライン中はログインできません");
+            return false;
+        }
         return await $Warn.CatchAsync(async () => {
             const email = await $Auth.GetVerifiedEmailByGoogle();
             if (await $Data.Access.LoginFirebase({ Email: email })) {
@@ -415,6 +455,11 @@ const AppManager = {
     },
 // メール認証実行フロー
     async ExecuteEmailAuthFlow(email, password, isSignUp = false) {
+        // オフラインチェック
+        if (!this.AppData.Context.IsNetOnline) {
+            $Notice.Error("オフライン中はログインできません");
+            return false;
+        }
         return await $Warn.CatchAsync(async () => {
             if (!email || !password) {
                 $Notice.Warn("メールアドレスとパスワードを入力してください");

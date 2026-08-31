@@ -1,7 +1,7 @@
 // 環境依存・機密設定の一括管理
 window.ENV_CONFIG = {
-    BASE_URL: "https://matomemo.onrender.com",
-    // BASE_URL: "https://eminently-meet-terrapin.ngrok-free.app",
+    // BASE_URL: "https://matomemo.onrender.com",
+    BASE_URL: "https://eminently-meet-terrapin.ngrok-free.app",
     // BASE_URL: "https://localhost:7292",
     // BASE_URL: "http://localhost:5255",
     ADMIN_PW: "8855",

@@ -5,7 +5,7 @@ window.$Err = {
     Handle(err, mode) {
         $Notice.Loading.Hide();
         console.error("Fatal Error:", err);
-        // ★追加：オフライン中は致命的エラーダイアログを出さない
+        // ★オフライン中は致命的エラーダイアログを出さない
         if (!navigator.onLine) return;
         // ダイアログ基盤が生きているかチェック
         const errorTemplate = document.getElementById('tpl-dialog-error');
@@ -197,7 +197,7 @@ window.$Util = {
     async SearchAddressByWord(keyword) {
         if (!keyword) return null;
         // オフラインチェック
-        if (!$App.AppData.Context.IsOnline) {
+        if (!$App.AppData.Context.IsNetOnline) {
             $Notice.Warn("オフライン中は、機能が制限されます。");
             return false;
         }
@@ -221,7 +221,7 @@ window.$Util = {
     // 地点情報から地点名を検索する
     async GetAddressName(lat, lng, lang = 'jp') {
         // オフラインチェック
-        if (!$App.AppData.Context.IsOnline) {
+        if (!$App.AppData.Context.IsNetOnline) {
             $Notice.Warn("オフライン中は、機能が制限されます。");
             return "オフライン中です";
         }
@@ -375,7 +375,7 @@ window.$Util = {
     // 外部リンク連携
     OpenExternalLink(url) {
         // オフラインチェック
-        if (!$App.AppData.Context.IsOnline) {
+        if (!$App.AppData.Context.IsNetOnline) {
             $Notice.Warn("オフライン中は、機能が制限されます。");
             return;
         }
