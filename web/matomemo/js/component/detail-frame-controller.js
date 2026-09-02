@@ -270,7 +270,7 @@ const _DetailFrameCore = {
     toggleDetailPanel(isShow) {
         // パネル占有サイズ設定
         const PANEL_WIDTH = '500px';
-        const PANEL_HEIGHT = '80%';
+        const PANEL_HEIGHT = '70%';
         // 広告差分計算
         const isMobile = window.innerWidth < 768;
         // メイン処理

@@ -174,15 +174,25 @@ window.$Data = {
         _setData(data) {
             $Data.resData = data;
             if (data.archiveId) $App.AppData.Context.TargetArchiveId = data.archiveId;
-            // アプリ基幹のデータ
-            if (data.archive) this._rawData.archive = data.archive;
+            // 現在ログインしているユーザーのIDを取得
+            const loginUid = $App.AppData.Owner.SystemInfo?.login_user_id;
+            // 1. まとめ親情報（archive）のオーナー判定
+            if (data.archive) {
+                if (loginUid && data.archive.user_id === loginUid) {
+                    data.archive.is_owner = true;
+                }
+                this._rawData.archive = data.archive;
+            }
             if (data.myReactions) this._rawData.myReactions = data.myReactions;
+            // 2. 地点明細（details）のオーナー判定とリアクション情報の付与
             if (data.details) {
-                // // 保存直前に表示用ルールを適用（生データを直接書き換える）
-                // $Data.Formatter.ApplyDisplayRules(data.details);
-                // 各明細に「取得時点の自分の状態」を紐付けて、後の計算（差分抽出）に備える
                 const myRes = data.myReactions || [];
                 data.details.forEach(d => {
+                    // ユーザーIDが一致すればオーナーフラグを立てる
+                    if (loginUid && d.user_id === loginUid) {
+                        d.is_owner = true;
+                    }
+                    // リアクション情報の紐付け
                     const my = myRes.find(r => r.seq === d.seq);
                     d.server_has_funny    = !!my?.has_funny;
                     d.server_has_love     = !!my?.has_love;
@@ -191,16 +201,21 @@ window.$Data = {
                 });
                 this._rawData.details = data.details;
             }
-            if (data.archiveList) this._rawData.archiveList = data.archiveList;
+            // 3. まとめリスト（archiveList）のオーナー判定
+            if (data.archiveList) {
+                data.archiveList.forEach(a => {
+                    if (loginUid && a.user_id === loginUid) {
+                        a.is_owner = true;
+                    }
+                });
+                this._rawData.archiveList = data.archiveList;
+            }
             if (data.userProfile) this._rawData.userProfile = data.userProfile;
-            // Owner
+            // 4. トークンおよびシステム情報の格納（既存処理）
             if (data.token) $App.AppData.Owner.Token = data.token;
-            // ユーザ用：システムデータ
             if (data.systemInfo) {
                 $App.AppData.Owner.SystemInfo = data.systemInfo;
-                // 下段バーのアイコンを更新
                 $Bar.UpdateUserIcon();
-                // 通知の未読判定とローカルDBの掃除を非同期で実行
                 $Warn.CatchAsync(async () => {
                     await $Data.LocalDb.CheckUnreadNotices();
                     await $Data.LocalDb.CheckUnreadMails();
@@ -208,7 +223,6 @@ window.$Data = {
             }
             if (data.myFeedback) $App.AppData.Owner.myFeedback = data.myFeedback;
             if (data.myReport) $App.AppData.Owner.myReport = data.myReport;
-            // 管理者用：各取得APIのレスポンスを Admin に格納
             if (data.notifications) $App.AppData.Admin.Notifications = data.notifications;
             if (data.reportSummary) $App.AppData.Admin.ReportSummary = data.reportSummary;
             if (data.feedbackList) $App.AppData.Admin.FeedbackList = data.feedbackList;
@@ -294,47 +308,19 @@ window.$Data = {
         // 【メイン】表示用の日付ルールをアタッチ（モード別分岐版）
         ApplyDisplayRules(details) {
             if (!details || details.length === 0) return;
-            // 現在のモードを取得
-            const mode = $App.AppData.Context.ScreenMode;
-            const isArchiveMode = (mode === $Const.SCREEN_MODE.ARCHIVE || mode === $Const.SCREEN_MODE.ARCHIVE_PUB);
-            if (isArchiveMode) {
-                // ■ A. まとめ参照モード（旅行記として扱う）
-                // 1. 日付・時刻で昇順ソート（古い順）
-                this.SortDetails(details);
-                // 2. DAY番号の計算とマスキング
-                let lastDate = "";
-                let dayCounter = 0;
-                const dateList = this._getUniqueDates(details);
-                const isMultiDay = dateList.length > 1;
-                const baseMask = dateList.length > 0 ? this._getMask(dateList[0]) : "";
-                details.forEach((d, index) => {
-                    d.no = index + 1; // 昇順の通し番号
-                    if (d.memo_date !== lastDate) {
-                        dayCounter++;
-                        lastDate = d.memo_date;
-                    }
-                    d.display_day = dayCounter;
-                    // // 他人のデータなら「〇月上旬 1day」「2day」等の形式にマスク
-                    // if (!d.is_owner) {
-                    //     if (dayCounter === 1) {
-                    //         d.memo_date = isMultiDay ? `${baseMask} 1 Day` : baseMask;
-                    //     } else {
-                    //         d.memo_date = `${dayCounter} Day`;
-                    //     }
-                    // }
-                });
-            } else {
-                // ■ B. 地図検索・作成モード（サーバーの順序を維持）
-                // 1. ソートは一切せず、取得した順序のまま No だけ付与
-                details.forEach((d, index) => {
-                    d.no = index + 1;
-                    d.display_day = 0; // 検索データにDayの概念はない
-                    // // 他人のデータなら「〇月上旬」の単純マスクのみ適用
-                    // if (!d.is_owner) {
-                    //     d.memo_date = this._getMask(d.memo_date);
-                    // }
-                });
-            }
+            // 1. 日付・時刻で昇順ソート（旅行記順にする）
+            this.SortDetails(details);
+            // 2. 日付の変わり目を判定して Day番号 を振る
+            let lastDate = "";
+            let dayCounter = 0;
+            details.forEach((d, index) => {
+                d.no = index + 1; // 通し番号
+                if (d.memo_date !== lastDate) {
+                    dayCounter++;
+                    lastDate = d.memo_date;
+                }
+                d.display_day = dayCounter; // Day番号確定
+            });
         },
     },
     // データ格納・取得

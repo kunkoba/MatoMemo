@@ -123,44 +123,48 @@ const UI_Manager = {
 			if (!parentEl || !detail) return;
 			parentEl.innerHTML = "";
 			const el = $Dom.GenerateTemplate("tpl-date-label", "ui-template-root");
-			// 1. レイアウト切り替え（detailサイズ時のみ差分クラスをadd）
+			// 1. デザイン設定（smなら小さめ、lgなら大きめ）
 			if (size === 'lg') {
 				el.classList.add('gap-6');
 				$Dom.QuerySelector(".js-main-text", el).classList.add('text-[1.2rem]');
 				$Dom.QuerySelector(".js-time-text", el).classList.add('text-[1.2rem]');
-				const badge = $Dom.QuerySelector(".js-day-badge", el);
-				badge.classList.add('w-20', 'h-10', 'text-[1.2rem]'); // テンプレート側のサイズクラスを上書き
+				$Dom.QuerySelector(".js-day-badge", el).classList.add('w-20', 'h-10', 'text-[1.2rem]');
 			} else {
 				el.classList.add('gap-4');
 				$Dom.QuerySelector(".js-main-text", el).classList.add('text-[1rem]');
 				$Dom.QuerySelector(".js-time-text", el).classList.add('text-[1rem]');
-				const badge = $Dom.QuerySelector(".js-day-badge", el);
-				badge.classList.add('w-16', 'h-8', 'text-[0.9rem]'); // テンプレート側のサイズクラスを上書き
+				$Dom.QuerySelector(".js-day-badge", el).classList.add('w-16', 'h-8', 'text-[0.9rem]');
 			}
-			// 2. データの流し込み（Formatterで加工済みの値を信頼して代入）
-			const mainText = $Dom.QuerySelector(".js-main-text", el);
-			let dateText = detail.memo_date;
-			if (!detail.is_owner && dateText) {
-				const mask = $Data.Formatter._getMask(dateText);
-				// まとめ表示中かつDay設定がある場合
-				if (detail.display_day > 0) {
-					dateText = (detail.display_day === 1) ? `${mask} 1 Day` : `${detail.display_day} Day`;
+			// 2. 「日付を隠す（マスクする）」かどうかの判定
+			// 条件：【他人のデータ】かつ【公開まとめモード】の時だけ隠す
+			const isPublicArchive = ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.ARCHIVE_PUB);
+			const needsMask = !detail.is_owner && isPublicArchive;
+			let dateText = detail.memo_date; // 基本は実日付
+			if (needsMask && dateText) {
+				// 隠す必要がある場合（他人の公開データ）
+				const mask = $Data.Formatter._getMask(dateText); // 「8月下旬」などに変換
+				if (detail.display_day > 1) {
+					dateText = `${detail.display_day} Day`; // 2日目以降は「2 Day」とだけ表示
 				} else {
-					dateText = mask;
+					dateText = (detail.display_day === 1) ? `${mask} 1 Day` : mask;
 				}
 			}
-			mainText.textContent = dateText;
+			// 3. 画面への反映
+			$Dom.QuerySelector(".js-main-text", el).textContent = dateText;
 			const timeEl = $Dom.QuerySelector(".js-time-text", el);
 			if (detail.memo_time) {
 				timeEl.textContent = detail.memo_time;
 			} else {
 				$Dom.ToggleShow(timeEl, false);
 			}
-			// 3. DAYバッジ制御
-			if (detail.display_day > 0 && $App.AppData.Context.ScreenMode !== $Const.SCREEN_MODE.SEARCH) {
-				const badge = $Dom.QuerySelector(".js-day-badge", el);
+			// 4. DAYバッジ（黒丸の 1 Day 等）の表示
+			// display_day が 1以上なら表示する
+			const badge = $Dom.QuerySelector(".js-day-badge", el);
+			if (detail.display_day > 0) {
 				$Dom.ToggleShow(badge, true);
-				$Dom.QuerySelector(".js-day-text", badge).textContent = `${detail.display_day} Day`;
+				$Dom.QuerySelector(".js-day-text", badge).textContent = `${detail.display_day}`;
+			} else {
+				$Dom.ToggleShow(badge, false);
 			}
 			parentEl.appendChild(el);
 		},

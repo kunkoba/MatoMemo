@@ -315,6 +315,39 @@ const DialogController = {
     UpdateNoticeBadgeDialog() {
         this._core.updateNoticeBadge();
     },
+    // js/dialog/dialog-manager.js 末尾（UpdateNoticeBadgeDialog の後など）
+
+    // 長文入力用エディタ（文字数カウント付き）
+    async ShowTextEditor({ title = "", initialValue = "", maxLength = 1000 }) {
+        return new Promise((resolve) => {
+            // 管理者用エディタのテンプレートを流用
+            const el = $Dom.GenerateTemplate("tpl-admin-core-editor");
+            const textarea = $Dom.QuerySelector('#js-editor-input', el);
+            const countLabel = $Dom.QuerySelector('#js-editor-count', el);
+            const labelEl = $Dom.QuerySelector('#js-editor-label', el);
+            labelEl.textContent = "入力内容";
+            textarea.value = initialValue;
+            textarea.maxLength = maxLength;
+            // カウント表示の初期化と分母の書き換え
+            countLabel.textContent = initialValue.length;
+            countLabel.parentElement.innerHTML = `<span id="js-editor-count">${initialValue.length}</span>/${maxLength}`;
+            // リアルタイムカウント（再取得した要素に対してバインド）
+            const newCountEl = el.querySelector('#js-editor-count');
+            textarea.oninput = () => { newCountEl.textContent = textarea.value.length; };
+            let isResolved = false;
+            this._core.open({
+                title: title,
+                content: el,
+                size: 'lg',
+                onClose: () => { if (!isResolved) resolve(null); },
+                buttons: [[
+                    { label: "CANCEL", className: "bg-slate-400 text-white shadow-md", handler: () => { isResolved = true; resolve(null); this._core.close(); } },
+                    { label: "OK", handler: () => { isResolved = true; resolve(textarea.value); this._core.close(); } }
+                ]]
+            });
+            setTimeout(() => textarea.focus(), 100);
+        });
+    },
 };
 
 // 初期処理

@@ -8,6 +8,7 @@ _del/
 # URLを除外
 *js/config.js
 
+*.mp3
 
 # Build
 bin/

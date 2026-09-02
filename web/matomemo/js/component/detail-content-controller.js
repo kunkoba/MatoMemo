@@ -106,6 +106,19 @@ const _DetailContentCore = {
                         });
                     });
                 }
+                // 追加：本文入力欄をクリックした時にエディタを開く
+                this.editBody.addEventListener('click', async () => {
+                    const result = await $Dialog.ShowTextEditor({
+                        title: "内容を入力",
+                        initialValue: this.editBody.value,
+                        maxLength: 1000
+                    });
+                    // キャンセル以外（OK時）のみ反映
+                    if (result !== null) {
+                        this.editBody.value = result;
+                        this.countBody.textContent = result.length; // 文字数カウントも更新
+                    }
+                });
                 // 文字数カウント連動（入力イベント）
                 const elements =
                 [

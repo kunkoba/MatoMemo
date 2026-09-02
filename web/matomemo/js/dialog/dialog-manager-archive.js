@@ -27,9 +27,17 @@ export default {
     },
     // タイムライン用リスト
     ShowDetailsTimeLine() {
-        const details = $Data.Store.GetDetails();
-        if (!details || details.length === 0) return $Notice.Warn("データはありません。");
-        const isPub = $App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.ARCHIVE_PUB;
+        const rawDetails = $Data.Store.GetDetails();
+        if (!rawDetails || rawDetails.length === 0) return $Notice.Warn("データはありません。");
+        // 追加：公開まとめモードかどうかを判定（エラー解消のための変数定義）
+        const isPub = ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.ARCHIVE_PUB);
+        // 修正：マーカー実体（DOM）を除外して、データプロパティだけをコピーする
+        const details = rawDetails.map(d => {
+            const { marker, ...dataOnly } = d; // markerプロパティだけを除外して抽出
+            return { ...dataOnly }; // 新しいオブジェクトとしてコピー
+        });
+        // コピーに対して表示ルール（ソートとDay採番）を適用
+        $Data.Formatter.ApplyDisplayRules(details);
         const el = $Dom.GenerateTemplate("tpl-timeline-container");
         const listContainer = $Dom.QuerySelector(".js-list-container", el);
         // --- 【追加】縦線を描画するためのクラスをコンテナに追加 ---
@@ -44,7 +52,7 @@ export default {
                 // ヘッダーは日付のみ表示（時刻は表示しない）
                 $UI.Generator.MemoDateFormatter(
                     container, 
-                    { ...item, memo_time: null, display_day: isPub ? item.display_day : 0 }, 
+                    { ...item, memo_time: null }, 
                     'lg'
                 );
                 listContainer.appendChild(header);

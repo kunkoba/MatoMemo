@@ -302,16 +302,14 @@
 <!-- 【部品】日付・DAY表示用テンプレート -->
 <template id="tpl-date-label">
     <div class="js-date-root flex items-center gap-2 font-bold italic tracking-tighter">
-        <!-- DAYバッジ（丸囲み） -->
-        <div class="js-day-badge hidden rounded-full bg-black text-white flex items-center justify-center shrink-0 gap-1">
-            <span class="js-day-text"></span>
-            <!-- <span class="js-day-text2">Day</span> -->
-        </div>
-        <!-- メインテキスト（マスク日付 or 実日付） -->
+        <!-- 1. メインテキスト（日付・時刻）を先に配置 -->
         <div class="flex items-baseline gap-2">
             <div class="js-main-text text-slate-600 tracking-[0.05em]"></div>
-            <!-- 時刻（オプション） -->
             <div class="js-time-text text-slate-600 tracking-[0.05em]"></div>
+        </div>
+        <!-- 2. DAYバッジを右側に配置 -->
+        <div class="js-day-badge hidden rounded-full bg-black text-white flex items-center justify-center shrink-0 gap-1">
+            <span class="js-day-text"></span><span class="pl-1 text-[0.9rem]">Day</span>
         </div>
     </div>
 </template>
