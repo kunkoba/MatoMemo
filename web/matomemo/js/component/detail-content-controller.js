@@ -57,6 +57,14 @@ const _DetailContentCore = {
                     this.editEvalGroup = $Dom.GetElementById("detail-edit-feel-group");
                     this.editEvalInput = $Dom.GetElementById("detail-edit-feel");
                     this.evalBtns = $Dom.QuerySelectorAll(".eval-btn", this.editEvalGroup);
+                    // 音源選択ボタンの動的生成
+                    this.editSoundGroup = $Dom.GetElementById("detail-edit-sound-group");
+                    this.editSoundInput = $Dom.GetElementById("detail-edit-move_sound_id");
+                    this.editSoundGroup.innerHTML = Object.values($Const.MOVE_SOUND_TYPE).map(s => `
+                        <button type="button" data-id="${s.id}" class="js-sound-btn w-10 h-10 rounded-full bg-slate-50 border-2 border-transparent flex items-center justify-center text-[1.2rem] active:scale-90 transition-all">
+                            ${s.emoji}
+                        </button>
+                    `).join('');
                 }
             }
             // イベント登録
@@ -133,6 +141,14 @@ const _DetailContentCore = {
                             detail.count.textContent = detail.input.value.length;
                         });
                     }
+                });
+                $Dom.QuerySelectorAll(".js-sound-btn", this.editSoundGroup).forEach(btn => {
+                    btn.onclick = () => {
+                        const id = btn.dataset.id;
+                        this.editSoundInput.value = id;
+                        this._updateSoundUI(id);
+                        $Util.PlayMoveSound(id); // 試し聴き
+                    };
                 });
             }
         }
@@ -344,6 +360,10 @@ const _DetailContentCore = {
             : $Const.FEEL_TYPE.NORMAL.val;
         this.editEvalInput.value = evalVal;
         this._updateEvalUI(evalVal);
+        // 音源の反映
+        const soundId = detail.move_sound_id ?? 1;
+        this.editSoundInput.value = soundId;
+        this._updateSoundUI(soundId);
         // 文字数カウンターの同期
         if (this.countTitle) this.countTitle.textContent = (detail.title || "").length;
         if (this.countBody)  this.countBody.textContent  = (detail.body || "").length;
@@ -381,6 +401,9 @@ const _DetailContentCore = {
         // ▼ 新規作成時は定数を使って NORMAL を選択状態にする
         this.editEvalInput.value = $Const.FEEL_TYPE.NORMAL.val;
         this._updateEvalUI($Const.FEEL_TYPE.NORMAL.val);
+        // 音源の初期値をWALK(1)にリセット
+        this.editSoundInput.value = 1;
+        this._updateSoundUI(1);
         // 文字数カウンターを0にリセット
         if (this.countTitle) this.countTitle.textContent = "0";
         if (this.countBody)  this.countBody.textContent  = "0";
@@ -420,6 +443,7 @@ const _DetailContentCore = {
         data.feel_type = (data.feel_type !== "" && data.feel_type !== undefined) 
             ? Number(data.feel_type)
             : $Const.FEEL_TYPE.NORMAL.val;
+        data.move_sound_id = Number(data.move_sound_id || 1);
         // データストアから元の明細データを取得（新規作成時(seq=0)は空オブジェクト）
         let originalData = {};
         // seq または dbid を使って元データを特定する
@@ -453,6 +477,15 @@ const _DetailContentCore = {
             if (this.countBody) this.countBody.textContent = defaultBody.length;
         }
     },
+    // 移動音源
+    _updateSoundUI(selectedId) {
+        $Dom.QuerySelectorAll(".js-sound-btn", this.editSoundGroup).forEach(btn => {
+            const isActive = btn.dataset.id === String(selectedId);
+            btn.classList.toggle('border-brand-5', isActive);
+            btn.classList.toggle('bg-white', isActive);
+            btn.classList.toggle('shadow-md', isActive);
+        });
+    }
 };
 
 // 窓口

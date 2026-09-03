@@ -219,13 +219,13 @@
                         <!-- DATE & TIME -->
                         <div class="grid grid-cols-2 gap-6">
                             <div>
-                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">DATE</label>
+                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">日付</label>
                                 <div class="flex items-center border-b-2 border-brand-2 pb-1">
                                     <input name="memo_date" id="detail-edit-memo_date" type="date" class="w-full bg-transparent outline-none font-bold text-slate-900 text-[1rem]">
                                 </div>
                             </div>
                             <div>
-                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">TIME</label>
+                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">時刻</label>
                                 <div class="flex items-center border-b-2 border-brand-2 pb-1">
                                     <input name="memo_time" id="detail-edit-memo_time" type="time" class="w-full bg-transparent outline-none font-bold text-slate-900 text-[1rem]">
                                 </div>
@@ -233,8 +233,9 @@
                         </div>
                         <!-- 編集用 (detail-edit) の MARKER & ATMOSPHERE エリア -->
                         <div class="grid grid-cols-2 gap-6">
+                            <!-- 絵文字 -->
                             <div>
-                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">MARKER</label>
+                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">絵文字</label>
                                 <div class="flex items-center justify-between border-b-2 border-brand-2 pb-1">
                                     <!-- マーカー絵文字 -->
                                     <button id="btn-face-trigger" type="button" class="relative h-8 w-full text-right text-[3rem] outline-none active:scale-95">
@@ -243,9 +244,9 @@
                                     </button>
                                 </div>
                             </div>
+                            <!-- 環境エフェクト -->
                             <div>
-                                <!-- 環境エフェクト -->
-                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">EFECT</label>
+                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">エフェクト</label>
                                 <div class="flex items-center justify-between border-b-2 border-brand-2 pb-1">
                                     <button id="btn-atmosphere-trigger" type="button" class="h-8 w-full text-right text-[1rem] outline-none active:scale-95 font-bold text-brand-5 tracking-widest">
                                         <span id="span-atmosphere-preview">0000</span>
@@ -262,9 +263,7 @@
                                 <div class="flex-1">
                                     <!-- タイトルとカウントを1行で、幅は入力欄と同じ -->
                                     <div class="flex justify-between items-center mb-1">
-                                        <label class="font-bold text-slate-600 text-[0.9rem] uppercase tracking-wider">
-                                            TITLE
-                                        </label>
+                                        <label class="font-bold text-slate-600 text-[0.9rem] uppercase tracking-wider">タイトル</label>
                                         <div class="text-[0.9rem] text-slate-600 font-bold">
                                             <span id="detail-count-title">0</span>/30
                                         </div>
@@ -288,7 +287,7 @@
                         <!-- BODY -->
                         <div>
                             <div class="flex justify-between items-end mb-1">
-                                <label class="font-bold text-slate-600 text-[0.9rem] uppercase tracking-wider">MEMORY DETAIL</label>
+                                <label class="font-bold text-slate-600 text-[0.9rem] uppercase tracking-wider">メモ詳細</label>
                                 <div class="text-[0.9rem] text-slate-600 font-bold"><span id="detail-count-body">0</span>/1000</div>
                             </div>
                             <textarea name="body" id="detail-edit-body" maxlength="1000" 
@@ -298,7 +297,7 @@
                         <!-- PRICE -->
                         <div>
                             <div class="flex justify-between items-end mb-1">
-                                <label class="font-bold text-slate-600 text-[0.9rem] uppercase tracking-wider">PRICE</label>
+                                <label class="font-bold text-slate-600 text-[0.9rem] uppercase tracking-wider">金額</label>
                             </div>
                             <div class="grid grid-cols-2 gap-6">
                                 <div>
@@ -320,7 +319,7 @@
                         <!-- URL -->
                         <div>
                             <div class="flex justify-between items-end mb-1">
-                                <label class="font-bold text-slate-600 text-[0.9rem] uppercase tracking-wider">URL</label>
+                                <label class="font-bold text-slate-600 text-[0.9rem] uppercase tracking-wider">リンクURL</label>
                                 <div class="text-[0.9rem] text-slate-600 font-bold"><span id="detail-count-url">0</span>/2000</div>
                             </div>
                             <!-- flexコンテナ化とボタン追加 -->
@@ -342,22 +341,29 @@
                                     <span class="eval-icon text-[2rem] leading-none mb-1 drop-shadow-sm grayscale opacity-30">
                                         <img src="img/face/face_bad.png" alt="bad">
                                     </span>
-                                    <span class="eval-label text-[0.8rem] font-bold tracking-wider text-slate-400">Bad</span>
+                                    <span class="eval-label text-[0.8rem] font-bold tracking-wider text-slate-400">う～ん</span>
                                 </button>
                                 <!-- data-val を 0 に -->
                                 <button type="button" data-val="0" class="eval-btn flex flex-col items-center justify-center py-3 rounded-[1rem] border-2 transition-all outline-none active:scale-95 bg-slate-50 border-transparent">
                                     <span class="eval-icon text-[2rem] leading-none mb-1 drop-shadow-sm grayscale opacity-30">
                                         <img src="img/face/face_normal.png" alt="normal">
                                     </span>
-                                    <span class="eval-label text-[0.8rem] font-bold tracking-wider text-slate-400">Normal</span>
+                                    <span class="eval-label text-[0.8rem] font-bold tracking-wider text-slate-400">まぁまぁ</span>
                                 </button>
                                 <!-- data-val を 1 に -->
                                 <button type="button" data-val="1" class="eval-btn flex flex-col items-center justify-center py-3 rounded-[1rem] border-2 transition-all outline-none active:scale-95 bg-slate-50 border-transparent">
                                     <span class="eval-icon text-[2rem] leading-none mb-1 drop-shadow-sm grayscale opacity-30">
                                         <img src="img/face/face_good.png" alt="good">
                                     </span>
-                                    <span class="eval-label text-[0.8rem] font-bold tracking-wider text-slate-400">Good</span>
+                                    <span class="eval-label text-[0.8rem] font-bold tracking-wider text-slate-400">よかった</span>
                                 </button>
+                            </div>
+                        </div>
+                        <!-- 移動音源 -->
+                        <div>
+                            <label class="block font-bold text-slate-600 text-[0.9rem] mb-2 uppercase tracking-wider">移動音源</label>
+                            <div id="detail-edit-sound-group" class="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
+                                <!-- JSでボタンが生成されます -->
                             </div>
                         </div>
                         <!-- 隠しフィールド -->
@@ -369,6 +375,7 @@
                             <input name="longitude" id="detail-edit-longitude" type="hidden" value="">
                             <input name="memo_price" id="detail-edit-memo_price" type="hidden" value="0">
                             <input name="feel_type" id="detail-edit-feel" type="hidden" value="0">
+                            <input name="move_sound_id" id="detail-edit-move_sound_id" type="hidden" value="1">
                         </div>
                     </form>
                 </div>

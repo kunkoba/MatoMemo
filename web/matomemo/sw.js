@@ -52,10 +52,12 @@ const CORE_ASSETS = [
     './template/template-admin.html',
     './img/ico/icon-192.png',
     './img/ico/icon-512.png',
+    './audio/clock.wav',
     './audio/walk.wav',
     './audio/bicycle.wav',
     './audio/bike.wav',
     './audio/car.wav',
+    './audio/train.wav',
     './audio/plane.wav',
     './audio/ship.wav',
 ];

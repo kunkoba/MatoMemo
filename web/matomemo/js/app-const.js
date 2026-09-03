@@ -6,7 +6,7 @@ window.$Const = {
         DESCRIPTION: "「その日、その時、その場所の思い出」をひとまとめに！旅の記録や日常の気づきを、地図と一緒に残せるアプリです。",
         DEVELOPER: "kunkoba",
         OFFICIAL_SITE: "https://hinekulemonstudio.web.app/",
-        VERSION: "1.1.17",
+        VERSION: "1.2.0",
         VERSION_DESCRIPTION: `
 メジャー.マイナー.パッチの形式で表されます。
 
@@ -87,14 +87,16 @@ window.$Const = {
         CLOSE:   "Close",   // 非公開中（準備中）
         DELETE:  "Delete",  // 削除済み
     },
-    // 追加：移動手段と音源の定義
+    // 移動手段と音源の定義
     MOVE_SOUND_TYPE: {
-        WALK:    { id: 1, file: 'audio/walk.wav' },
-        BICYCLE: { id: 2, file: 'audio/bicycle.wav' },
-        BIKE:    { id: 3, file: 'audio/bike.wav' },
-        CAR:     { id: 4, file: 'audio/car.wav' },
-        PLANE:   { id: 5, file: 'audio/plane.wav' },
-        SHIP:    { id: 6, file: 'audio/ship.wav' },
+        CLOCK:   { id: 0, emoji: '🕐', file: 'audio/clock.wav' },
+        WALK:    { id: 1, emoji: '🚶', file: 'audio/walk.wav' },
+        BICYCLE: { id: 2, emoji: '🚲', file: 'audio/bicycle.wav' },
+        BIKE:    { id: 3, emoji: '🏍️', file: 'audio/bike.wav' },
+        CAR:     { id: 4, emoji: '🚗', file: 'audio/car.wav' },
+        TRAIN:   { id: 5, emoji: '🚃', file: 'audio/train.wav' },
+        PLANE:   { id: 6, emoji: '✈️', file: 'audio/plane.wav' },
+        SHIP:    { id: 7, emoji: '🚢', file: 'audio/ship.wav' },
     },
 };
 
