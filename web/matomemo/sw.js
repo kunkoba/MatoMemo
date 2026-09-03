@@ -51,7 +51,13 @@ const CORE_ASSETS = [
     './template/template-list.html',
     './template/template-admin.html',
     './img/ico/icon-192.png',
-    './img/ico/icon-512.png'
+    './img/ico/icon-512.png',
+    './audio/walk.wav',
+    './audio/bicycle.wav',
+    './audio/bike.wav',
+    './audio/car.wav',
+    './audio/plane.wav',
+    './audio/ship.wav',
 ];
 // キャッシュ優先（Cache First）にする外部ドメイン群
 const STATIC_DOMAINS = [
