@@ -389,10 +389,11 @@ window.$Util = {
     },
     // 追加：移動音を再生する
     PlayMoveSound(typeId) {
-        // 定数から該当するファイル名を探す
         const sound = Object.values($Const.MOVE_SOUND_TYPE).find(s => s.id === Number(typeId));
         if (!sound) return;
         const audio = new Audio(sound.file);
+        // AppData の音量を反映 (0.0 ～ 1.0)
+        audio.volume = $App.AppData.Owner.SoundVolume;
         audio.play().catch(e => console.warn("再生ブロック:", e));
     },
 };

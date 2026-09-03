@@ -241,6 +241,7 @@ export default {
         $Dom.QuerySelector('#btn-set-currency', el).onclick = () => this.ShowCurrencyConfig();
         $Dom.QuerySelector('#btn-set-gps', el).onclick = () => this.ShowGpsFollowConfig();
         $Dom.QuerySelector('#btn-set-font', el).onclick = () => this.ShowFontSizeConfig();
+        $Dom.QuerySelector('#btn-set-volume', el).onclick = () => this.ShowVolumeConfig();
         //
         this._core.open({
             title: "ユーザ設定",
@@ -529,6 +530,48 @@ export default {
                         $App.ChangeFontSize(selectedSize); // ここで初めてAppData更新・保存
                         this._core.close();
                         $Notice.Info("保存しました。");
+                    }
+                }
+            ]]
+        });
+    },
+    // （ユーザ設定）音量設定ダイアログ本体
+    ShowVolumeConfig() {
+        const oldVol = $App.AppData.Owner.SoundVolume; // 現在の音量を取得
+        let tempVol = oldVol;
+        const el = $Dom.GenerateTemplate("tpl-config-volume");
+        const slider = $Dom.QuerySelector('#vol-range-slider', el);
+        const display = $Dom.QuerySelector('#vol-val-display', el);
+        // 初期値反映
+        slider.value = oldVol;
+        display.textContent = Math.round(oldVol * 100);
+        // スライダー操作時のリアルタイム反映
+        slider.oninput = (e) => {
+            tempVol = parseFloat(e.target.value);
+            display.textContent = Math.round(tempVol * 100);
+        };
+        // スライダーを離したときにテスト音を鳴らす
+        slider.onchange = () => {
+            const testSoundFile = $Const.MOVE_SOUND_TYPE.WALK.file; // 定数を使用
+            const audio = new Audio(testSoundFile);
+            audio.volume = tempVol;
+            audio.play().catch(() => {});
+        };
+        this._core.open({
+            title: "音量設定",
+            content: el,
+            buttons: [[
+                {
+                    label: "CANCEL",
+                    className: "bg-slate-400 text-white shadow-md",
+                    handler: () => this._core.close()
+                },
+                {
+                    label: "OK",
+                    handler: () => {
+                        $App.ChangeSoundVolume(tempVol); // AppManager経由で保存
+                        this._core.close();
+                        $Notice.Info("保存しました");
                     }
                 }
             ]]
@@ -1116,7 +1159,7 @@ export default {
             headerButtons.push({
                 label: "✏️",
                 handler: () => {
-                    // ★ 修正：第3引数にコールバックを渡し、保存完了時に再描画させる
+                    // 第3引数にコールバックを渡し、保存完了時に再描画させる
                     this.ShowAdminCoreDocumentEditor(key, title, (updatedBody, updatedTim) => {
                         renderView(updatedBody, updatedTim);
                     });

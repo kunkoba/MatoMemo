@@ -80,7 +80,7 @@ const UI_Manager = {
 			if (type === 'button') {
 				el.onclick = async (e) => {
 					e.stopPropagation();
-                    // ★修正：匿名かつ自分以外（管理者以外）なら中断
+                    // 匿名かつ自分以外（管理者以外）なら中断
                     if (profile.anonymous_flg && !isOwner && $App.AppData.Owner.Plan !== "Admin") {
                         $Notice.Warn("このユーザーは情報を公開していません");
                         return;
@@ -225,7 +225,6 @@ const UI_Manager = {
 	},
 	// アイコンバーの開閉
 	ToggleIconBar(isShow){
-		$Bar.ToggleRoot(isShow);
 		$Bar.ToggleRoot(isShow);
 	},
 	// フォントサイズの変更

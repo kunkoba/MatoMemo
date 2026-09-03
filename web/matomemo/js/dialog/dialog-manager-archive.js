@@ -31,7 +31,7 @@ export default {
         if (!rawDetails || rawDetails.length === 0) return $Notice.Warn("データはありません。");
         // 追加：公開まとめモードかどうかを判定（エラー解消のための変数定義）
         const isPub = ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.ARCHIVE_PUB);
-        // 修正：マーカー実体（DOM）を除外して、データプロパティだけをコピーする
+        // マーカー実体（DOM）を除外して、データプロパティだけをコピーする
         const details = rawDetails.map(d => {
             const { marker, ...dataOnly } = d; // markerプロパティだけを除外して抽出
             return { ...dataOnly }; // 新しいオブジェクトとしてコピー
@@ -435,7 +435,7 @@ export default {
     ShowArchiveInfo() {
         const archive = $Data.Store.GetArchive();
         const isAdmin = $App.AppData.Context.IsLoggedIn && $App.AppData.Owner.Plan === "Admin";
-        // ★修正：データが取得できていない場合は処理を中断
+        // データが取得できていない場合は処理を中断
         if (!archive) return;
         const el = $Dom.GenerateTemplate('tpl-view-archive');
         // URLとQRコードの生成（最初に行う）

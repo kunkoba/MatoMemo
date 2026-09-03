@@ -915,7 +915,7 @@ export default {
         });
     },
     // 長文ドキュメント編集画面（利用規約 / プライバシーポリシー）
-    // ★ 修正：第3引数に onUpdate を追加
+    // 第3引数に onUpdate を追加
     async ShowAdminCoreDocumentEditor(key, title, onUpdate = null) { 
         // 1. ローカルDBから該当キーのデータを直接取得
         const record = await $LocalDb.Legal.Get(key);

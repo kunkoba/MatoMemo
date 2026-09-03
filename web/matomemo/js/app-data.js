@@ -99,7 +99,7 @@ window.$Data = {
             console.log("▼ Access:", BaseUrl + url, params);
             // 通信ガード判定
             const isHealthCheck = url.includes("EnsureLoginUser") || url.includes("GetAppInfo");
-            // 修正：オフライン時はヘルスチェック以外、即遮断
+            // オフライン時はヘルスチェック以外、即遮断
             if (!$App.AppData.Context.IsNetOnline && !isHealthCheck) {
                 // $Notice.Warn("ネットワーク未接続のため通信をスキップしました");
                 await $App.HandleServerFailure(); // 共通のエラー処理へ
@@ -138,9 +138,9 @@ window.$Data = {
                 response = await fetch(BaseUrl + url, options);
             } catch (err) {
                 console.log("err:", err);
-                // 修正：中断（AbortError）だった場合はタイムアウトフラグを true にする
+                // 中断（AbortError）だった場合はタイムアウトフラグを true にする
                 const isTimeout = (err.name === 'AbortError');
-                // 修正：判定会議へタイムアウト情報を渡す
+                // 判定会議へタイムアウト情報を渡す
                 await $App.HandleServerFailure(null, isTimeout);
                 return false;
             } finally {

@@ -225,7 +225,8 @@ const _DetailFrameCore = {
             this.toggleDetailPanel(false);
         }
         // UI表示切替
-        $Bar.UpdateMainSwitchUI(true);
+        // $Bar.UpdateMainSwitchUI(true);
+        $Bar.ToggleSwitches
     },
     // 画面モード変更時
     changeScreenMode(){
@@ -297,11 +298,12 @@ const _DetailFrameCore = {
         const isMobile = window.innerWidth < 768;
         // メイン処理
         if (isShow) {
+            $Bar.ToggleSwitches(false);
+            $Map.LockMap(true);
             // パネル表示時にエフェクトの重なり順を調整
             if (typeof Atmosphere !== 'undefined' && Atmosphere.canvas) {
                 Atmosphere.canvas.style.zIndex = '1100'; // 背面に移動
             }
-            $Map.LockMap(true);
             // バリアを展開（マーカーへのタッチを防ぐ）
             if (this.mapBarrier) $Dom.ToggleShow(this.mapBarrier, true);
             // 詳細画面のサイズ
@@ -318,6 +320,12 @@ const _DetailFrameCore = {
             // このタイミングで移動（Mapのリサイズ含み）
             $Marker.FocusToCurrentMarker();
         } else {
+            $Map.LockMap(false);
+            // 2. 明細を閉じる時、ポップアップが出ていないならUIを復帰
+            const hasPopup = document.querySelector('.leaflet-popup');
+            if (!hasPopup) {
+                $Bar.ToggleSwitches(true);
+            }
             // バリアを解除
             if (this.mapBarrier) $Dom.ToggleShow(this.mapBarrier, false);
             // パネルを閉じる時に環境エフェクトをオフにし、奥に戻す
@@ -325,7 +333,6 @@ const _DetailFrameCore = {
                 Atmosphere.hide();
                 if (Atmosphere.canvas) Atmosphere.canvas.style.zIndex = '0';
             }
-            $Map.LockMap(false);
             // 詳細画面のサイズ
             if (isMobile) {
                 this.root.style.height = "0";
@@ -341,8 +348,6 @@ const _DetailFrameCore = {
             // パネルを閉じる処理の最後
             $App.ResumeGpsTracking(); // ★パネルを閉じる際にGPSを再開
         }
-        // アイコン表示切替
-        $UI.ToggleIconBar(!isShow);
     },
     // リアクションのカウントと状態を反映する
     async renderReactions(detail) {
@@ -423,7 +428,7 @@ const DetailFrameController = {
 	},
     // 開く
     Open(detail) {
-        $Bar.UpdateMainSwitchUI(false);
+        // $Bar.UpdateMainSwitchUI(false);
         $App.PauseGpsTracking(); // ★パネルを開く際にGPSを止める
         // ▼ 画面を開く前にポップアップを閉じる
         $Marker.ClosePopup();

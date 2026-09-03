@@ -24,7 +24,9 @@ const _MarkerCore = {
             this.clearAll();
             this.locationMarker = L.marker(this._map.getCenter(), { draggable: true }).addTo(this._map);
             // 地図クリック時にポップアップを閉じる処理（UIバーの復帰）を実行させる
-            this._map.on('click', () => this.toggleMarkerPopup(false));
+            this._map.on('click', () => {
+                this.toggleMarkerPopup(false)}
+            );
         }
         this.locationMarker.on("dragend", (e) => {
             if ($App.AppData.Context.ScreenMode !== $Const.SCREEN_MODE.CREATE) return;
@@ -175,10 +177,12 @@ const _MarkerCore = {
     // 物理的なポップアップ表示（DOM生成含む）
     toggleMarkerPopup(isOpen, index = null, detail = null) {
         if (isOpen && index !== null) {
+            // 1. ポップアップ表示時はUIを隠す
+            $Bar.ToggleSwitches(false);
+            //
             const marker = this._markerList[index];
             const el = $Dom.GenerateTemplate("tpl-marker-popup");
             $Dom.QuerySelector(".index", el).textContent = (index + 1);
-            // $Dom.QuerySelector(".js-face", el).textContent = detail.face_emoji || '😀'; // ★追加
             const dateContainer = $Dom.QuerySelector(".js-date-container", el);
             $UI.Generator.MemoDateFormatter(dateContainer, detail); // デフォルトサイズで呼び出し
             $Dom.QuerySelector(".title", el).textContent = detail.title || "";
@@ -226,9 +230,13 @@ const _MarkerCore = {
             }).setLatLng(marker.getLatLng()).setContent(el).openOn(this._map);
         } else {
             this._map.closePopup();
+            // 2. ポップアップを閉じる時、明細が「閉じている（translate-y-full）」ならUIを復帰
+            const detailFrame = document.getElementById("ui-detail-frame-id");
+            const isDetailClosed = !detailFrame || detailFrame.classList.contains("translate-y-full");
+            if (isDetailClosed) {
+                $Bar.ToggleSwitches(true);
+            }
         }
-        // ポップアップの開閉状態に合わせてUIバーの表示/非表示を切り替える
-        $Bar.ToggleSwitches(!isOpen);
     },
     // 指定インデックスのマーカー実体を取得
     getMarker(index) {
@@ -357,7 +365,7 @@ const MarkerController = {
         // ハイライト
         _MarkerCore.highlightMarker(true, this._currentIndex);
     },
-    // 修正：第3引数 isFly を追加
+    // 第3引数 isFly を追加
     FocusToCurrentMarker(delay = 200, zoom = null, isFly = false) {
         const details = $Data.Store.GetDetails();
         if (!details) return;
@@ -365,7 +373,7 @@ const MarkerController = {
         const marker = _MarkerCore.getMarker(this._currentIndex);
         if (!marker) return;
         marker.setZIndexOffset(1000);
-        // 修正：isFly フラグを第3引数として渡す
+        // isFly フラグを第3引数として渡す
         $Map.FocusToTargetMarker(marker, delay, zoom, isFly);
         _MarkerCore.toggleMarkerPopup(true, this._currentIndex, details[this._currentIndex]);
         _MarkerCore.highlightMarker(true, this._currentIndex);

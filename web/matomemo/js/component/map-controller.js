@@ -160,7 +160,7 @@ const _MapCore = {
     _moveTo(latLng, zoom, isFly = false) {
         const targetZoom = zoom || this._map.getZoom();
         const delay = $Const.MAP_CONFIG.MOVE_ANIMATION_SEC;
-        // 修正：isFly が true なら、画面内かどうかに関わらず flyTo を実行する
+        // isFly が true なら、画面内かどうかに関わらず flyTo を実行する
         if (isFly) {
             this._map.flyTo(latLng, targetZoom, { duration: delay });
         } else {

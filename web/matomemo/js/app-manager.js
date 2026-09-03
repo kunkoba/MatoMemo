@@ -36,6 +36,7 @@ const _AppCore = {
         AppData.Owner.FontSize = saved.fontSize || 'standard';
         AppData.Owner.Token = saved.token;
         AppData.Owner.LastLoginDate = saved.lastLoginDate;
+        AppData.Owner.SoundVolume = saved.soundVolume ?? 0.5;
         if (saved.loginUserId) {
             AppData.Owner.SystemInfo = { 
                 login_user_id: saved.loginUserId, // ID復元
@@ -78,7 +79,8 @@ const _AppCore = {
             fontSize: Owner.FontSize, // 文字サイズ
             lastLoginDate: Owner.LastLoginDate, // ログイン日
             loginUserId: Owner.SystemInfo?.login_user_id, // ユーザID
-            ownerProfile: Owner.SystemInfo?.ownerProfile // プロフィール情報を追加
+            ownerProfile: Owner.SystemInfo?.ownerProfile, // プロフィール情報を追加
+            soundVolume: Owner.SoundVolume,     // 音量
         }));
     },
     // オフライン監視・GPS追従・データ同期などのポーリング処理をまとめて登録する
@@ -163,7 +165,7 @@ const _AppCore = {
             }
             return true;
         } else {
-            // 修正：失敗した原因が「そもそもネットが切れたから」でないか確認
+            // 失敗した原因が「そもそもネットが切れたから」でないか確認
             if (!navigator.onLine) {
                 $App.AppData.Context.IsNetOnline = false;
                 $App.AppData.Context.IsServerOnline = false;
@@ -275,7 +277,8 @@ const AppManager = {
             FontSize: 'standard',
             LastLoginDate: null,
             SystemInfo: null,
-            Token: null
+            Token: null,
+            SoundVolume: 0.5,
         },
         Admin: {
             Notifications: [],
@@ -340,7 +343,7 @@ const AppManager = {
             // その他
             _AppCore.registerSW();
             _AppCore.refreshLegalConfigs();
-            // 修正：ログイン中の場合のみユーザーチェックを実行する
+            // ログイン中の場合のみユーザーチェックを実行する
             if (this.AppData.Context.IsLoggedIn) {
                 $Data.Access.EnsureLoginUser();
             }
@@ -422,7 +425,6 @@ const AppManager = {
         // 接続失敗時は論理オフラインへ移行
         this.AppData.Context.IsNetOnline = false;
         $Notice.Offline.Show(); // オフラインバーを表示
-
         let msg = "サーバ接続が切断されました。";
         $Notice.Error(msg);
         return false;
@@ -551,7 +553,12 @@ const AppManager = {
         if (this.AppData.Owner.GpsTrackingSec > 0) {
             $Polling.Start($Polling.TASKS.GPS_FOLLOW);
         }
-    }
+    },
+    // 音量変更メソッド
+    ChangeSoundVolume(vol) {
+        this.AppData.Owner.SoundVolume = parseFloat(vol);
+        _AppCore.save(this.AppData.Owner);
+    },
 };
 document.addEventListener('DOMContentLoaded', () => AppManager.Init());
 export default AppManager;

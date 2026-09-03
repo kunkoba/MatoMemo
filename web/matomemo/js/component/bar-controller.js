@@ -154,8 +154,7 @@ const _BarCore = {
         const isArc = (mode === $Const.SCREEN_MODE.ARCHIVE || mode === $Const.SCREEN_MODE.ARCHIVE_PUB);
         // タイトル表示の連動
         if (isArc) $Dom.ToggleShow(this.btnArchiveTitle, isOn);
-        $Dom.ToggleShow(this.groupAction, isOn);
-        $Dom.ToggleShow(this.groupAction, isOn);
+        // $Dom.ToggleShow(this.groupAction, isOn);
         // $Dom.ToggleShow(this.sliderRoot, isOn);
     },
     // 画面モード変更：上下バーのレイアウト一括更新
@@ -171,7 +170,6 @@ const _BarCore = {
         const actOff = ["w-10", "h-10", "text-[1rem]", "opacity-70", "z-0"];
         // モード別分岐
 		if (mode === $Const.SCREEN_MODE.CREATE) {
-            $Dom.ToggleShow(this.groupAction, true);
             // 作法：複数クラスは remove/add を使用する
             this.btnCreate.classList.remove(...actOff);
             this.btnCreate.classList.add(...actOn);
@@ -179,7 +177,6 @@ const _BarCore = {
             this.btnSearch.classList.add(...actOff);
         } else if (mode === $Const.SCREEN_MODE.SEARCH) {
             $Dom.ToggleShow(this.uiSortGroup, true);
-            $Dom.ToggleShow(this.groupAction, true);
             this.btnSearch.classList.remove(...actOff);
             this.btnSearch.classList.add(...actOn);
             this.btnCreate.classList.remove(...actOn);
@@ -239,10 +236,10 @@ const _BarCore = {
         return {
             isPublic: true,
             sortField: parseInt(field || '1', 10),
-            // ★修正：_getActiveButtonValue を使用するように変更
+            // _getActiveButtonValue を使用するように変更
             reactionType: field === '3' ? this._getActiveButtonValue(this.sortReaction) : null,
             keyword: field === '4' ? input?.value.trim() : null,
-            // ★修正：こちらも同様にボタン形式なので修正
+            // こちらも同様にボタン形式なので修正
             feelType: field === '5' ? this._getActiveButtonValue(this.sortFeel) : null
         };
     },
@@ -283,18 +280,12 @@ const BarController = {
         $Dom.ToggleShow(_BarCore.rootTop, isOpen);
         $Dom.ToggleShow(_BarCore.rootBot, isOpen);
     },
-    // ポップアップと重なるスイッチUIだけをピンポイントで切り替える
-    ToggleSwitches(isShow) {
-        $Dom.ToggleShow($Dom.GetElementById('ui-marker-mode-switch'), isShow);
-        $Dom.ToggleShow($Dom.GetElementById('ui-map-zoom-slider-root'), isShow);
-        $Dom.ToggleShow($Dom.GetElementById('ui-side-action-group'), isShow);
-    },
     ChangeTitle(title) { _BarCore.changeTitle(title); },
     GetSortSetting() { return _BarCore.getSortSetting(); },
     UpdateNoticeBadge() { _BarCore.updateNoticeBadge(); },
     UpdateUserIcon() { _BarCore.updateUserIcon(); },
-    UpdateMainSwitchUI(isOn){ _BarCore._updateMainSwitchUI(isOn); },
-    // 修正：既存の pointer-events-auto と完全に「入れ替える」ことで連打を物理遮断する
+    // UpdateMainSwitchUI(isOn){ _BarCore._updateMainSwitchUI(isOn); },
+    // 既存の pointer-events-auto と完全に「入れ替える」ことで連打を物理遮断する
     ToggleNavLock(isLock) {
         console.log("◆ToggleNavLock:", isLock);
         // ロック対象のボタンIDリスト（中央ボタンは含めない）
@@ -313,6 +304,18 @@ const BarController = {
                 el.classList.remove(...cls);
                 el.disabled = false;
             }
+        });
+    },
+    // ポップアップと重なるスイッチUIだけをピンポイントで切り替える
+    ToggleSwitches(isShow) {
+        const targetIds = [
+            'ui-map-zoom-slider-root', // ズームスライダー
+            'ui-marker-mode-switch',    // マーカー切替スイッチ
+            'ui-side-action-group'      // 操作関連ボタン（親）
+        ];
+        targetIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) $Dom.ToggleShow(el, isShow);
         });
     },
 };
