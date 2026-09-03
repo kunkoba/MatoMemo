@@ -39,7 +39,9 @@ window.$Const = {
     MAP_CONFIG: {
         MIN_ZOOM: 4,
         MAX_ZOOM: 18,
-        DEFAULT_ZOOM: 15
+        DEFAULT_ZOOM: 15,
+        MOVE_DEFAULT_SEC: 0.5,
+        MOVE_ANIMATION_SEC: 3,
     },
     // 画面モード
     SCREEN_MODE: {
@@ -84,6 +86,15 @@ window.$Const = {
         OPEN:    "Open",    // 公開中
         CLOSE:   "Close",   // 非公開中（準備中）
         DELETE:  "Delete",  // 削除済み
+    },
+    // 追加：移動手段と音源の定義
+    MOVE_SOUND_TYPE: {
+        WALK:    { id: 1, file: 'audio/walk.wav' },
+        BICYCLE: { id: 2, file: 'audio/bicycle.wav' },
+        BIKE:    { id: 3, file: 'audio/bike.wav' },
+        CAR:     { id: 4, file: 'audio/car.wav' },
+        PLANE:   { id: 5, file: 'audio/plane.wav' },
+        SHIP:    { id: 6, file: 'audio/ship.wav' },
     },
 };
 

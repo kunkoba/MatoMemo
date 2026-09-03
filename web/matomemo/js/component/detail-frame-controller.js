@@ -185,26 +185,28 @@ const _DetailFrameCore = {
                 this.btnClose.addEventListener("click", () => this.handleCloseOrCancel());
                 this.btnCancel.addEventListener("click", () => this.handleCloseOrCancel());
                 this.btnCancel2.addEventListener("click", () => this.handleCloseOrCancel());
-                // 移動ボタン
-                this.btnMoveFirst.addEventListener("click", () => this._moveAndRender(() => $Marker.FocusFirst()));
-                this.btnMovePrev.addEventListener("click",  () => this._moveAndRender(() => $Marker.FocusPrev()));
+                // 最初へ
+                this.btnMoveFirst.addEventListener("click", async () => {
+                    const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最初に戻りますか？" });
+                    if (isOk) await this._moveAndRender(() => $Marker.FocusFirst());
+                });
+                // 前へ
+                this.btnMovePrev.addEventListener("click", async () => {
+                    await this._moveAndRender(() => $Marker.FocusPrev());
+                });
+                // 次へ
                 this.btnMoveNext.addEventListener("click", async () => {
                     const details = $Data.Store.GetDetails();
                     const isLast = ($Marker._currentIndex >= details.length - 1);
                     if (isLast) {
-                        const isOk = await $Dialog.ShowConfirm({
-                            title: "Navigation",
-                            message: "最後まで到達しました。最初に戻りますか？",
-                            label: "最初に戻る"
-                        });
-                        if (isOk) {
-                            this._moveAndRender(() => $Marker.FocusFirst());
-                        }
+                        const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最後まで到達しました。最初に戻りますか？", label: "最初に戻る" });
+                        if (isOk) await this._moveAndRender(() => $Marker.FocusFirst());
                     } else {
-                        this._moveAndRender(() => $Marker.FocusNext());
+                        $Util.PlayMoveSound(2);
+                        await this._moveAndRender(() => $Marker.FocusNext());
                     }
                 });
-                this.btnMoveLast.addEventListener("click",  () => this._moveAndRender(() => $Marker.FocusLast()));
+                // this.btnMoveLast.addEventListener("click", async () => await this._moveAndRender(() => $Marker.FocusLast()));
                 this.mapBarrier.addEventListener("click", () => this.handleCloseOrCancel());
             }
         }
@@ -253,7 +255,7 @@ const _DetailFrameCore = {
         }
     },
     // 移動して詳細画面表示
-    _moveAndRender(callback) {
+    _moveAndRender_2(callback) {
         // 1. マーカーのインデックス更新と地図移動
         callback();
         // 2. 新しいインデックスのデータを取得
@@ -265,6 +267,26 @@ const _DetailFrameCore = {
         if ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH && this.txtJumpArchiveTitle) {
             this.txtJumpArchiveTitle.textContent = detail.a_title || "まとめへ移動";
         }
+    },
+    // 移動して詳細画面表示（演出・待機秒数の指定対応版）
+    async _moveAndRender(callback) {
+        // バー全体の操作をロック
+        $Bar.ToggleNavLock(true);
+        // 1. マーカーのインデックス更新と地図移動（演出フラグを渡す）
+        callback();
+        // 2. 新しいインデックスのデータを取得
+        const detail = $Marker.GetDataWithCurrentIndex();
+        // 3. コンテンツとリアクションを更新
+        $DetailContent.RenderDetail(detail);
+        this.renderReactions(detail);
+        // SEARCHモードの場合、ジャンプボタンのタイトルも更新する
+        if ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH && this.txtJumpArchiveTitle) {
+            this.txtJumpArchiveTitle.textContent = detail.a_title || "まとめへ移動";
+        }
+        // 指定された秒数分待機する
+        await new Promise(resolve => setTimeout(resolve, $Const.MAP_CONFIG.MOVE_ANIMATION_SEC * 1000));
+        // ロックを解除
+        $Bar.ToggleNavLock(false);
     },
     // 詳細パネルの開閉と関連UIの更新
     toggleDetailPanel(isShow) {

@@ -322,7 +322,6 @@ const MarkerController = {
                 // 地点指定があれば、そこにフォーカス
                 const seq = $App.AppData.Context.TargetSeq;
                 const defZoom = $Const.MAP_CONFIG.DEFAULT_ZOOM;
-                console.log("ChangeScreenMode():", seq);
                 if (seq > 0) {
                     // seq指定がある場合、その地点へ定数ズームで移動
                     this.FocusBySeq(seq, defZoom);
@@ -339,7 +338,7 @@ const MarkerController = {
         _MarkerCore.clearAll();
     },
     // 現在の状態に基づくフォーカス実行
-    FocusToCurrentMarker(delay = 200, zoom = null) {
+    FocusToCurrentMarker_2(delay = 200, zoom = null) {
         const details = $Data.Store.GetDetails();
         if (!details) return;
         // すべてのマーカーのZインデックスを一旦リセット
@@ -358,31 +357,44 @@ const MarkerController = {
         // ハイライト
         _MarkerCore.highlightMarker(true, this._currentIndex);
     },
-    // ナビゲーション
-    FocusFirst() {
-        this._currentIndex = 0;
-        this.FocusToCurrentMarker();
+    // 修正：第3引数 isFly を追加
+    FocusToCurrentMarker(delay = 200, zoom = null, isFly = false) {
+        const details = $Data.Store.GetDetails();
+        if (!details) return;
+        _MarkerCore._markerList.forEach((m) => { if (m && typeof m.setZIndexOffset === 'function') m.setZIndexOffset(0); });
+        const marker = _MarkerCore.getMarker(this._currentIndex);
+        if (!marker) return;
+        marker.setZIndexOffset(1000);
+        // 修正：isFly フラグを第3引数として渡す
+        $Map.FocusToTargetMarker(marker, delay, zoom, isFly);
+        _MarkerCore.toggleMarkerPopup(true, this._currentIndex, details[this._currentIndex]);
+        _MarkerCore.highlightMarker(true, this._currentIndex);
     },
-    FocusPrev() {
-        if (this._currentIndex > 0) {
-            this._currentIndex--;
-            this.FocusToCurrentMarker();
-        }
+    // ナビゲーション
+    FocusFirst() { 
+        this._currentIndex = 0; 
+        this.FocusToCurrentMarker(200, null); 
+    },
+    FocusPrev() { 
+        if (this._currentIndex > 0) { 
+            this._currentIndex--; 
+            this.FocusToCurrentMarker(200, null); 
+        } 
     },
     FocusNext() {
         const details = $Data.Store.GetDetails();
-        if (details && this._currentIndex < details.length - 1) {
-            this._currentIndex++;
-            this.FocusToCurrentMarker();
+        if (details && this._currentIndex < details.length - 1) { 
+            this._currentIndex++; 
+            this.FocusToCurrentMarker(200, null, true); 
         }
     },
-    FocusLast() {
-        const details = $Data.Store.GetDetails();
-        if (details) {
-            this._currentIndex = details.length - 1;
-            this.FocusToCurrentMarker();
-        }
-    },
+    // FocusLast() {
+    //     const details = $Data.Store.GetDetails();
+    //     if (details) {
+    //         this._currentIndex = details.length - 1;
+    //         this.FocusToCurrentMarker();
+    //     }
+    // },
     FocusToLocationMarker() {
         _MarkerCore.focusToLocationMarker();
     },

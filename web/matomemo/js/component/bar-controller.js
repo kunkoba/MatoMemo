@@ -75,25 +75,47 @@ const _BarCore = {
             this.btnListBtn.onclick = () => ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH) 
                 ? $Dialog.ShowDetailsSearchResult() : $Dialog.ShowDetailsTimeLine();
         }
-        this.btnFirst.onclick = () => $Marker.FocusFirst();
-        this.btnPrev.onclick = () => $Marker.FocusPrev();
-        // this.btnNext.onclick = () => $Marker.FocusNext();
-        this.btnNext.onclick = async () => {
-            const mode = $App.AppData.Context.ScreenMode;
+        // 移動ボタン制御
+        const moveWithLock = async (actionFn) => {
+            $Bar.ToggleNavLock(true);
+            // 実行した関数から待機秒数を受け取る
+            const resultWaitSec = await actionFn();
+            // 戻り値があればそれ（1.5など）を使い、なければデフォルト 0.5秒
+            const waitMs = (resultWaitSec !== undefined ? resultWaitSec : 0.5) * 1000;
+            await new Promise(resolve => setTimeout(resolve, waitMs));
+            $Bar.ToggleNavLock(false);
+        };
+        // 最初へ
+        this.btnFirst.onclick = async () => {
+            const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最初に戻りますか？" });
+            if (isOk) await moveWithLock(() => {
+                $Marker.FocusFirst(false);
+                return 0.5; // 待機秒数を返す
+            });
+        };
+        // 前へ
+        this.btnPrev.onclick = () => moveWithLock(() => {
+            $Marker.FocusPrev(false);
+            return 0.5;
+        });
+        // 次へ（戻り値が正しく moveWithLock に伝わるよう修正）
+        this.btnNext.onclick = () => moveWithLock(async () => {
             const details = $Data.Store.GetDetails();
             const isLast = ($Marker._currentIndex >= details.length - 1);
-            if (mode !== $Const.SCREEN_MODE.CREATE && isLast) {
-                const isOk = await $Dialog.ShowConfirm({
-                    title: "Navigation",
-                    message: "最後まで到達しました。最初に戻りますか？",
-                    label: "最初に戻る"
-                });
-                if (isOk) $Marker.FocusFirst();
+            if ($App.AppData.Context.ScreenMode !== $Const.SCREEN_MODE.CREATE && isLast) {
+                const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最後まで到達しました。最初に戻りますか？", label: "最初に戻る" });
+                if (isOk) {
+                    $Marker.FocusFirst(false);
+                    return 0.5; // ここで返した 0.5 が moveWithLock に渡る
+                }
             } else {
-                $Marker.FocusNext();
+                $Util.PlayMoveSound(4);
+                $Marker.FocusNext(true);
+                return $Const.MAP_CONFIG.MOVE_ANIMATION_SEC; // ここで返した 2（定数）が渡る
             }
-        };
-        this.btnLast.onclick = () => $Marker.FocusLast();
+        });
+        // this.btnLast.onclick  = () => moveWithLock(() => $Marker.FocusLast());
+        // 
         this.btnOpen.onclick = () => $DetailFrame.Open($Marker.GetDataWithCurrentIndex());
         this.btnCreate.onclick = () => {
             if ($App.AppData.Context.ScreenMode !== $Const.SCREEN_MODE.CREATE) {
@@ -134,7 +156,7 @@ const _BarCore = {
         if (isArc) $Dom.ToggleShow(this.btnArchiveTitle, isOn);
         $Dom.ToggleShow(this.groupAction, isOn);
         $Dom.ToggleShow(this.groupAction, isOn);
-        $Dom.ToggleShow(this.sliderRoot, isOn);
+        // $Dom.ToggleShow(this.sliderRoot, isOn);
     },
     // 画面モード変更：上下バーのレイアウト一括更新
     changeScreenMode() {
@@ -264,7 +286,6 @@ const BarController = {
     // ポップアップと重なるスイッチUIだけをピンポイントで切り替える
     ToggleSwitches(isShow) {
         $Dom.ToggleShow($Dom.GetElementById('ui-marker-mode-switch'), isShow);
-        // $Dom.ToggleShow($Dom.GetElementById('ui-side-map-group'), isShow);
         $Dom.ToggleShow($Dom.GetElementById('ui-map-zoom-slider-root'), isShow);
         $Dom.ToggleShow($Dom.GetElementById('ui-side-action-group'), isShow);
     },
@@ -273,6 +294,27 @@ const BarController = {
     UpdateNoticeBadge() { _BarCore.updateNoticeBadge(); },
     UpdateUserIcon() { _BarCore.updateUserIcon(); },
     UpdateMainSwitchUI(isOn){ _BarCore._updateMainSwitchUI(isOn); },
+    // 修正：既存の pointer-events-auto と完全に「入れ替える」ことで連打を物理遮断する
+    ToggleNavLock(isLock) {
+        console.log("◆ToggleNavLock:", isLock);
+        // ロック対象のボタンIDリスト（中央ボタンは含めない）
+        const targetIds = [
+            'btn-bot-move-first', 'btn-bot-move-prev', 'btn-bot-move-next', 'btn-bot-move-last',
+            'detail-btn-first', 'detail-btn-prev', 'detail-btn-next', 'detail-btn-last'
+        ];
+        const cls = ['pointer-events-none', 'opacity-50'];
+        targetIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (isLock) {
+                el.classList.add(...cls);
+                el.disabled = true; // HTML属性としても無効化
+            } else {
+                el.classList.remove(...cls);
+                el.disabled = false;
+            }
+        });
+    },
 };
 
 export default BarController;

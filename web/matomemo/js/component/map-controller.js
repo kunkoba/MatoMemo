@@ -101,17 +101,17 @@ const _MapCore = {
         this.root.classList.toggle('map-grayscale', isGray);
     },
     // 視点移動の実体
-    focusToTargetMarker(marker, delay = 500, zoom = null) {
+    focusToTargetMarker(marker, delay = 500, zoom = null, isFly = false) {
         if (delay > 0) {
             // パネルが開く時などは従来通り遅延＋リサイズ追従
             setTimeout(() => {
                 this._map.invalidateSize();
-                this._moveTo(marker.getLatLng(), zoom);
+                this._moveTo(marker.getLatLng(), zoom, isFly);
             }, delay + 100);
             this.resizeMap(delay);
         } else {
             // 遅延0の場合は即座に移動するだけ
-            this._moveTo(marker.getLatLng(), zoom);
+            this._moveTo(marker.getLatLng(), zoom, isFly);
         }
     },
     // 再計算ループ処理
@@ -157,18 +157,15 @@ const _MapCore = {
         this._moveTo([lat, lng], zoom);
     },
     // 移動処理の共通ヘルパー（flyTo と setView を分岐）
-    _moveTo(latLng, zoom) {
+    _moveTo(latLng, zoom, isFly = false) {
         const targetZoom = zoom || this._map.getZoom();
-        const delay = 1.5;
-        // 画面内かつズーム変更なしなら即時移動、それ以外はアニメーション
-        if (this._isInCurrentView(latLng, targetZoom)) {
-            // 画面内は0.5秒のスライド移動
-            this._map.setView(latLng, targetZoom, {
-                animate: true,
-                pan: { duration: delay / 2 }
-            });
-        } else {
+        const delay = $Const.MAP_CONFIG.MOVE_ANIMATION_SEC;
+        // 修正：isFly が true なら、画面内かどうかに関わらず flyTo を実行する
+        if (isFly) {
             this._map.flyTo(latLng, targetZoom, { duration: delay });
+        } else {
+            // 通常移動（一瞬で切り替え）
+            this._map.setView(latLng, targetZoom, { animate: false });
         }
     },
     // 現在の表示範囲内（座標＋ズーム）か判定
@@ -231,8 +228,8 @@ const MapController = {
     ResizeMap(delay) {
         _MapCore.resizeMap(delay);
     },
-    FocusToTargetMarker(marker, delay, zoom = null) {
-        _MapCore.focusToTargetMarker(marker, delay, zoom);
+    FocusToTargetMarker(marker, delay, zoom = null, isFly = false) {
+        _MapCore.focusToTargetMarker(marker, delay, zoom, isFly);
     },
     GetCenter() {
         return _MapCore.getCenter();

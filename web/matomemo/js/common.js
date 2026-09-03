@@ -387,4 +387,12 @@ window.$Util = {
         const item = Object.values($Const.FEEL_TYPE).find(f => f.val === Number(val));
         return item ? item.path : $Const.FEEL_TYPE.NORMAL.path;
     },
+    // 追加：移動音を再生する
+    PlayMoveSound(typeId) {
+        // 定数から該当するファイル名を探す
+        const sound = Object.values($Const.MOVE_SOUND_TYPE).find(s => s.id === Number(typeId));
+        if (!sound) return;
+        const audio = new Audio(sound.file);
+        audio.play().catch(e => console.warn("再生ブロック:", e));
+    },
 };
