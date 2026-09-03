@@ -109,7 +109,7 @@ const _BarCore = {
                     return 0.5; // ここで返した 0.5 が moveWithLock に渡る
                 }
             } else {
-                $Util.PlayMoveSound(4);
+                $Util.PlayMoveSound($Const.MOVE_SOUND_TYPE.WALK.id);
                 $Marker.FocusNext(true);
                 return $Const.MAP_CONFIG.MOVE_ANIMATION_SEC; // ここで返した 2（定数）が渡る
             }
@@ -284,10 +284,8 @@ const BarController = {
     GetSortSetting() { return _BarCore.getSortSetting(); },
     UpdateNoticeBadge() { _BarCore.updateNoticeBadge(); },
     UpdateUserIcon() { _BarCore.updateUserIcon(); },
-    // UpdateMainSwitchUI(isOn){ _BarCore._updateMainSwitchUI(isOn); },
     // 既存の pointer-events-auto と完全に「入れ替える」ことで連打を物理遮断する
     ToggleNavLock(isLock) {
-        console.log("◆ToggleNavLock:", isLock);
         // ロック対象のボタンIDリスト（中央ボタンは含めない）
         const targetIds = [
             'btn-bot-move-first', 'btn-bot-move-prev', 'btn-bot-move-next', 'btn-bot-move-last',
@@ -306,18 +304,22 @@ const BarController = {
             }
         });
     },
-    // ポップアップと重なるスイッチUIだけをピンポイントで切り替える
+    // Aグループ（スライダー・切替・アクション）の制御
     ToggleSwitches(isShow) {
-        const targetIds = [
-            'ui-map-zoom-slider-root', // ズームスライダー
-            'ui-marker-mode-switch',    // マーカー切替スイッチ
-            'ui-side-action-group'      // 操作関連ボタン（親）
-        ];
+        const targetIds = ['ui-map-zoom-slider-root', 'ui-marker-mode-switch', 'ui-side-action-group'];
         targetIds.forEach(id => {
             const el = document.getElementById(id);
             if (el) $Dom.ToggleShow(el, isShow);
         });
     },
+    // Bグループ（タイトル・移動ボタン）の制御 ★新規追加
+    ToggleNavUI(isShow) {
+        const targetIds = ['ui-archive-title', 'bot-group-move'];
+        targetIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) $Dom.ToggleShow(el, isShow);
+        });
+    }
 };
 
 export default BarController;

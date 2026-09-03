@@ -202,7 +202,7 @@ const _DetailFrameCore = {
                         const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最後まで到達しました。最初に戻りますか？", label: "最初に戻る" });
                         if (isOk) await this._moveAndRender(() => $Marker.FocusFirst());
                     } else {
-                        $Util.PlayMoveSound(2);
+                        $Util.PlayMoveSound($Const.MOVE_SOUND_TYPE.WALK.id);
                         await this._moveAndRender(() => $Marker.FocusNext());
                     }
                 });
@@ -299,6 +299,7 @@ const _DetailFrameCore = {
         // メイン処理
         if (isShow) {
             $Bar.ToggleSwitches(false);
+            $Bar.ToggleNavUI(false);
             $Map.LockMap(true);
             // パネル表示時にエフェクトの重なり順を調整
             if (typeof Atmosphere !== 'undefined' && Atmosphere.canvas) {
@@ -326,6 +327,7 @@ const _DetailFrameCore = {
             if (!hasPopup) {
                 $Bar.ToggleSwitches(true);
             }
+            $Bar.ToggleNavUI(true);
             // バリアを解除
             if (this.mapBarrier) $Dom.ToggleShow(this.mapBarrier, false);
             // パネルを閉じる時に環境エフェクトをオフにし、奥に戻す

@@ -41,7 +41,7 @@ window.$Const = {
         MAX_ZOOM: 18,
         DEFAULT_ZOOM: 15,
         MOVE_DEFAULT_SEC: 0.5,
-        MOVE_ANIMATION_SEC: 3,
+        MOVE_ANIMATION_SEC: 2,
     },
     // 画面モード
     SCREEN_MODE: {
