@@ -61,7 +61,7 @@ const _DetailContentCore = {
                     this.editSoundGroup = $Dom.GetElementById("detail-edit-sound-group");
                     this.editSoundInput = $Dom.GetElementById("detail-edit-move_sound_id");
                     this.editSoundGroup.innerHTML = Object.values($Const.MOVE_SOUND_TYPE).map(s => `
-                        <button type="button" data-id="${s.id}" class="js-sound-btn w-10 h-10 rounded-full bg-slate-50 border-2 border-transparent flex items-center justify-center text-[1.2rem] active:scale-90 transition-all">
+                        <button type="button" data-id="${s.id}" class="js-sound-btn shrink-0 w-14 h-14 rounded-xl bg-white border-2 border-slate-200 flex items-center justify-center text-[1.8rem] active:scale-90 transition-all">
                             ${s.emoji}
                         </button>
                     `).join('');
@@ -480,9 +480,14 @@ const _DetailContentCore = {
     // 移動音源
     _updateSoundUI(selectedId) {
         $Dom.QuerySelectorAll(".js-sound-btn", this.editSoundGroup).forEach(btn => {
-            const isActive = btn.dataset.id === String(selectedId);
-            btn.classList.toggle('border-brand-5', isActive);
-            btn.classList.toggle('bg-white', isActive);
+            const isActive = Number(btn.dataset.id) === Number(selectedId);
+            if (isActive) {
+                btn.classList.add('border-brand-5');
+                btn.classList.remove('border-slate-200');
+            } else {
+                btn.classList.add('border-slate-200');
+                btn.classList.remove('border-brand-5');
+            }
             btn.classList.toggle('shadow-md', isActive);
         });
     }

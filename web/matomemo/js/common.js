@@ -391,9 +391,14 @@ window.$Util = {
     PlayMoveSound(typeId) {
         const sound = Object.values($Const.MOVE_SOUND_TYPE).find(s => s.id === Number(typeId));
         if (!sound) return;
+        // 再生中の音があれば停止してリセット
+        if (this._currentAudio) {
+            this._currentAudio.pause();
+            this._currentAudio.currentTime = 0;
+        }
         const audio = new Audio(sound.file);
-        // AppData の音量を反映 (0.0 ～ 1.0)
         audio.volume = $App.AppData.Owner.SoundVolume;
+        this._currentAudio = audio; // インスタンスを保持
         audio.play().catch(e => console.warn("再生ブロック:", e));
     },
 };
