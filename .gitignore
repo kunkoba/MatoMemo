@@ -6,7 +6,9 @@ _del/
 
 
 # URLを除外
-*js/config.js
+js/*config*
+config.js
+
 
 *.mp3
 
