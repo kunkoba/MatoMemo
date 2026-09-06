@@ -357,6 +357,34 @@ window.$Util = {
         // メートルをkmに変換して返却
         return totalMeters / 1000;
     },
+    // SNSシェア
+    async Share(type, url, title = "") {
+        // オフラインチェック
+        if (!$App.AppData.Context.IsNetOnline) {
+            $Notice.Warn("オフライン中は、機能が制限されます。");
+            return;
+        }
+        if (!url) return;
+        // スマホ等（Web Share API対応環境）の場合
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: title,
+                    url: url
+                });
+                return; // OS共有画面が開いたらここで終了
+            } catch (err) {
+                // ユーザーが「キャンセル」を押した場合は何もしない
+                if (err.name === 'AbortError') return;
+                // その他のエラー時は下のフォールバック（従来処理）へ進む
+            }
+        }
+        // PC等（未対応環境）の場合：既存のメソッドを活用して従来通りの動きをする
+        const shareUrl = this.GetShareUrl(type, url, title);
+        if (shareUrl) {
+            this.OpenExternalLink(shareUrl);
+        }
+    },
     // SNSシェア用URLの生成
     GetShareUrl(type, url, title = "") {
         const encodedUrl = encodeURIComponent(url);

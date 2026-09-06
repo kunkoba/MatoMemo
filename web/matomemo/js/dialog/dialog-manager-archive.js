@@ -525,7 +525,7 @@ export default {
             if (archive.is_public && !archive.closed_flg) {
                 headerButtons.push({
                     label: "🔗",
-                    handler: () => this.ShowShareArchive(archive, profile, sUrl, qrIUrl)
+                    handler: () => this.ShowShareArchive(archive, sUrl, qrIUrl)
                 });
             }
             if (archive.is_owner) {
@@ -723,7 +723,7 @@ export default {
         this._core.open({ title: "公開状態を変更する", content: root, buttons: [] });
     },
     // URL公開画面
-    ShowShareArchive(archive, profile, shareUrl, qrImageUrl) {
+    ShowShareArchive(archive, shareUrl, qrImageUrl) {
         const el = $Dom.GenerateTemplate('tpl-share-archive');
         $Dom.QuerySelector('#share-archive-title', el).textContent = archive.title || "No Title";
         // 画像URLをsrcにセット
@@ -734,19 +734,26 @@ export default {
             navigator.clipboard.writeText(shareUrl).then(() => $Notice.Info("URLをコピーしました！"));
         };
         $Dom.QuerySelector('#btn-share-line', el).onclick = async () => {
-            // if (await $Dialog.ShowConfirm({ title: "LINE 連携", message: "LINE を起動しますか？" })) window.open($Util.GetShareUrl('line', shareUrl), '_blank');
+            // 1. Web Share API対応（スマホ等）の場合は、ダイアログを出さずに直接OSの共有シートを開くのが一般的
+            if (navigator.share) {
+                await $Util.Share('line', shareUrl, $Const.APP_INFO.NAME);
+                return;
+            }
+            // 2. PCなどの未対応環境の場合のみ、従来の確認ダイアログを出して開く
             const isOk = await $Dialog.ShowConfirm({
                 title: "LINE 連携",
                 message: "LINE を起動しますか？"
             });
             if (isOk) {
-                const url = $Util.GetShareUrl('line', shareUrl);
-                $Util.OpenExternalLink(url);
+                await $Util.Share('line', shareUrl, $Const.APP_INFO.NAME);
             }
-
         };
         $Dom.QuerySelector('#btn-share-x', el).onclick = async () => {
-            // if (await $Dialog.ShowConfirm({ title: "X 連携", message: "X を起動しますか？" })) window.open($Util.GetShareUrl('x', shareUrl, archive.title), '_blank');
+            // 1. Web Share API対応（スマホ等）の場合は、ダイアログを出さずに直接OSの共有シートを開くのが一般的
+            if (navigator.share) {
+                await $Util.Share('line', shareUrl, $Const.APP_INFO.NAME);
+                return;
+            }
             const isOk = await $Dialog.ShowConfirm({
                 title: "X連携",
                 message: "Xを起動しますか？"
@@ -758,7 +765,11 @@ export default {
 
         };
         $Dom.QuerySelector('#btn-share-fb', el).onclick = async () => {
-            // if (await $Dialog.ShowConfirm({ title: "facebook 連携", message: "facebook を起動しますか？" })) window.open($Util.GetShareUrl('facebook', shareUrl), '_blank');
+            // 1. Web Share API対応（スマホ等）の場合は、ダイアログを出さずに直接OSの共有シートを開くのが一般的
+            if (navigator.share) {
+                await $Util.Share('line', shareUrl, $Const.APP_INFO.NAME);
+                return;
+            }
             const isOk = await $Dialog.ShowConfirm({
                 title: "facebook連携",
                 message: "facebookを起動しますか？"
