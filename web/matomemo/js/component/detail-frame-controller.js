@@ -202,7 +202,10 @@ const _DetailFrameCore = {
                         const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最後まで到達しました。最初に戻りますか？", label: "最初に戻る" });
                         if (isOk) await this._moveAndRender(() => $Marker.FocusFirst());
                     } else {
-                        $Util.PlayMoveSound($Const.MOVE_SOUND_TYPE.WALK.id);
+                        // 次の地点の音源IDを取得（WALK:1 をデフォルトとする）
+                        const nextDetail = $Data.Store.GetDetails()[$Marker._currentIndex + 1];
+                        const soundId = nextDetail?.move_sound_id ?? 1;
+                        $Util.PlayMoveSound(soundId);
                         await this._moveAndRender(() => $Marker.FocusNext());
                     }
                 });
@@ -225,8 +228,8 @@ const _DetailFrameCore = {
             this.toggleDetailPanel(false);
         }
         // UI表示切替
-        // $Bar.UpdateMainSwitchUI(true);
-        $Bar.ToggleSwitches
+        $Bar.ToggleSwitches(true);
+        $Bar.ToggleNavUI(true);
     },
     // 画面モード変更時
     changeScreenMode(){

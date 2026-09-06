@@ -443,6 +443,7 @@ window.$Data = {
                     memo_price: d.memo_price,
                     is_public: !!d.is_public,
                     feel_type: d.feel_type,
+                    move_sound_id: d.move_sound_id,
                 }))
             };
             // 3. 一括送信

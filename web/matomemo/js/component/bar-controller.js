@@ -109,9 +109,12 @@ const _BarCore = {
                     return 0.5; // ここで返した 0.5 が moveWithLock に渡る
                 }
             } else {
-                $Util.PlayMoveSound($Const.MOVE_SOUND_TYPE.WALK.id);
+                // 次の地点のデータを取得して音源IDを特定
+                const nextDetail = $Data.Store.GetDetails()[$Marker._currentIndex + 1];
+                const soundId = nextDetail?.move_sound_id ?? 1;
+                $Util.PlayMoveSound(soundId);
                 $Marker.FocusNext(true);
-                return $Const.MAP_CONFIG.MOVE_ANIMATION_SEC; // ここで返した 2（定数）が渡る
+                return $Const.MAP_CONFIG.MOVE_ANIMATION_SEC; 
             }
         });
         // this.btnLast.onclick  = () => moveWithLock(() => $Marker.FocusLast());
@@ -314,10 +317,15 @@ const BarController = {
     },
     // Bグループ（タイトル・移動ボタン）の制御 ★新規追加
     ToggleNavUI(isShow) {
+        const mode = $App.AppData.Context.ScreenMode;
+        // まとめモード（通常・公開）の時だけを表示対象とする
+        const isArchiveMode = (mode === $Const.SCREEN_MODE.ARCHIVE || mode === $Const.SCREEN_MODE.ARCHIVE_PUB);
         const targetIds = ['ui-archive-title', 'bot-group-move'];
         targetIds.forEach(id => {
             const el = document.getElementById(id);
-            if (el) $Dom.ToggleShow(el, isShow);
+            // 表示命令(isShow=true)であっても、まとめモードでなければ隠したままにする
+            const finalShow = isShow ? isArchiveMode : false;
+            if (el) $Dom.ToggleShow(el, finalShow);
         });
     }
 };
