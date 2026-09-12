@@ -214,6 +214,7 @@ CREATE TABLE public.t_memo_detail_1 (
 	del_flg bool DEFAULT false NULL,
 	create_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	update_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	move_sound_id int8 NULL,
 	CONSTRAINT t_memo_detail_1_pkey PRIMARY KEY (seq)
 );
 CREATE INDEX idx_memo_detail_1_archive ON public.t_memo_detail_1 USING btree (archive_id);
@@ -244,6 +245,7 @@ CREATE TABLE public.t_memo_detail_2 (
 	del_flg bool DEFAULT false NULL,
 	create_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	update_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	move_sound_id int8 NULL,
 	CONSTRAINT t_memo_detail_2_pkey PRIMARY KEY (seq)
 );
 CREATE INDEX idx_memo_detail_2_archive ON public.t_memo_detail_2 USING btree (archive_id);
@@ -274,6 +276,7 @@ CREATE TABLE public.t_memo_detail_3 (
 	del_flg bool DEFAULT false NULL,
 	create_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	update_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	move_sound_id int8 NULL,
 	CONSTRAINT t_memo_detail_3_pkey PRIMARY KEY (seq)
 );
 CREATE INDEX idx_memo_detail_3_archive ON public.t_memo_detail_3 USING btree (archive_id);
@@ -304,6 +307,7 @@ CREATE TABLE public.t_memo_detail_4 (
 	del_flg bool DEFAULT false NULL,
 	create_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	update_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	move_sound_id int8 NULL,
 	CONSTRAINT t_memo_detail_4_pkey PRIMARY KEY (seq)
 );
 CREATE INDEX idx_memo_detail_4_archive ON public.t_memo_detail_4 USING btree (archive_id);
@@ -334,6 +338,7 @@ CREATE TABLE public.t_memo_detail_5 (
 	del_flg bool DEFAULT false NULL,
 	create_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	update_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	move_sound_id int8 NULL,
 	CONSTRAINT t_memo_detail_5_pkey PRIMARY KEY (seq)
 );
 CREATE INDEX idx_memo_detail_5_archive ON public.t_memo_detail_5 USING btree (archive_id);
@@ -369,6 +374,7 @@ CREATE TABLE public.t_memo_detail_pub (
 	create_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	update_tim timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	click_stats jsonb DEFAULT '{}'::jsonb NULL,
+	move_sound_id int8 NULL,
 	CONSTRAINT t_memo_detail_pub_pkey PRIMARY KEY (archive_id, seq)
 );
 CREATE INDEX idx_memo_detail_pub_archive ON public.t_memo_detail_pub USING btree (archive_id);

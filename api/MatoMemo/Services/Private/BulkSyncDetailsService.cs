@@ -25,7 +25,8 @@ public class BulkSyncDetailsService(
         [Required(ErrorMessage = "天気IDは必須です")] string weather_code,
         string? link_url,
         [Required(ErrorMessage = "金額は必須です")] int memo_price,
-        [Required(ErrorMessage = "評価は必須です")] int feel_type
+        [Required(ErrorMessage = "評価は必須です")] int feel_type,
+        int? move_sound_id
     );
 
     public record BulkSyncReq(
@@ -83,6 +84,7 @@ public class BulkSyncDetailsService(
         link_url = item.link_url,
         memo_price = item.memo_price,
         feel_type = item.feel_type,
+        move_sound_id = item.move_sound_id,
         del_flg = false
     };
 

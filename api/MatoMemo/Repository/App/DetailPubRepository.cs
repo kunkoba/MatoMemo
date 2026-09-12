@@ -28,6 +28,7 @@ public class DetailPubRepository : _BaseRepository
                 link_url     = @link_url,
                 memo_price   = @memo_price,
                 feel_type    = @feel_type,
+                move_sound_id = @move_sound_id,
                 update_tim   = CURRENT_TIMESTAMP
             WHERE   seq         = @seq 
                 AND archive_id  = @archive_id 
@@ -63,10 +64,10 @@ public class DetailPubRepository : _BaseRepository
         const string sql = @"
             INSERT INTO t_memo_detail_pub (
                 archive_id, seq, user_id, latitude, longitude, title, body,
-                memo_date, memo_time, face_emoji, weather_code, link_url, memo_price, feel_type
+                memo_date, memo_time, face_emoji, weather_code, link_url, memo_price, feel_type, move_sound_id
             ) VALUES (
                 @archive_id, @seq, @user_id, @latitude, @longitude, @title, @body,
-                @memo_date, @memo_time, @face_emoji, @weather_code, @link_url, @memo_price, @feel_type
+                @memo_date, @memo_time, @face_emoji, @weather_code, @link_url, @memo_price, @feel_type, @move_sound_id
             )
             ON CONFLICT (archive_id, seq) DO UPDATE SET
                 del_flg = false,

@@ -23,7 +23,7 @@ window.$Const = {
     // アプリ設定
     APP_CONFIG: {
         ADMIN_PW: (window.ENV_CONFIG && window.ENV_CONFIG.ADMIN_PW) ? window.ENV_CONFIG.ADMIN_PW : "",
-        SAVE_DETAIL_SEC: 300,
+        SAVE_DETAIL_SEC: 30,
         SAVE_REACTION_SEC: 300,
         NETWORK_TIMEOUT_SEC: 10,
     },

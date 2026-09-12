@@ -93,6 +93,7 @@ export default {
     ShowDetailsSearchResult() {
         const details = $Data.Store.GetDetails();
         if (!details || details.length === 0) return $Notice.Warn("データはありません。");
+        console.log(">>ShowDetailsSearchResult", details);
         const el = $Dom.GenerateTemplate("tpl-list-parent");
         const rt = $Const.REACTION_TYPE; // リアクション定数
         details.forEach((item, index) => {
@@ -102,7 +103,23 @@ export default {
             $Dom.QuerySelector(".js-face", child).textContent = item.face_emoji || '😀';
             $Dom.QuerySelector(".js-archive-title", child).textContent = item.a_title || "(No Archive)";
             $Dom.QuerySelector(".js-title", child).textContent = item.title || "No Title";
-            $Dom.QuerySelector(".js-body", child).textContent = (item.body || "").replace(/\r?\n/g, ' ');
+            // $Dom.QuerySelector(".js-body", child).textContent = (item.body || "").replace(/\r?\n/g, ' ');
+            const feelImg = $Dom.QuerySelector(".js-feel-image", child);
+            feelImg.src = $Util.GetFeelIconPath(item.feel_type);
+            // 3. 金額表示（他画面と同ロジック）
+            const priceWrapper = $Dom.QuerySelector(".js-price-wrapper", child);
+            const priceValEl = $Dom.QuerySelector(".js-price", child);
+            const priceUnitEl = $Dom.QuerySelector(".js-price-unit", child);
+            const price = Number(item.memo_price || 0);
+            if (price !== 0) {
+                $Dom.ToggleShow(priceWrapper, true);
+                priceValEl.textContent = price > 0 ? `+${price.toLocaleString()}` : price.toLocaleString();
+                priceValEl.className = "js-price font-bold text-[1rem] " + (price > 0 ? "text-blue-500" : "text-red-500");
+                const archive = $Data.Store.GetArchive();
+                priceUnitEl.textContent = archive?.currency_unit || $App.AppData.Context.Archive?.currency_unit || item.currency_unit || "";
+            } else {
+                $Dom.ToggleShow(priceWrapper, false);
+            }
             // --- 【変更】日付情報の反映 ---
             const dateContainer = $Dom.QuerySelector(".js-date-container", child);
             // dateContainer.innerHTML = "";

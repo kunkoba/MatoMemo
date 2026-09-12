@@ -106,8 +106,8 @@
 </template>
 
 <!-- 【リスト子】シンプルリスト（検索結果・単発リスト用） -->
-<template id="tpl-list-child-search">
-    <div class="js-item-card relative flex flex-col p-4 border-b _rounded-[1rem] _border _ _shadow-md bg-white cursor-pointer active:scale-[0.98] transition-transform overflow-hidden mb-3">
+<template id="tpl-list-child-search_2">
+    <div class="js-item-card relative flex flex-col p-4 border-b _rounded-[1rem] bg-white cursor-pointer active:scale-[0.98] transition-transform overflow-hidden mb-3">
         <div class="flex justify-between items-center mb-2">
             <div class="flex items-center gap-2">
                 <span class="js-index w-6 h-6 bg-slate-800 text-white text-[0.9rem] font-bold rounded-full flex items-center justify-center"></span>
@@ -125,6 +125,35 @@
         <div class="js-title text-[1rem] font-bold text-slate-900 truncate mb-1"></div>
         <!-- 4. 本文 (2行まで許容) -->
         <div class="js-body text-[0.9rem] text-slate-600 line-clamp-2  mb-3"></div>
+    </div>
+</template>
+<!-- 【リスト子】シンプルリスト（検索結果・単発リスト用） -->
+<template id="tpl-list-child-search">
+    <div class="js-item-card relative flex flex-col p-2 border-b bg-white cursor-pointer active:scale-[0.98] transition-transform overflow-hidden mb-2">
+        <div class="flex justify-between items-center mb-2">
+            <div class="flex items-center gap-2">
+                <span class="js-index w-6 h-6 bg-slate-800 text-white text-[0.9rem] font-bold rounded-full flex items-center justify-center"></span>
+                <!-- 【変更】作成日時表示用spanをコンテナに変更 -->
+                <div class="js-date-container"></div>
+            </div>
+            <!-- <div class="js-face shrink-0 kb-icon-emoji-lg"></div> -->
+        </div>
+        <!-- 2. 所属まとめタイトル -->
+        <div class="flex items-center gap-1.5 mb-1.5">
+            <span class="kb-icon-emoji-sm">🗂️</span>
+            <span class="js-archive-title text-[0.9rem] font-bold text-brand-5 truncate"></span>
+        </div>
+        <!-- 3. 地点タイトル -->
+        <div class="js-title text-[1rem] font-bold text-slate-900 truncate mb-1"></div>
+        <!-- 4. 絵文字・評価・金額 -->
+        <div class="flex items-center gap-2 mb-3">
+            <div class="js-face kb-icon-emoji-md"></div>
+            <img src="" class="js-feel-image w-6 h-6 object-contain">
+            <div class="js-price-wrapper flex items-baseline gap-1 italic">
+                <span class="js-price text-[1rem] font-bold"></span>
+                <span class="js-price-unit text-[0.7rem] font-bold text-slate-500 uppercase">JPY</span>
+            </div>
+        </div>
     </div>
 </template>
 

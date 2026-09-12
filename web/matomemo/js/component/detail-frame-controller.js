@@ -185,28 +185,71 @@ const _DetailFrameCore = {
                 this.btnClose.addEventListener("click", () => this.handleCloseOrCancel());
                 this.btnCancel.addEventListener("click", () => this.handleCloseOrCancel());
                 this.btnCancel2.addEventListener("click", () => this.handleCloseOrCancel());
+                // // 最初へ
+                // this.btnMoveFirst.addEventListener("click", async () => {
+                //     const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最初に戻りますか？" });
+                //     if (isOk) await this._moveAndRender(() => $Marker.FocusFirst());
+                // });
+                // // 前へ
+                // this.btnMovePrev.addEventListener("click", async () => {
+                //     await this._moveAndRender(() => $Marker.FocusPrev());
+                // });
+                // // 次へ
+                // this.btnMoveNext.addEventListener("click", async () => {
+                //     const details = $Data.Store.GetDetails();
+                //     const isLast = ($Marker._currentIndex >= details.length - 1);
+                //     if (isLast) {
+                //         const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最後まで到達しました。最初に戻りますか？", label: "最初に戻る" });
+                //         if (isOk) await this._moveAndRender(() => $Marker.FocusFirst());
+                //     } else {
+                //         // 次の地点の音源IDを取得（WALK:1 をデフォルトとする）
+                //         const nextDetail = $Data.Store.GetDetails()[$Marker._currentIndex];
+                //         const soundId = nextDetail?.move_sound_id ?? 1;
+                //         $Util.PlayMoveSound(soundId);
+                //         await this._moveAndRender(() => $Marker.FocusNext());
+                //     }
+                // });
                 // 最初へ
                 this.btnMoveFirst.addEventListener("click", async () => {
-                    const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最初に戻りますか？" });
-                    if (isOk) await this._moveAndRender(() => $Marker.FocusFirst());
+                    const isOk = await $Dialog.ShowConfirm({
+                        title: "Navigation",
+                        message: "最初に戻りますか？"
+                    });
+                    if (isOk) await this._moveAndRender(
+                        () => $Marker.FocusFirst(),
+                        $Const.MAP_CONFIG.MOVE_DEFAULT_SEC
+                    );
                 });
                 // 前へ
                 this.btnMovePrev.addEventListener("click", async () => {
-                    await this._moveAndRender(() => $Marker.FocusPrev());
+                    await this._moveAndRender(
+                        () => $Marker.FocusPrev(),
+                        $Const.MAP_CONFIG.MOVE_DEFAULT_SEC
+                    );
                 });
                 // 次へ
                 this.btnMoveNext.addEventListener("click", async () => {
                     const details = $Data.Store.GetDetails();
                     const isLast = ($Marker._currentIndex >= details.length - 1);
                     if (isLast) {
-                        const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最後まで到達しました。最初に戻りますか？", label: "最初に戻る" });
-                        if (isOk) await this._moveAndRender(() => $Marker.FocusFirst());
+                        const isOk = await $Dialog.ShowConfirm({
+                            title: "Navigation",
+                            message: "最後まで到達しました。最初に戻りますか？",
+                            label: "最初に戻る"
+                        });
+                        if (isOk) await this._moveAndRender(
+                            () => $Marker.FocusFirst(),
+                            $Const.MAP_CONFIG.MOVE_DEFAULT_SEC
+                        );
                     } else {
                         // 次の地点の音源IDを取得（WALK:1 をデフォルトとする）
-                        const nextDetail = $Data.Store.GetDetails()[$Marker._currentIndex + 1];
+                        const nextDetail = $Data.Store.GetDetails()[$Marker._currentIndex];
                         const soundId = nextDetail?.move_sound_id ?? 1;
                         $Util.PlayMoveSound(soundId);
-                        await this._moveAndRender(() => $Marker.FocusNext());
+                        await this._moveAndRender(
+                            () => $Marker.FocusNext(),
+                            $Const.MAP_CONFIG.MOVE_ANIMATION_SEC
+                        );
                     }
                 });
                 // this.btnMoveLast.addEventListener("click", async () => await this._moveAndRender(() => $Marker.FocusLast()));
@@ -273,7 +316,7 @@ const _DetailFrameCore = {
         }
     },
     // 移動して詳細画面表示（演出・待機秒数の指定対応版）
-    async _moveAndRender(callback) {
+    async _moveAndRender(callback, waitSec) {
         // バー全体の操作をロック
         $Bar.ToggleNavLock(true);
         // 1. マーカーのインデックス更新と地図移動（演出フラグを渡す）
@@ -288,7 +331,7 @@ const _DetailFrameCore = {
             this.txtJumpArchiveTitle.textContent = detail.a_title || "まとめへ移動";
         }
         // 指定された秒数分待機する
-        await new Promise(resolve => setTimeout(resolve, $Const.MAP_CONFIG.MOVE_ANIMATION_SEC * 1000));
+        await new Promise(resolve => setTimeout(resolve, waitSec * 1000));
         // ロックを解除
         $Bar.ToggleNavLock(false);
     },

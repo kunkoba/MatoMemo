@@ -76,10 +76,10 @@ const _BarCore = {
                 ? $Dialog.ShowDetailsSearchResult() : $Dialog.ShowDetailsTimeLine();
         }
         // 移動ボタン制御
-        const moveWithLock = async (actionFn) => {
+        const moveWithLock = async (callback) => {
             $Bar.ToggleNavLock(true);
             // 実行した関数から待機秒数を受け取る
-            const resultWaitSec = await actionFn();
+            const resultWaitSec = await callback();
             // 戻り値があればそれ（1.5など）を使い、なければデフォルト 0.5秒
             const waitMs = (resultWaitSec !== undefined ? resultWaitSec : 0.5) * 1000;
             await new Promise(resolve => setTimeout(resolve, waitMs));
@@ -90,13 +90,13 @@ const _BarCore = {
             const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最初に戻りますか？" });
             if (isOk) await moveWithLock(() => {
                 $Marker.FocusFirst(false);
-                return 0.5; // 待機秒数を返す
+                return $Const.MAP_CONFIG.MOVE_DEFAULT_SEC;
             });
         };
         // 前へ
         this.btnPrev.onclick = () => moveWithLock(() => {
             $Marker.FocusPrev(false);
-            return 0.5;
+            return $Const.MAP_CONFIG.MOVE_DEFAULT_SEC;
         });
         // 次へ（戻り値が正しく moveWithLock に伝わるよう修正）
         this.btnNext.onclick = () => moveWithLock(async () => {
@@ -106,15 +106,15 @@ const _BarCore = {
                 const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最後まで到達しました。最初に戻りますか？", label: "最初に戻る" });
                 if (isOk) {
                     $Marker.FocusFirst(false);
-                    return 0.5; // ここで返した 0.5 が moveWithLock に渡る
+                    return $Const.MAP_CONFIG.MOVE_ANIMATION_SEC;
                 }
             } else {
                 // 次の地点のデータを取得して音源IDを特定
-                const nextDetail = $Data.Store.GetDetails()[$Marker._currentIndex + 1];
+                const nextDetail = $Data.Store.GetDetails()[$Marker._currentIndex];
                 const soundId = nextDetail?.move_sound_id ?? 1;
                 $Util.PlayMoveSound(soundId);
                 $Marker.FocusNext(true);
-                return $Const.MAP_CONFIG.MOVE_ANIMATION_SEC; 
+                return $Const.MAP_CONFIG.MOVE_ANIMATION_SEC;
             }
         });
         // this.btnLast.onclick  = () => moveWithLock(() => $Marker.FocusLast());

@@ -29,7 +29,8 @@ public class UpdateDetailPubService(
         [Required(ErrorMessage = "天気IDは必須です")] string weather_code,
         string? link_url,
         [Required(ErrorMessage = "金額は必須です")] int memo_price,
-        [Required(ErrorMessage = "感情は必須です")] int feel_type
+        [Required(ErrorMessage = "感情は必須です")] int feel_type,
+        int? move_sound_id
     ) : ILoginUserRequest;
 
     public record Response(long seq);
@@ -86,6 +87,7 @@ public class UpdateDetailPubService(
         link_url = req.link_url,
         memo_price = req.memo_price,
         feel_type = req.feel_type,
+        move_sound_id = req.move_sound_id,
         del_flg = false
     };
 
