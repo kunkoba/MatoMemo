@@ -127,7 +127,6 @@ const _DetailFrameCore = {
                 // 編集切替ボタン
                 this.btnEdit.addEventListener("click", () => {
                     const data = $DetailContent.GetFormEditData();
-                    console.log("btnEdit:", data);
                     const currentData = $Data.Store.GetDetailByKey(data.archive_id, data.seq, data.dbid);
                     if (currentData) {
                         $DetailContent.RenderDetail(currentData, true); // 編集モード

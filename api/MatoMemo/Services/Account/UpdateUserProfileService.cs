@@ -12,13 +12,12 @@ public class UpdateUserProfileService(
 ) : _BaseService(userContext)
 {
     public record UpdateUserReq(
-        [Required] Guid login_user_id,
         [Required] string icon,
         [Required] string nick_name,
         string description,
         string? user_category,
         string link_1, string link_2, string link_3
-    ) : ILoginUserRequest;
+    );
 
     public record Response();
 

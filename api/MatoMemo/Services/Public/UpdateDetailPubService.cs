@@ -16,7 +16,6 @@ public class UpdateDetailPubService(
 ) : _BaseService(userContext)
 {
     public record UpdateDetailPubReq(
-        [Required] Guid login_user_id,
         [Required(ErrorMessage = "seqは必須です")][Range(0, int.MaxValue)] long seq,
         [Required(ErrorMessage = "旅の記録IDは必須です")] int archive_id,
         [Required(ErrorMessage = "緯度は必須です")] decimal latitude,
@@ -31,7 +30,7 @@ public class UpdateDetailPubService(
         [Required(ErrorMessage = "金額は必須です")] int memo_price,
         [Required(ErrorMessage = "感情は必須です")] int feel_type,
         int? move_sound_id
-    ) : ILoginUserRequest;
+    );
 
     public record Response(long seq);
 

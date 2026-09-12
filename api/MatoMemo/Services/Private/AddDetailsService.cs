@@ -20,10 +20,9 @@ public class AddDetailsService(
 ) : _BaseService(userContext)
 {
     public record AddDetailsReq(
-        [Required] Guid login_user_id,
         [Required(ErrorMessage = "seqリストは必須です")] long[] seqs,
         [Required(ErrorMessage = "archiveIdは必須です")] int archive_id
-    ) : ILoginUserRequest;
+    );
 
     public record Response(int archiveId, int updatedCount);
 

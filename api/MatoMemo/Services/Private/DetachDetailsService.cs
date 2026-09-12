@@ -19,10 +19,9 @@ public class DetachDetailsService(
 ) : _BaseService(userContext)
 {
     public record DetachDetailsReq(
-        [Required] Guid login_user_id,
         [Required(ErrorMessage = "解除対象のseqリストは必須です")] long[] seqs,
         [Required(ErrorMessage = "元のアーカイブIDは必須です")] int archive_id
-    ) : ILoginUserRequest;
+    );
 
     public record Response(int detached_count, bool is_archive_deleted);
 

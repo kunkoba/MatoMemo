@@ -21,9 +21,8 @@ ReactionPubRepository reactionPubRepo
 ) : _BaseService(userContext)
 {
     public record UnpublishArchiveReq(
-    [Required] Guid login_user_id,
-    [Required] int archive_id
-    ) : ILoginUserRequest;
+        [Required] int archive_id
+    );
 
 public record Response(int archiveId);
 

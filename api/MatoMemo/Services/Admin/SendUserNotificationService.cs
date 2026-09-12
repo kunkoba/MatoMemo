@@ -18,11 +18,10 @@ public class SendUserNotificationService(
 ) : _BaseService(userContext)
 {
     public record SendUserNotificationReq(
-        [Required] Guid login_user_id,
         Guid target_user_id,
         short kind,
         string body
-    ) : ILoginUserRequest;
+    );
 
     public record Response(bool is_success);
 

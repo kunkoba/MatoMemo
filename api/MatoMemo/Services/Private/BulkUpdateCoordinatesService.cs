@@ -20,10 +20,9 @@ public class BulkUpdateCoordinatesService(
     );
 
     public record BulkUpdateCoordinatesReq(
-        [Required] Guid login_user_id,
         [Required] int archive_id,
         [Required] IEnumerable<CoordinateItem> items
-    ) : ILoginUserRequest;
+    );
 
     public record Response(int updated_count);
 

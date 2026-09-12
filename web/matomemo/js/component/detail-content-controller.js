@@ -513,7 +513,6 @@ const DetailContentController = {
     },
     // DetailContentController (窓口) 内に追加
     Validate(detail) {
-        console.log("Validate:", detail);
         // 1. タイトル必須チェック
         if (!detail.title || detail.title.trim().length === 0) {
             $Notice.Warn("タイトルを入力してください。");

@@ -14,10 +14,9 @@ public class UpdateLegalConfigService(
 ) : _BaseService(user)
 {
     public record UpdateLegalConfigReq(
-        [Required] Guid login_user_id,
         [Required] string key,
         [Required] string value
-    ) : ILoginUserRequest;
+    );
 
     public record Response(bool is_success);
 

@@ -17,7 +17,9 @@ public class UpsertFeedbackService(
     ITransactionProvider transactionProvider
 ) : _BaseService(userContext)
 {
-    public record UpsertFeedbackReq(Guid login_user_id, string? body, int score) : ILoginUserRequest;
+    public record UpsertFeedbackReq(
+        string? body, int score
+    );
 
     public record Response(TSysFeedback? feedback);
 

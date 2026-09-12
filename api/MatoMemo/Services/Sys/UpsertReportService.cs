@@ -9,7 +9,11 @@ namespace LittleTripMemo.Services.Sys;
 /// <summary>通報の登録・更新</summary>
 public class UpsertReportService(UserContext user, SysReportRepository repo) : _BaseService(user)
 {
-    public record UpsertReportReq([Required] Guid login_user_id, Guid target_user_id, long archive_id, string? body) : ILoginUserRequest;
+    public record UpsertReportReq(
+        Guid target_user_id, 
+        long archive_id, 
+        string? body
+    );
     public record Response(bool is_success);
 
     public async Task<Response> ExecuteAsync(UpsertReportReq req)

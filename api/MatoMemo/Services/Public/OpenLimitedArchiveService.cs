@@ -10,9 +10,8 @@ using System.ComponentModel.DataAnnotations;
 public class OpenLimitedArchiveService(UserContext user, ArchivePubRepository repo) : _BaseService(user)
 {
     public record OpenLimitedArchiveReq(
-        [Required] Guid login_user_id,
         [Required] int archive_id
-    ) : ILoginUserRequest;
+    );
 
     public record Response(int archiveId);
 

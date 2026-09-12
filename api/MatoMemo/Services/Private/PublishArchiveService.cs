@@ -21,10 +21,9 @@ public class PublishArchiveService(
 ) : _BaseService(userContext)
 {
     public record PublishArchiveReq(
-        [Required] Guid login_user_id,
         [Required] int archive_id,
         bool reset_flg
-    ) : ILoginUserRequest;
+    );
 
     public record Response(int archiveId);
 

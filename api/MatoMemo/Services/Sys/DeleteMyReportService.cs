@@ -8,7 +8,9 @@ namespace LittleTripMemo.Services.Sys;
 /// <summary>自分の通報の削除</summary>
 public class DeleteMyReportService(UserContext user, SysReportRepository repo) : _BaseService(user)
 {
-    public record DeleteMyReportReq([Required] Guid login_user_id, long archive_id) : ILoginUserRequest;
+    public record DeleteMyReportReq(
+        long archive_id
+    );
     public record Response(bool is_success);
 
     public async Task<Response> ExecuteAsync(DeleteMyReportReq req)

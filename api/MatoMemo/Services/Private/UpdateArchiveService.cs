@@ -15,14 +15,13 @@ public class UpdateArchiveService(
 ) : _BaseService(userContext)
 {
     public record UpdateArchiveReq(
-        [Required] Guid login_user_id,
         [Required] int archive_id,
         string category,
         [Required] string title,
         string memo,
         string? link_url,
         string currency_unit
-    ) : ILoginUserRequest;
+    );
 
     public record Response(int archiveId);
 

@@ -8,7 +8,9 @@ namespace LittleTripMemo.Services.Public;
 /// <summary>非公開（クローズ）のまとめを一般公開にするサービス</summary>
 public class OpenArchiveService(UserContext userContext, ArchivePubRepository archivePubRepo) : _BaseService(userContext)
 {
-    public record OpenArchiveReq([Required] Guid login_user_id, int archive_id) : ILoginUserRequest;
+    public record OpenArchiveReq(
+        int archive_id
+    );
     public record Response(int archiveId);
 
     public async Task<Response> ExecuteAsync(OpenArchiveReq req)

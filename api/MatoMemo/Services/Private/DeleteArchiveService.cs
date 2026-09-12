@@ -15,9 +15,8 @@ public class DeleteArchiveService(
 ) : _BaseService(userContext)
 {
     public record DeleteArchiveReq(
-        [Required] Guid login_user_id,
         [Required(ErrorMessage = "アーカイブIDは必須です")] int archive_id
-    ) : ILoginUserRequest;
+    );
 
     public record Response(bool is_success, string message);
 

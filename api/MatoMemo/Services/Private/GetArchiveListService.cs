@@ -14,8 +14,7 @@ public class GetArchiveListService(
 ) : _BaseService(userContext)
 {
     public record GetArchiveListReq(
-        [Required] Guid login_user_id
-    ) : ILoginUserRequest;
+    );
 
     public record Response(IEnumerable<DtoArchive> archiveList);
 

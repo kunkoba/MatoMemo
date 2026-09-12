@@ -20,10 +20,9 @@ public class AdminCloseArchivePubService(
 ) : _BaseService(userContext)
 {
     public record AdminCloseArchivePubReq(
-        [Required] Guid login_user_id,
         int archive_id,
         Guid target_user_id
-    ) : ILoginUserRequest;
+    );
 
     public record Response(bool is_success);
 

@@ -9,7 +9,9 @@ namespace LittleTripMemo.Services.Public;
 /// <summary>公開まとめを非公開（クローズ）にするサービス</summary>
 public class CloseArchiveService(UserContext userContext, ArchivePubRepository archivePubRepo) : _BaseService(userContext)
 {
-    public record CloseArchiveReq([Required] Guid login_user_id, int archive_id) : ILoginUserRequest;
+    public record CloseArchiveReq(
+        int archive_id
+    );
     public record Response(int archiveId);
 
     public async Task<Response> ExecuteAsync(CloseArchiveReq req)

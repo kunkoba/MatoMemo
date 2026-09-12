@@ -16,8 +16,7 @@ public class WithdrawalUserService(
 ) : _BaseService(userContext)
 {
     public record WithdrawalReq(
-        [Required] Guid login_user_id
-    ) : ILoginUserRequest;
+    );
 
     public record Response(bool is_success);
 
@@ -56,7 +55,6 @@ public class WithdrawalUserService(
     {
         // ログイン状態および本人確認
         BusinessException.ThrowIf(_user.login_user_id == Guid.Empty, "ログインが必要です", "AUTH_REQUIRED");
-        BusinessException.ThrowIf(_user.login_user_id != req.login_user_id, "不正なリクエストです");
 
         // ユーザーが実在するか確認
         var loginUser = await appUserRepository.GetByUserIdAsync(_user.login_user_id);

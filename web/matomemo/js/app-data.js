@@ -124,10 +124,10 @@ window.$Data = {
             }
             if (options.method !== "GET" && params) {
                 options.headers["Content-Type"] = "application/json";
-                // 全リクエストに login_user_id を自動で混ぜる
-                if ($App.AppData.Owner.SystemInfo) {
-                    params.login_user_id = $App.AppData.Owner.SystemInfo.login_user_id;
-                }
+                // // 全リクエストに login_user_id を自動で混ぜる
+                // if ($App.AppData.Owner.SystemInfo) {
+                //     params.login_user_id = $App.AppData.Owner.SystemInfo.login_user_id;
+                // }
                 options.body = JSON.stringify(params);
             }
             // 接続準備

@@ -7,13 +7,4 @@
         bool is_public { get; set; }
     }
 
-    /// <summary>
-    /// ユーザIDチェック用
-    /// </summary>
-    public interface ILoginUserRequest
-    {
-        // JSから送られてくる login_user_id と一致させる
-        Guid login_user_id { get; }
-    }
-
 }

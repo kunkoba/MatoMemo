@@ -16,10 +16,9 @@ public class UpdateUserBanStatusService(
 ) : _BaseService(userContext)
 {
     public record UpdateUserBanStatusReq(
-        [Required] Guid login_user_id,
         [Required] Guid target_user_id,
         [Required] bool is_banned
-    ) : ILoginUserRequest;
+    );
 
     public record Response(bool is_success);
 

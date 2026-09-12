@@ -13,7 +13,9 @@ public class UpdateCoreConfigService(
 ) : _BaseService(user)
 {
     public record ConfigUpdateItem(string key, string value);
-    public record UpdateCoreConfigReq([Required] Guid login_user_id, IEnumerable<ConfigUpdateItem> items) : ILoginUserRequest;
+    public record UpdateCoreConfigReq(
+        IEnumerable<ConfigUpdateItem> items
+    );
     public record Response(bool is_success);
 
     public async Task<Response> ExecuteAsync(UpdateCoreConfigReq req)

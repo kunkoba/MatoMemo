@@ -14,14 +14,13 @@ public class UpdateArchivePubService(
 ) : _BaseService(userContext)
 {
     public record UpdateArchivePubReq(
-        [Required] Guid login_user_id,
         int archive_id,
         string category,
         string title,
         string memo,
         string? link_url,
         string currency_unit
-    ) : ILoginUserRequest;
+    );
 
     public record Response(int archiveId);
 

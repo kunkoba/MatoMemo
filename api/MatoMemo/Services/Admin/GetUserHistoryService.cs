@@ -15,9 +15,8 @@ public class GetUserHistoryService(
 ) : _BaseService(userContext)
 {
     public record GetUserHistoryReq(
-        [Required] Guid login_user_id,
         [Required] Guid target_user_id
-    ) : ILoginUserRequest;
+    );
 
     public record Response(IEnumerable<TSysUserHistory> historyList);
 

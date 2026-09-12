@@ -26,9 +26,8 @@ public class BulkSyncReactionService(
     );
 
     public record BulkSyncReactionReq(
-        [Required] Guid login_user_id,
         [Required] IEnumerable<ReactionSyncItem> reactions
-    ) : ILoginUserRequest;
+    );
 
     public record Response(int updatedCount);
 

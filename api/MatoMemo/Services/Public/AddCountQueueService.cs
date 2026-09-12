@@ -11,13 +11,12 @@ namespace LittleTripMemo.Services.Public;
 public class AddCountQueueService(UserContext u, CountQueueRepository r) : _BaseService(u)
 {
     public record AddCountReq(
-        [Required] Guid login_user_id,
         CountTargetType target_type,
         Guid target_user_id,
         int? archive_id,
         long? seq,
         string item_name
-    ) : ILoginUserRequest;
+    );
 
     public record Response(bool is_success);
 

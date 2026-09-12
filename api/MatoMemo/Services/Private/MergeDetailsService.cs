@@ -18,10 +18,9 @@ public class MergeDetailsService(
 ) : _BaseService(userContext)
 {
     public record MergeDetailsReq(
-        [Required] Guid login_user_id,
         [Required(ErrorMessage = "対象の明細が選択されていません")] long[] seqs,
         string? title
-    ) : ILoginUserRequest;
+    );
 
     public record Response(int archiveId);
 
