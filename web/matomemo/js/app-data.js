@@ -248,6 +248,7 @@ window.$Data = {
             const ver = $Const.APP_INFO.VERSION; // バージョン取得
             const options = { // 通信設定
                 method: 'POST', // メソッド
+                credentials: 'include',
                 headers: { // ヘッダー
                     'Content-Type': 'application/json', // コンテンツ
                     // 'Authorization': `Bearer ${token}`, // 認証

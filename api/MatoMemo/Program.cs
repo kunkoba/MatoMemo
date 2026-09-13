@@ -136,7 +136,7 @@ builder.Services.AddSwaggerGen(c =>
 //builder.Services.AddCors(options => options.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 builder.Services.AddCors(options => options.AddDefaultPolicy(p =>
     p.WithOrigins(
-        //"http://127.0.0.1:5501",
+        "http://127.0.0.1:5501",
         "http://localhost:5501",
         "https://mato-memo.vercel.app" // 本番のURLもここに
     )
