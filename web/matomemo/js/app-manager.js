@@ -38,8 +38,9 @@ const _AppCore = {
         AppData.Owner.LastLoginDate = saved.lastLoginDate;
         AppData.Owner.SoundVolume = saved.soundVolume ?? 0.5;
         if (saved.loginUserId) {
+            AppData.Owner.LoginUserId = saved.loginUserId;
             AppData.Owner.SystemInfo = { 
-                login_user_id: saved.loginUserId, // ID復元
+                // login_user_id: saved.loginUserId, // ID復元
                 ownerProfile: saved.ownerProfile // プロフィール情報をローカルから復元
             };
         }
@@ -70,17 +71,18 @@ const _AppCore = {
     // 設定とIDの永続化
     save(Owner) {
         localStorage.setItem(this.settingsKey, JSON.stringify({
-            theme: Owner.Theme, // テーマ
-            mapStyleKey: Owner.MapStyle?.key, // 地図
+            theme:          Owner.Theme, // テーマ
+            mapStyleKey:    Owner.MapStyle?.key, // 地図
             isMapGrayscale: Owner.IsMapGrayscale, // 白黒
             gpsTrackingSec: Owner.GpsTrackingSec, // GPS
-            // token: Owner.Token, // トークン
-            currency_unit: Owner.Currency_unit, // 通貨
-            fontSize: Owner.FontSize, // 文字サイズ
-            lastLoginDate: Owner.LastLoginDate, // ログイン日
-            loginUserId: Owner.SystemInfo?.login_user_id, // ユーザID
-            ownerProfile: Owner.SystemInfo?.ownerProfile, // プロフィール情報を追加
-            soundVolume: Owner.SoundVolume,     // 音量
+            currency_unit:  Owner.Currency_unit, // 通貨
+            fontSize:       Owner.FontSize, // 文字サイズ
+            lastLoginDate:  Owner.LastLoginDate, // ログイン日
+            ownerProfile:   Owner.SystemInfo?.ownerProfile, // プロフィール情報を追加
+            soundVolume:    Owner.SoundVolume,     // 音量
+            // token:          Owner.Token, // トークン
+            // loginUserId:    Owner.SystemInfo?.login_user_id, // ユーザID
+            loginUserId:    Owner.LoginUserId,   // ユーザID
         }));
     },
     // オフライン監視・GPS追従・データ同期などのポーリング処理をまとめて登録する
@@ -226,7 +228,6 @@ const _AppCore = {
     },
     // ユーザ情報の整合性チェックとローカル補完（同期処理追加版）
     ensureUserInfo(AppData) {
-        // console.log("★ensureUserInfo:", AppData);
         // ローカルストレージから設定読み込み
         const saved = JSON.parse(localStorage.getItem(this.settingsKey) || '{}'); // JSON解析
         // メモリ上のプロフ情報が欠落しているかチェック
@@ -280,6 +281,7 @@ const AppManager = {
             SystemInfo: null,
             Token: null,
             SoundVolume: 0.5,
+            LoginUserId: null,
         },
         Admin: {
             Notifications: [],
@@ -305,10 +307,10 @@ const AppManager = {
                 $Auth.Init(); // ★認証基盤を事前初期化（ポップアップブロック対策）
                 await _AppCore.restoreLocal(this.AppData); // 基本設定復元
                 // ログイン維持処理（クッキー方式）
-                const savedId = this.AppData.Owner.SystemInfo?.login_user_id;
-                if (savedId && savedId !== 'anonymous') {
+                const savedId = this.AppData.Owner.LoginUserId;
+                console.log("- savedId:", savedId);
+                if (savedId) {
                     // 一旦ログイン扱いにしておく（サーバ側でクッキー検証してダメなら401で落とされる）
-                    this.AppData.Context.IsLoggedIn = true;
                     if (navigator.onLine) {
                         await _AppCore.syncActivityLog(); // ここで EnsureLoginUser → 401なら IsLoggedIn=falseになる
                         if (this.AppData.Context.IsLoggedIn) {
@@ -316,6 +318,10 @@ const AppManager = {
                         }
                     }
                     _AppCore.ensureUserInfo(this.AppData);
+                } else {
+                    // ローカルにログインIDが無ければログアウトと判定
+                    this.AppData.Context.IsLoggedIn = false;
+                    this.AppData.Owner.LoginUserId = '';
                 }
             }
             // 見た目設定（テーマ・地図スタイル・フォントサイズ）を復元・適用
@@ -400,8 +406,8 @@ const AppManager = {
         }
         // 1. ログインエラー (401) は認証をクリアするのみ
         if (response && response.status === 401) {
+            this.AppData.Owner.LoginUserId = '';
             this.AppData.Context.IsLoggedIn = false;
-            // this.AppData.Owner.Token = null;
             $Notice.Warn("引き続き利用される際は、ログインをしてください。");
             return false;
         }
@@ -439,7 +445,7 @@ const AppManager = {
         return await $Warn.CatchAsync(async () => {
             const email = await $Auth.GetVerifiedEmailByGoogle();
             if (await $Data.Access.LoginFirebase({ Email: email })) {
-                this.AppData.Context.IsLoggedIn = true;
+                // this.AppData.Context.IsLoggedIn = true;
                 _AppCore.save(this.AppData.Owner);
                 return true;
             }
@@ -451,9 +457,11 @@ const AppManager = {
         if (firebase.apps.length) {
             await firebase.auth().signOut();
         }
-        this.AppData.Context.IsLoggedIn = false;
-        // this.AppData.Owner.Token = null;
-        _AppCore.save(this.AppData.Owner);
+        if (await $Data.Access.Logout()) {
+            this.AppData.Owner.LoginUserId = '';
+            this.AppData.Context.IsLoggedIn = false;
+            _AppCore.save(this.AppData.Owner);
+        }
     },
     // メール認証実行フロー
     async ExecuteEmailAuthFlow(email, password, isSignUp = false) {
@@ -475,7 +483,7 @@ const AppManager = {
                     : await $Auth.SignInEmail(email, password);
                 // 2. 自サーバへログイン通知
                 if (verifiedEmail && await $Data.Access.LoginFirebase({ Email: verifiedEmail })) {
-                    this.AppData.Context.IsLoggedIn = true;
+                    // this.AppData.Context.IsLoggedIn = true;
                     _AppCore.save(this.AppData.Owner);
                     return true;
                 }

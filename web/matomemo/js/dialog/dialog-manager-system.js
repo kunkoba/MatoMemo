@@ -145,7 +145,7 @@ export default {
         b.loginTgl.onclick  = async () => {
             if (isLoggedIn) {
                 if (await this.ShowConfirm({ title: "LOGOUT", message: "ログアウトしますか？" })) {
-                    this._core.closeAll(); $App.Logout(); setTimeout(() => location.reload(), 500);
+                    this._core.closeAll(); $App.Logout(); setTimeout(() => location.reload(), 1000);
                 }
             } else {
                 this.ShowLoginDialog();

@@ -40,6 +40,7 @@ public abstract class _BaseController(
         return Ok(new
         {
             is_logged_in = _user.login_user_id != Guid.Empty,
+            login_user_id = _user.login_user_id,
             plan = _user.plan_type,
             // new_token は返さない。クッキーに入れたから
             data = result

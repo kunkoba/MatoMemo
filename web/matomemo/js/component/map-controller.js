@@ -7,7 +7,6 @@ const _MapCore = {
     currentTileLayer: null,
     // 物理的な初期化処理
     init() {
-        console.log("map -> init");
         if (!this._map) {
             // DOM要素の取得
             this.root = $Dom.GetElementById(this._elementId);

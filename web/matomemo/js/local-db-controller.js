@@ -1,6 +1,7 @@
 // 現在のログインユーザーIDを取得（未ログイン時は 'anonymous'）
 const getUserId = () => {
-    const uid = $App.AppData.Owner.SystemInfo?.login_user_id;
+    // const uid = $App.AppData.Owner.SystemInfo?.login_user_id;
+    const uid = $App.AppData.Owner.LoginUserId;
     // IDが空（未ログインまたは初期化前）ならエラーを投げて後続のDB処理を止める
     if (!uid) {
         throw new Error("[LocalDB] ユーザーIDが取得できていません！");

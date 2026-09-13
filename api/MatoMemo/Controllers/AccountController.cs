@@ -90,4 +90,24 @@ public class AccountController(
     public async Task<IActionResult> Withdrawal([FromBody] WithdrawalUserService.WithdrawalReq req)
         => OkWithBase(await withdrawalUserService.ExecuteAsync(req));
 
+
+    /// <summary>
+    /// ログアウト（クッキーの消去）
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("Logout")]
+    public IActionResult Logout()
+    {
+        // ログイン時に発行しているクッキー名を指定してください
+        // 例: "session" や ".AspNetCore.Identity.Application" など
+        Response.Cookies.Delete(AuthConstants.TokenCookieName, new CookieOptions
+        {
+            Path = "/",
+            Secure = true,
+            SameSite = SameSiteMode.None
+        });
+
+        return OkWithBase(null);
+    }
+
 }

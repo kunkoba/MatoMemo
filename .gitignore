@@ -7,7 +7,7 @@ _del/
 
 # URLを除外
 js/*config*
-# config.js
+config.local.js
 
 
 *.mp3

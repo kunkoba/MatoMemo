@@ -1,10 +1,10 @@
 const API_ENDPOINTS = {
     // Account
     LoginFirebase:          { method: 'post', url: '/api/Account/LoginFirebase' },
-    // EnsureLoginUser:        { method: 'post', url: '/api/Account/EnsureLoginUser' },
     UpdateProfile:          { method: 'post', url: '/api/Account/UpdateProfile' },
     GetUserProfile:         { method: 'post', url: '/api/Account/GetUserProfile' },
     Withdrawal:             { method: 'post', url: '/api/Account/Withdrawal' }, // 未使用
+    Logout:                 { method: 'post', url: '/api/Account/Logout' },
     // Private
     GetArchiveDetails:      { method: 'post', url: '/api/Private/GetArchiveDetails' },
     UpdateDetail:           { method: 'post', url: '/api/Private/UpdateDetail' },
@@ -164,9 +164,10 @@ window.$Data = {
             // メイン処理
             $App.AppData.Context.IsLoggedIn = result.is_logged_in ?? false;
             $App.AppData.Owner.Plan = result.plan;
-            // if (result.new_token) {
-            //     $App.AppData.Owner.Token = result.new_token;    // 新しいトークンがあれば上書き更新する
-            // }
+            if (result.login_user_id) {
+                $App.AppData.Owner.LoginUserId = result.login_user_id;
+                // $App.AppData.Context.IsLoggedIn = true;
+            }
             // 取得データを内部に保持
             this._setData(data);
             // ベース情報をStoreに保持
@@ -175,10 +176,13 @@ window.$Data = {
         },
         // 取得データを内部に保持
         _setData(data) {
+            // console.log("_setData:", data);
+            if (!data) return;
             $Data.resData = data;
             if (data.archiveId) $App.AppData.Context.TargetArchiveId = data.archiveId;
             // 現在ログインしているユーザーのIDを取得
-            const loginUid = $App.AppData.Owner.SystemInfo?.login_user_id;
+            // const loginUid = $App.AppData.Owner.SystemInfo?.login_user_id;
+            const loginUid = $App.AppData.Owner.LoginUserId;
             // 1. まとめ親情報（archive）のオーナー判定
             if (data.archive) {
                 if (loginUid && data.archive.user_id === loginUid) {
