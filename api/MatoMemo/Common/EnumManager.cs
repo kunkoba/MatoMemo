@@ -74,7 +74,7 @@ public static class AuthConstants
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.None,
+            SameSite = SameSiteMode.Lax,
             Path = "/",
             Expires = DateTimeOffset.UtcNow.AddDays(TokenExpiryDays)
         };
