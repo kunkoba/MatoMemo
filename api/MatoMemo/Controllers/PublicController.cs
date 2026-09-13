@@ -52,7 +52,6 @@ public class PublicController(
     /// リンクやボタンのクリック統計をキューに追加する
     /// </summary>
     [AllowAnonymous]
-    [EnableRateLimiting("PublicApiPolicy")] 
     [HttpPost("AddClick")]
     public async Task<IActionResult> AddClick([FromBody] AddCountQueueService.AddCountReq req)
         => OkWithBase(await addClickQueueService.ExecuteAsync(req));
