@@ -50,6 +50,7 @@ const Notice = {
         el: null,
         Show(msg) {
             if (!this.el) {
+                console.log("Offline:", msg);
                 this.el = $Dom.GenerateTemplate("tpl-offline");
             }
             // メッセージを常に最新の理由（ネット断 or サーバ断）で更新する

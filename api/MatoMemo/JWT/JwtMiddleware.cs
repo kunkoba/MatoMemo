@@ -6,32 +6,33 @@ using LittleTripMemo.Common;
 
 namespace LittleTripMemo.JWT;
 
-/// <summary>
-/// HTTPリクエストのヘッダーからJWTトークンを抽出し、認証情報をUserContextに展開するミドルウェア
-/// </summary>
-public class JwtMiddleware(
-    RequestDelegate next,
-    IConfiguration configuration
-)
+public class JwtMiddleware(RequestDelegate next, IConfiguration configuration)
 {
     public async Task Invoke(HttpContext context)
     {
-        // プリフライトリクエスト（OPTIONS）の場合は認証処理をスキップ
         if (context.Request.Method == "OPTIONS")
         {
             await next(context);
             return;
         }
 
-        var authorizationHeader = context.Request.Headers["Authorization"].FirstOrDefault();
-        var token = authorizationHeader?.Split(" ").Last();
+        // 1. ヘッダ優先、なければクッキー
+        var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+        var token = authHeader?.Split(" ").Last();
+
+        if (string.IsNullOrEmpty(token))
+        {
+            context.Request.Cookies.TryGetValue(AuthConstants.TokenCookieName, out token);
+        }
+
+        //Console.WriteLine($"[JWT_MW] Path={context.Request.Path} HasToken={!string.IsNullOrEmpty(token)} CookieHeader={context.Request.Headers.Cookie}");
 
         if (!string.IsNullOrEmpty(token))
         {
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var secretKey = Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"] ?? "");
+                var secretKey = Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]!);
 
                 var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
@@ -42,23 +43,27 @@ public class JwtMiddleware(
                     ValidateAudience = true,
                     ValidAudience = configuration["JwtSettings:Audience"],
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.FromMinutes(1)
                 }, out _);
 
-                // UserContext への注入
                 var userContext = context.RequestServices.GetRequiredService<UserContext>();
-                userContext.login_user_id = Guid.Parse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
-                userContext.table_id = int.Parse(principal.FindFirst("table_id")?.Value ?? "0");
-                userContext.plan_type = principal.FindFirst("plan_type")?.Value ?? PlanType.Free.ToString();
+                var idStr = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (Guid.TryParse(idStr, out var guid))
+                {
+                    userContext.login_user_id = guid;
+                }
+                var tableIdStr = principal.FindFirst("table_id")?.Value;
+                if (int.TryParse(tableIdStr, out var tid)) userContext.table_id = tid;
+                userContext.plan_type = principal.FindFirst("plan_type")?.Value ?? "Free";
 
                 context.User = principal;
+                Console.WriteLine($"[JWT_MW] SUCCESS user={userContext.login_user_id}");
             }
-            catch
+            catch (Exception ex)
             {
-                // トークン検証失敗時はコンテキストへの注入を行わず後続へ（Authorize属性で弾く）
+                Console.WriteLine($"[JWT_MW] FAILED {ex.Message}");
             }
         }
         await next(context);
     }
-
 }

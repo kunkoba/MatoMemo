@@ -94,7 +94,7 @@ window.$Data = {
             userProfile: null,
         },
         // サーバー通信の基礎
-        async _fetchData(method, url, params, isDebug = false) {// 設定ファイルから取得
+        async _fetchData(method, url, params) {// 設定ファイルから取得
             const BaseUrl = window.ENV_CONFIG.BASE_URL;
             console.log("▼ Access:", BaseUrl + url, params);
             // 通信ガード判定
@@ -109,25 +109,30 @@ window.$Data = {
             const controller = new AbortController(); // 通信中断用コントローラー
             const timeoutId = setTimeout(() => controller.abort(), $Const.APP_CONFIG.NETWORK_TIMEOUT_SEC * 1000); // タイマー起動
             // メイン処理
-            const token = $App.AppData.Owner.Token;
+            // const token = $App.AppData.Owner.Token;
+            // const options = {
+            //     method: method.toUpperCase(),
+            //     signal: controller.signal, // 中断シグナルを紐付け
+            //     headers: {
+            //         "ngrok-skip-browser-warning": "69420", // ngrok対応
+            //         "X-App-Version": $Const.APP_INFO.VERSION // ★これを追加。すべてのリクエストに載せる
+            //     }
+            // };
             const options = {
                 method: method.toUpperCase(),
-                signal: controller.signal, // 中断シグナルを紐付け
+                signal: controller.signal,
+                credentials: 'include', // ★これ追加。クッキーを自動で送る
                 headers: {
-                    "ngrok-skip-browser-warning": "69420", // ngrok対応
-                    "X-App-Version": $Const.APP_INFO.VERSION // ★これを追加。すべてのリクエストに載せる
+                    "ngrok-skip-browser-warning": "69420",
+                    "X-App-Version": $Const.APP_INFO.VERSION
                 }
             };
-            // トークンがある場合のみヘッダーに追加（空文字を送らない）
-            if (token) {
-                options.headers["Authorization"] = `Bearer ${token}`;
-            }
+            // // トークンがある場合のみヘッダーに追加（空文字を送らない）
+            // if (token) {
+            //     options.headers["Authorization"] = `Bearer ${token}`;
+            // }
             if (options.method !== "GET" && params) {
                 options.headers["Content-Type"] = "application/json";
-                // // 全リクエストに login_user_id を自動で混ぜる
-                // if ($App.AppData.Owner.SystemInfo) {
-                //     params.login_user_id = $App.AppData.Owner.SystemInfo.login_user_id;
-                // }
                 options.body = JSON.stringify(params);
             }
             // 接続準備
@@ -159,11 +164,9 @@ window.$Data = {
             // メイン処理
             $App.AppData.Context.IsLoggedIn = result.is_logged_in ?? false;
             $App.AppData.Owner.Plan = result.plan;
-            if (result.new_token) {
-                console.log("token1:", $App.AppData.Owner.Token);
-                $App.AppData.Owner.Token = result.new_token;    // 新しいトークンがあれば上書き更新する
-                console.log("token2:", $App.AppData.Owner.Token);
-            }
+            // if (result.new_token) {
+            //     $App.AppData.Owner.Token = result.new_token;    // 新しいトークンがあれば上書き更新する
+            // }
             // 取得データを内部に保持
             this._setData(data);
             // ベース情報をStoreに保持
@@ -212,7 +215,7 @@ window.$Data = {
             }
             if (data.userProfile) this._rawData.userProfile = data.userProfile;
             // 4. トークンおよびシステム情報の格納（既存処理）
-            if (data.token) $App.AppData.Owner.Token = data.token;
+            // if (data.token) $App.AppData.Owner.Token = data.token;
             if (data.systemInfo) {
                 $App.AppData.Owner.SystemInfo = data.systemInfo;
                 $Bar.UpdateUserIcon();
@@ -237,13 +240,13 @@ window.$Data = {
             if (!navigator.onLine) return false; // 接続なし
             const baseUrl = window.ENV_CONFIG.BASE_URL; // ベースURL
             const url = baseUrl + '/api/Account/EnsureLoginUser'; // 接続先
-            const token = $App.AppData.Owner.Token; // トークン取得
+            // const token = $App.AppData.Owner.Token; // トークン取得
             const ver = $Const.APP_INFO.VERSION; // バージョン取得
             const options = { // 通信設定
                 method: 'POST', // メソッド
                 headers: { // ヘッダー
                     'Content-Type': 'application/json', // コンテンツ
-                    'Authorization': `Bearer ${token}`, // 認証
+                    // 'Authorization': `Bearer ${token}`, // 認証
                     'X-App-Version': ver // アプリVer
                 },
                 body: JSON.stringify(params) // ボディ

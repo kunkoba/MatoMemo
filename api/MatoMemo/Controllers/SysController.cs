@@ -17,6 +17,7 @@ public class SysController(
     UserContext userContext,
     JwtService jwtService,
     ITransactionProvider provider, // 追加
+    IWebHostEnvironment env, // 追加
     GetSystemInfoService getSystemInfoService,
     UpsertFeedbackService upsertFeedbackService,
     GetMyFeedbackService getMyFeedbackService,
@@ -25,7 +26,7 @@ public class SysController(
     DeleteMyReportService deleteMyReportService,
     GetMyUserNotificationsService getMyUserNotificationsService,
     GetAppInfoService getAppInfoService
-) : _BaseController(userContext, jwtService, provider)
+) : _BaseController(userContext, jwtService, provider, env)
 {
     /// <summary>
     /// システム全体の基本情報（お知らせ、統計、自分の通知状況等）をまとめて取得する

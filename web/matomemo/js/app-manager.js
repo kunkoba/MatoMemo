@@ -34,7 +34,7 @@ const _AppCore = {
         AppData.Owner.GpsTrackingSec = saved.gpsTrackingSec ?? 0;
         AppData.Owner.Currency_unit = saved.currency_unit || '円';
         AppData.Owner.FontSize = saved.fontSize || 'standard';
-        AppData.Owner.Token = saved.token;
+        // AppData.Owner.Token = saved.token;
         AppData.Owner.LastLoginDate = saved.lastLoginDate;
         AppData.Owner.SoundVolume = saved.soundVolume ?? 0.5;
         if (saved.loginUserId) {
@@ -74,7 +74,7 @@ const _AppCore = {
             mapStyleKey: Owner.MapStyle?.key, // 地図
             isMapGrayscale: Owner.IsMapGrayscale, // 白黒
             gpsTrackingSec: Owner.GpsTrackingSec, // GPS
-            token: Owner.Token, // トークン
+            // token: Owner.Token, // トークン
             currency_unit: Owner.Currency_unit, // 通貨
             fontSize: Owner.FontSize, // 文字サイズ
             lastLoginDate: Owner.LastLoginDate, // ログイン日
@@ -102,8 +102,8 @@ const _AppCore = {
             // 状態が「オフライン」から「オンライン」に変わった瞬間
             else if (!$App.AppData.Context.IsNetOnline && isNowNetOnline) {
                 $App.AppData.Context.IsNetOnline = true;
-                // ネットが復帰したら即座にサーバ疎通チェック（Check ②④）を走らせる
-                this.syncActivityLog();
+                // // ネットが復帰したら即座にサーバ疎通チェック（Check ②④）を走らせる
+                // this.syncActivityLog();
             }
         }, checkSec);
         // GPS追従（初期登録）
@@ -146,7 +146,8 @@ const _AppCore = {
         if (!navigator.onLine) return false;
         let isSuccess = false;
         // ログイン状態によって、使用するAPIを切り替える（Check ③ の分離）
-        if ($App.AppData.Context.IsLoggedIn && $App.AppData.Owner.Token) {
+        // if ($App.AppData.Context.IsLoggedIn && $App.AppData.Owner.Token) {
+        if ($App.AppData.Context.IsLoggedIn) {
             // ログイン中：ユーザチェック ＋ 生存確認
             isSuccess = await $Data.Access.EnsureLoginUser();
         } else {
@@ -174,7 +175,7 @@ const _AppCore = {
             }
             // ネットはあるのに失敗した（サーバダウン・メンテ）場合のみ表示
             $App.AppData.Context.IsServerOnline = false;
-            $Notice.Offline.Show("サービスに接続できません");
+            $Notice.Offline.Show("サーバーに接続できません");
             return false;
         }
     },
@@ -303,18 +304,18 @@ const AppManager = {
                 await _AppCore.setupShell(); // UI準備
                 $Auth.Init(); // ★認証基盤を事前初期化（ポップアップブロック対策）
                 await _AppCore.restoreLocal(this.AppData); // 基本設定復元
-                // トークンがある場合のログイン維持処理
-                if (this.AppData.Owner.Token) {
-                    this.AppData.Context.IsLoggedIn = true; // ログインフラグ
-                    // オンライン時のみサーバから最新情報を取得
+                // ログイン維持処理（クッキー方式）
+                const savedId = this.AppData.Owner.SystemInfo?.login_user_id;
+                if (savedId && savedId !== 'anonymous') {
+                    // 一旦ログイン扱いにしておく（サーバ側でクッキー検証してダメなら401で落とされる）
+                    this.AppData.Context.IsLoggedIn = true;
                     if (navigator.onLine) {
-                        await _AppCore.syncActivityLog(); // 最終日同期
-                        await $Data.Access.GetSystemInfo(); // 最新プロフ取得
+                        await _AppCore.syncActivityLog(); // ここで EnsureLoginUser → 401なら IsLoggedIn=falseになる
+                        if (this.AppData.Context.IsLoggedIn) {
+                            await $Data.Access.GetSystemInfo();
+                        }
                     }
-                    // サーバ取得の成否に関わらず、最終的な情報の整合性を確保する
-                    _AppCore.ensureUserInfo(this.AppData); // 情報補完実行
-                    // // 確定した情報をローカルへ書き戻す
-                    // _AppCore.save(this.AppData.Owner); // 永続化
+                    _AppCore.ensureUserInfo(this.AppData);
                 }
             }
             // 見た目設定（テーマ・地図スタイル・フォントサイズ）を復元・適用
@@ -330,7 +331,7 @@ const AppManager = {
                 _AppCore.initPollingTasks();
                 // 起動時にすでにオフラインなら即表示
                 if (!navigator.onLine || !this.AppData.Context.IsNetOnline) {
-                    $Notice.Offline.Show();
+                    $Notice.Offline.Show("サーバーに接続できません");
                 }
                 if (this.AppData.Owner.GpsTrackingSec > 0) {
                     $Polling.Start($Polling.TASKS.GPS_FOLLOW);
@@ -391,7 +392,6 @@ const AppManager = {
     },
     // サーバ通信エラー処理（画面を中断せず通知のみに留める）
     async HandleServerFailure(response, isTimeout = false) {
-        console.warn(">> HandleServerFailure", response?.status, "isTimeout:", isTimeout);
         $Notice.Loading.Hide();
         // タイムアウト時の専用メッセージを表示
         if (isTimeout) {
@@ -401,7 +401,7 @@ const AppManager = {
         // 1. ログインエラー (401) は認証をクリアするのみ
         if (response && response.status === 401) {
             this.AppData.Context.IsLoggedIn = false;
-            this.AppData.Owner.Token = null;
+            // this.AppData.Owner.Token = null;
             $Notice.Warn("引き続き利用される際は、ログインをしてください。");
             return false;
         }
@@ -424,7 +424,7 @@ const AppManager = {
         }
         // 接続失敗時は論理オフラインへ移行
         this.AppData.Context.IsNetOnline = false;
-        $Notice.Offline.Show(); // オフラインバーを表示
+        $Notice.Offline.Show("サーバーに接続できません");
         let msg = "サーバ接続が切断されました。";
         $Notice.Error(msg);
         return false;
@@ -452,10 +452,10 @@ const AppManager = {
             await firebase.auth().signOut();
         }
         this.AppData.Context.IsLoggedIn = false;
-        this.AppData.Owner.Token = null;
+        // this.AppData.Owner.Token = null;
         _AppCore.save(this.AppData.Owner);
     },
-// メール認証実行フロー
+    // メール認証実行フロー
     async ExecuteEmailAuthFlow(email, password, isSignUp = false) {
         // オフラインチェック
         if (!this.AppData.Context.IsNetOnline) {

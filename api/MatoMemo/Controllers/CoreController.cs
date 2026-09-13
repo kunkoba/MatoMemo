@@ -17,11 +17,12 @@ public class CoreController(
     UserContext userContext,
     JwtService jwtService,
     ITransactionProvider provider, // 追加
+    IWebHostEnvironment env, // 追加
     GetCoreConfigService getCoreConfigService,
     UpdateCoreConfigService updateCoreConfigService,
     GetLegalConfigsService getLegalConfigsService,
     UpdateLegalConfigService updateLegalConfigService
-) : _BaseController(userContext, jwtService, provider)
+) : _BaseController(userContext, jwtService, provider, env)
 {
     /// <summary>
     /// 現在のシステム設定一覧を取得（管理者のみ）

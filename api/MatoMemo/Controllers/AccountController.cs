@@ -15,18 +15,18 @@ public class AccountController(
     UserContext userContext,
     JwtService jwtService,
     ITransactionProvider provider, // 追加
+    IWebHostEnvironment env, // 追加
     RegistrationUserService registrationUserService,
     UpdateUserProfileService updateUserProfileService,
     EnsureLoginUserService ensureLoginUserService,
     GetUserProfileService getUserProfileService,
     WithdrawalUserService withdrawalUserService
-) : _BaseController(userContext, jwtService, provider)
+) : _BaseController(userContext, jwtService, provider, env)
 {
     /// <summary>
     /// Firebase認証の結果を受け取り、アプリ側へのログインまたは新規登録を行う
     /// </summary>
-    [HttpPost("LoginFirebase")]
-    public async Task<IActionResult> FirebaseLogin([FromBody] RegistrationUserService.FirebaseLoginRequest req)
+    public async Task<IActionResult> FirebaseLogin2([FromBody] RegistrationUserService.FirebaseLoginRequest req)
     {
         var result = await registrationUserService.ExecuteAsync(req);
 
@@ -37,6 +37,26 @@ public class AccountController(
         _user.plan_type = result.plan ?? PlanType.Free.ToString();
 
         return OkWithBase(new { token = result.token });
+    }
+
+    [HttpPost("LoginFirebase")]
+    public async Task<IActionResult> FirebaseLogin([FromBody] RegistrationUserService.FirebaseLoginRequest req)
+    {
+        var result = await registrationUserService.ExecuteAsync(req);
+        if (!result.is_success) return BadRequest(new { result.message });
+
+        // Cookieだけセット
+        Response.Cookies.Append(
+            AuthConstants.TokenCookieName,
+            result.token,
+            AuthConstants.DefaultCookieOptions(Request, _env.IsDevelopment())
+        );
+
+        _user.login_user_id = result.userId ?? Guid.Empty;
+        _user.plan_type = result.plan ?? "Free";
+
+        // dataにtoken入れない。空でいい
+        return OkWithBase(new { });
     }
 
     /// <summary>

@@ -19,6 +19,7 @@ public class PublicController(
     UserContext userContext,
     JwtService jwtService,
     ITransactionProvider provider, // 追加
+    IWebHostEnvironment env, // 追加
     GetArchiveDetailsPubService getArchiveDetailsPubService,
     SearchByLocationPubService searchByLocationPubService,
     UnpublishArchiveService unpublishArchiveService,
@@ -31,7 +32,7 @@ public class PublicController(
     OpenLimitedArchiveService openLimitedArchiveService,
     GetArchiveListByIdsService getArchiveListByIdsService,
     GetArchiveListByUserService getArchiveListByUserService
-) : _BaseController(userContext, jwtService, provider)
+) : _BaseController(userContext, jwtService, provider, env)
 {
     #region "未ログイン・ゲスト可"
 

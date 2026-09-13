@@ -10,13 +10,20 @@ using LittleTripMemo.Models;
 using LittleTripMemo.Repository;
 using LittleTripMemo.Services.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Security.Claims;
 using System.Text;
+
+
+// ===================================================
+// アプリ構成・サービス登録
+// ===================================================
 
 // 1. 起動前設定（Npgsql タイムスタンプ挙動の固定）
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -67,22 +74,48 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.Configure<MyAppSettings>(builder.Configuration.GetSection(MyAppSettings.SectionName));
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 
-// 7. 認証 (JWT Bearer) 設定
-var jwt = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()!;
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwt.Issuer,
-            ValidAudience = jwt.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SecretKey))
-        };
-    });
+//// 7. 認証 (JWT Bearer) 設定
+//var jwt = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()!;
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//   .AddJwtBearer(options =>
+//   {
+//       options.TokenValidationParameters = new TokenValidationParameters
+//       {
+//           ValidateIssuer = true,
+//           ValidateAudience = true,
+//           ValidateLifetime = true,
+//           ValidateIssuerSigningKey = true,
+//           ValidIssuer = jwt.Issuer,
+//           ValidAudience = jwt.Audience,
+//           IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SecretKey)),
+//           ClockSkew = TimeSpan.FromMinutes(1)
+//       };
+//       options.Events = new JwtBearerEvents
+//       {
+//           OnMessageReceived = context =>
+//           {
+//               Console.WriteLine($"[AUTH CHECK] OnMessageReceived called for {context.Request.Path}");
+//               Console.WriteLine($"[AUTH CHECK] Cookie Header: {context.Request.Headers.Cookie}");
+
+//               if (context.Request.Cookies.TryGetValue(AuthConstants.TokenCookieName, out var token))
+//                   context.Token = token;
+//               return Task.CompletedTask;
+//           },
+//           OnTokenValidated = context =>
+//           {
+//               var userContext = context.HttpContext.RequestServices.GetRequiredService<UserContext>();
+//               userContext.login_user_id = Guid.Parse(context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
+//               var tableIdStr = context.Principal?.FindFirst("table_id")?.Value;
+//               if (int.TryParse(tableIdStr, out var tid)) userContext.table_id = tid;
+//               userContext.plan_type = context.Principal?.FindFirst("plan_type")?.Value ?? "Free";
+//               return Task.CompletedTask;
+//           },
+//           OnAuthenticationFailed = ctx => {
+//               Console.WriteLine($"[AUTH FAILED] {ctx.Exception.Message}");
+//               return Task.CompletedTask;
+//           }
+//       };
+//   });
 
 // 8. API / CORS / Swagger 設定
 builder.Services.AddControllers(options => options.Filters.Add<UserValidationFilter>());
@@ -100,7 +133,17 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityRequirement(new OpenApiSecurityRequirement { { new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }, Array.Empty<string>() } });
 });
 
-builder.Services.AddCors(options => options.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+//builder.Services.AddCors(options => options.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+builder.Services.AddCors(options => options.AddDefaultPolicy(p =>
+    p.WithOrigins(
+        //"http://127.0.0.1:5501",
+        "http://localhost:5501",
+        "https://hogehoge.onrender.com" // 本番のURLもここに
+    )
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()
+));
 
 // 9. 定期バッチ実行
 builder.Services.AddHostedService<LittleTripMemo.Worker.SystemMaintenanceWorker>();
@@ -115,14 +158,32 @@ builder.Services.AddRateLimiter(options => {
     };
     options.AddFixedWindowLimiter("PublicApiPolicy", opt => {
         opt.Window = TimeSpan.FromMinutes(1);
-        opt.PermitLimit = 1; // 1分間に1回
+        opt.PermitLimit = 10; // 1分間に1回
         opt.QueueLimit = 0;
     });
 });
 
+builder.Services.Configure<ForwardedHeadersOptions>(o => {
+    o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    o.KnownNetworks.Clear();
+    o.KnownProxies.Clear();
+});
 
+
+
+// ===================================================
+// アプリ実行・リクエスト処理
+// ===================================================
 
 var app = builder.Build();
+
+// 11. リクエストログ出力（デバッグ用）
+app.Use(async (HttpContext context, RequestDelegate next) => {
+    Console.WriteLine($"[REQ IN] {context.Request.Method} {context.Request.Path}");
+    await next(context);
+});
+
+app.UseForwardedHeaders(); // 最初
 
 // UserHistoryLogger に HttpContextAccessor を紐付け（静的サービスからの DI 解決を可能にする）
 UserHistoryRegister.Configure(app.Services.GetRequiredService<IHttpContextAccessor>());
@@ -144,7 +205,7 @@ app.UseCors();
 app.UseMiddleware<JwtMiddleware>(); // 認証情報の抽出
 app.UseMiddleware<LittleTripMemo.Middleware.SystemManagementMiddleware>(); // メンテナンス・バージョンチェック
 
-app.UseAuthentication();
+//app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

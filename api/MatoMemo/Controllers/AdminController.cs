@@ -13,6 +13,7 @@ public class AdminController(
     UserContext userContext,
     JwtService jwtService,
     ITransactionProvider provider, // 追加
+    IWebHostEnvironment env, // 追加
     GetAdminAllInfoService getAdminAllInfoService,
     GetReportDetailsService getReportDetailsService,
     AdminCloseArchivePubService adminCloseArchivePubService,
@@ -26,7 +27,7 @@ public class AdminController(
     GetSentUserMailListService getSentUserMailListService,
     GetUserHistoryService getUserHistoryService,
     GetShadowBanUsersService getShadowBanUsersService
-) : _BaseController(userContext, jwtService, provider)
+) : _BaseController(userContext, jwtService, provider, env)
 {
     /// <summary>
     /// 管理者情報のすべてを取得する（管理者のみ）

@@ -13,6 +13,7 @@ public class PrivateController(
     UserContext userContext,
     JwtService jwtService,
     ITransactionProvider provider, // 追加
+    IWebHostEnvironment env, // 追加
     GetUnMergeDetailsService getUnMergeDetailsService,
     GetArchiveDetailsService getArchiveDetailsService,
     GetArchiveListService getArchiveListService,
@@ -26,7 +27,7 @@ public class PrivateController(
     BulkSyncDetailsService bulkSyncDetailsService,
     PublishArchiveService publishArchiveService,
     BulkUpdateCoordinatesService bulkUpdateCoordinatesService
-) : _BaseController(userContext, jwtService, provider)
+) : _BaseController(userContext, jwtService, provider, env)
 {
     [HttpPost("GetUnMergeDetails")]
     public async Task<IActionResult> GetUnMergeDetails([FromBody] GetUnMergeDetailsService.GetUnMergeDetailsReq req)
