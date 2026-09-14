@@ -57,11 +57,11 @@ public class JwtMiddleware(RequestDelegate next, IConfiguration configuration)
                 userContext.plan_type = principal.FindFirst("plan_type")?.Value ?? "Free";
 
                 context.User = principal;
-                Console.WriteLine($"[JWT_MW] SUCCESS user={userContext.login_user_id}");
+                //Console.WriteLine($"[JWT_MW] SUCCESS user={userContext.login_user_id}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[JWT_MW] FAILED {ex.Message}");
+                //Console.WriteLine($"[JWT_MW] FAILED {ex.Message}");
             }
         }
         await next(context);

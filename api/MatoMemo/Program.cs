@@ -26,9 +26,9 @@ using System.Threading.RateLimiting;
 // 1. 起動前設定（Npgsql タイムスタンプ挙動の固定）
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-Console.WriteLine("DEBUG: Application starting...");
+//Console.WriteLine("DEBUG: Application starting...");
 var builder = WebApplication.CreateBuilder(args);
-Console.WriteLine("DEBUG: WebApplication.CreateBuilder completed.");
+//Console.WriteLine("DEBUG: WebApplication.CreateBuilder completed.");
 
 // 環境変数からポート番号を取得し、取得できない場合はローカル用の 5255 をデフォルトとする
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5255";
@@ -49,7 +49,8 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // 3. DB / Identity 設定
-var connectionString = builder.Configuration["ConnectionStrings:MatoMemoConnStr"]!;
+//var connectionString = builder.Configuration["ConnectionStrings:ConnectionStrings__MatoMemoConnStr"]!;
+var connectionString = Environment.GetEnvironmentVariable("CONN_STR") ?? builder.Configuration["ConnectionStrings:ConnectionStrings__MatoMemoConnStr"]!;
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddScoped<ITransactionProvider>(_ => new TransactionProvider(connectionString));
 
@@ -144,7 +145,7 @@ var app = builder.Build();
 
 // 11. リクエストログ出力（デバッグ用）
 app.Use(async (HttpContext context, RequestDelegate next) => {
-    Console.WriteLine($"[REQ IN] {context.Request.Method} {context.Request.Path}");
+    //Console.WriteLine($"[REQ IN] {context.Request.Method} {context.Request.Path}");
     await next(context);
 });
 
@@ -172,6 +173,16 @@ app.UseMiddleware<LittleTripMemo.Middleware.SystemManagementMiddleware>(); // �
 
 //app.UseAuthentication();
 app.UseAuthorization();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/api"))
+    {
+        context.Response.Headers.CacheControl = "private, no-store, no-cache, must-revalidate";
+        context.Response.Headers.Pragma = "no-cache";
+    }
+    await next();
+});
 
 //app.MapControllers();
 app.MapControllers().RequireRateLimiting("PublicApiPolicy");
