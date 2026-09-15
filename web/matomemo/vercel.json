@@ -1,12 +1,10 @@
 {
-  "_comment_rewrites": "onrenderへの偽装でSameSite対策",
   "rewrites": [
     {
       "source": "/api/:path*",
       "destination": "https://matomemo.onrender.com/api/:path*"
     }
   ],
-  "_comment_headers": "クリックジャッキング対策 X-Frame-Options",
   "headers": [
     {
       "source": "/(.*)",
