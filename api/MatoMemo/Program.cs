@@ -50,7 +50,7 @@ builder.Host.UseSerilog();
 
 // 3. DB / Identity 設定
 //var connectionString = builder.Configuration["ConnectionStrings:ConnectionStrings__MatoMemoConnStr"]!;
-var connectionString = Environment.GetEnvironmentVariable("CONN_STR") ?? builder.Configuration["ConnectionStrings:ConnectionStrings__MatoMemoConnStr"]!;
+var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__MatoMemoConnStr") ?? builder.Configuration["ConnectionStrings:ConnectionStrings__MatoMemoConnStr"]!;
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddScoped<ITransactionProvider>(_ => new TransactionProvider(connectionString));
 
