@@ -293,7 +293,6 @@ const MarkerController = {
                 this.FocusToCurrentMarker();
             },
             onDragEnd: (index, latLng) => {
-                console.log(">onDragEnd:", latLng);
                 // 1. 【重要】生データ(_rawData)は絶対に触らない
                 // 作業用メモリ(Store)のデータのみを更新する
                 const details = $Data.Store.GetDetails();

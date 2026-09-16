@@ -315,8 +315,6 @@ const DialogController = {
     UpdateNoticeBadgeDialog() {
         this._core.updateNoticeBadge();
     },
-    // js/dialog/dialog-manager.js 末尾（UpdateNoticeBadgeDialog の後など）
-
     // 長文入力用エディタ（文字数カウント付き）
     async ShowTextEditor({ title = "", initialValue = "", maxLength = 1000 }) {
         return new Promise((resolve) => {
@@ -346,6 +344,38 @@ const DialogController = {
                 ]]
             });
             setTimeout(() => textarea.focus(), 100);
+        });
+    },
+    // 絵文字ピッカー（自作）
+    ShowMarkerLibrary(onSelect) {
+        const EMOJIS = [
+            "😀", "😃", "😄", "😁", "😆", "😅",   "😂", "🤣", "🥹", "😊", "😇", "🙂",
+            "🙃", "😉", "😌", "😍", "🥰", "😘",   "😗", "😙", "😚", "😋", "😛", "😝",
+            "😜", "🤪", "🤨", "🧐", "🤓", "😎",   "🥸", "🤩", "🥳", "😏", "😒", "😞",
+            "😔", "😟", "😕", "🙁", "☹️", "😣",   "😖", "😫", "😩", "🥺", "😢", "😭",
+            "😮‍💨", "😤", "😮", "😱", "😨", "😰",   "😥", "😓", "🫨", "🤔", "🫣", "🤭",
+            "🫢", "🫡", "🤫", "🫠", "🤥", "😶",   "🫥", "😐", "😑", "😬", "🙄",
+            "😮", "😯", "😲", "🥱", "😴", "🤤",   "😪", "😵", "😵‍💫", "🤐", "🥴", "🤢",
+            "🤮", "🤧", "😷", "🤒", "🤕", "🤑",
+        ];
+        const el = $Dom.GenerateTemplate("tpl-marker-library");
+        const grid = $Dom.QuerySelector("#js-marker-grid", el);
+        EMOJIS.forEach(emoji => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "w-11 h-11 text-[3.0rem] flex items-center justify-center _rounded-[0.8rem] hover:bg-slate-100 active:scale-95 transition-all";
+            btn.textContent = emoji;
+            btn.onclick = () => {
+                if (onSelect) onSelect(emoji);
+                this._core.close();
+            };
+            grid.appendChild(btn);
+        });
+        this._core.open({
+            title: "マーカーの選択",
+            content: el,
+            size: "md",
+            buttons: []
         });
     },
 };

@@ -40,9 +40,12 @@ const _DetailContentCore = {
                     this.editLng = $Dom.GetElementById("detail-edit-longitude");
                     this.editPrice = $Dom.GetElementById("detail-edit-memo_price");
                     // 
-                    this.editFaceEmoji = $Dom.GetElementById("detail-edit-face_emoji");
                     this.editFaceTrigger = $Dom.GetElementById("btn-face-trigger");
                     this.editFacePreview = $Dom.GetElementById("span-face-preview"); // IDを span 用のものに修正
+                    this.editFaceEmoji = $Dom.GetElementById("detail-edit-face_emoji");
+                    this.editFaceTrigger2 = $Dom.GetElementById("btn-face-trigger2");
+                    this.editFacePreview2 = $Dom.GetElementById("span-face-preview2"); // IDを span 用のものに修正
+                    this.editFaceEmoji2 = $Dom.GetElementById("detail-edit-face_emoji2");
                     // 
                     this.btnAtmosphereTrigger = $Dom.GetElementById("btn-atmosphere-trigger");
                     this.spanAtmospherePreview = $Dom.GetElementById("span-atmosphere-preview");
@@ -88,6 +91,15 @@ const _DetailContentCore = {
                         this.editFacePreview.textContent = emoji;
                         // 隠しフィールド（face_emoji）に直接絵文字をセット
                         this.editFaceEmoji.value = emoji;
+                    });
+                });
+                // ボタンクリック時のイベント設定例
+                this.editFaceTrigger2.addEventListener('click', () => {
+                    $Dialog.ShowMarkerLibrary((emoji) => {
+                        // プレビュー（span等）のテキストを更新
+                        this.editFacePreview2.textContent = emoji;
+                        // 隠しフィールド等に値をセット
+                        this.editFaceEmoji2.value = emoji;
                     });
                 });
                 // プラスに入力されたらマイナスをクリア

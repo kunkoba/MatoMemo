@@ -256,7 +256,7 @@ window.$Util = {
             return null;
         }
     },
-    // 絵文字ピッカー
+    // 絵文字ピッカー（ライブラリ）
     ShowEmojiPicker(onSelect) {
         const el = $Dom.GenerateTemplate("tpl-emoji-picker", "ui-dialog-root");
         const container = $Dom.GetElementById('emoji-mart-container');
@@ -266,7 +266,12 @@ window.$Util = {
                 el.remove();
             },
             locale: 'en',
-            set: 'native',
+            set: 'native',// ↓ v5.6.0 では「表示するカテゴリ」をここで指定します（除外したいものを省く）
+            categories: [
+                'frequent',
+                'people',
+                'nature', 'foods', 'activity', 'places', 'objects', 'symbols', 'flags',
+            ],
             navPosition: 'bottom',
             previewPosition: 'none',
             skinTonePosition: 'none',
@@ -311,13 +316,11 @@ window.$Util = {
         // rootHtml（第2引数）を渡さず、手動で appendChild する
         const tpl = document.getElementById("tpl-status-badge");
         const badge = tpl.content.firstElementChild.cloneNode(true);
-
         const configs = [
             ['bg-slate-800', 'bg-white', 'bg-transparent', 'bg-transparent'], // 0: Private
             ['bg-slate-400', 'bg-transparent', 'bg-white', 'bg-transparent'], // 1: Close
             ['bg-brand-5',   'bg-transparent', 'bg-transparent', 'bg-white']  // 2: Open
         ];
-
         const [bg, d0, d1, d2] = configs[statusIndex];
         badge.classList.add(bg);
         const dots = badge.querySelectorAll('.dot');
