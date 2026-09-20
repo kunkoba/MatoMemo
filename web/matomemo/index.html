@@ -112,7 +112,6 @@
                                 <option value="1">作成順で表示</option>
                                 <option value="2">更新順で表示</option>
                                 <option value="3">リアクション別</option>
-                                <option value="5">評価別（Feel）</option>
                                 <option value="4">キーワード検索</option>
                             </select>
                         </div>
@@ -196,8 +195,7 @@
                                 <div id="detail-display-face_emoji" class="text-[5rem] leading-none shrink-0 mr-6"></div>
                                 <!-- 評価（Feel Type）画像と文字 -->
                                 <div class="flex flex-col items-center justify-center shrink-0 pt-2">
-                                    <img id="detail-display-feel_image" src="" alt="feel" class="w-[4rem] h-[4rem] object-contain">
-                                    <span id="detail-display-feel_text" class="text-[0.8rem] font-bold tracking-wider"></span>
+                                    <img id="detail-display-feel_image" src="" alt="feel" class="w-[5rem] h-[5rem] object-contain">
                                 </div>
                                 <!-- 金額：ml-autoで右寄せ -->
                                 <div id="detail-display-price-wrapper" class="hidden ml-auto pr-3 mt-1 flex items-baseline italic">
@@ -232,64 +230,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- 編集用 (detail-edit) の MARKER & ATMOSPHERE エリア -->
-                        <div class="grid grid-cols-2 gap-6">
-                            <!-- 絵文字 -->
-                            <div>
-                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">絵文字</label>
-                                <div class="flex items-center justify-between border-b-2 border-brand-2 pb-1">
-                                    <!-- マーカー絵文字 -->
-                                    <button id="btn-face-trigger_2" type="button" class="relative h-8 w-full text-right text-[3rem] outline-none active:scale-95">
-                                        <span id="span-face-preview_2" class="absolute -top-8 right-0"></span>
-                                        <input name="face_emoji_2" id="detail-edit-face_emoji_2" type="hidden">
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- 環境エフェクト -->
-                            <div>
-                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">エフェクト</label>
-                                <div class="flex items-center justify-between border-b-2 border-brand-2 pb-1">
-                                    <button id="btn-atmosphere-trigger_2" type="button" class="h-8 w-full text-right text-[1rem] outline-none active:scale-95 font-bold text-brand-5 tracking-widest">
-                                        <span id="span-atmosphere-preview">0000</span>
-                                        <input name="weather_code" id="detail-edit-weather_code" type="hidden">
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-6">
-    <!-- 絵文字 1 -->
-    <div>
-        <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">きもち</label>
-        <div class="border-b-2 border-brand-2 pb-1">
-            <button id="btn-face-trigger" type="button" class="relative h-8 w-full block outline-none active:scale-95">
-                <span id="span-face-preview" class="absolute -top-4 text-[2.8rem] leading-none">😀</span>
-                <input id="detail-edit-face_emoji" name="face_emoji" type="hidden">
-            </button>
-        </div>
-    </div>
-
-    <!-- 絵文字 2 -->
-    <div>
-        <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">シンボル</label>
-        <div class="border-b-2 border-brand-2 pb-1">
-            <button id="btn-face-trigger2" type="button" class="relative h-8 w-full block outline-none active:scale-95">
-                <span id="span-face-preview2" class="absolute -top-4 text-[2.8rem] leading-none">😀</span>
-                <input id="detail-edit-face_emoji2" name="face_emoji" type="hidden">
-            </button>
-        </div>
-    </div>
-
-    <!-- エフェクト -->
-    <div>
-        <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">エフェクト</label>
-        <div class="border-b-2 border-brand-2 pb-1">
-            <button id="btn-atmosphere-trigger" type="button" class="relative h-8 w-full block outline-none active:scale-95">
-                <span id="span-atmosphere-preview" class="absolute right-0 bottom-1 font-bold text-brand-5 tracking-widest text-">0000</span>
-                <input name="weather_code" type="hidden" value="0000">
-            </button>
-        </div>
-    </div>
-</div>
                         <!-- TITLE -->
                         <div class="w-full">
                             <!-- 全体：左（タイトル＋カウント＋入力欄）＋右（ボタン） -->
@@ -365,40 +305,40 @@
                                     class="w-8 h-8 shrink-0 flex items-center justify-center bg-slate-200 rounded-full text-[0.9rem] active:scale-95 transition-all">✕</button>
                             </div>
                         </div>
-                        <!-- 評価 -->
-                        <div>
-                            <div class="flex justify-between items-end mb-2">
-                                <label class="font-bold text-slate-600 text-[0.9rem] uppercase tracking-wider">どうでしたか？</label>
+                        <!-- 編集用 (detail-edit) の MARKER & ATMOSPHERE エリア -->
+                        <div class="grid grid-cols-2 gap-6">
+                            <!-- 絵文字 -->
+                            <div>
+                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">シンボル</label>
+                                <div class="flex items-center justify-between border-b-2 border-brand-2 pb-1">
+                                    <!-- マーカー絵文字 -->
+                                    <button id="btn-face-trigger" type="button" class="relative h-8 w-full text-right text-[3rem] outline-none active:scale-95">
+                                        <span id="span-face-preview" class="absolute -top-8 right-0"></span>
+                                        <input id="detail-edit-face_emoji" name="face_emoji" type="hidden">
+                                    </button>
+                                </div>
                             </div>
-                            <div class="grid grid-cols-3 gap-4" id="detail-edit-feel-group">
-                                <!-- data-val を -1 に -->
-                                <button type="button" data-val="-1" class="eval-btn flex flex-col items-center justify-center py-3 rounded-[1rem] border-2 transition-all outline-none active:scale-95 bg-slate-50 border-transparent">
-                                    <span class="eval-icon text-[2rem] leading-none mb-1 drop-shadow-sm grayscale opacity-30">
-                                        <img src="img/face/face_bad.png" alt="bad">
-                                    </span>
-                                    <span class="eval-label text-[0.8rem] font-bold tracking-wider text-slate-400">う～ん</span>
-                                </button>
-                                <!-- data-val を 0 に -->
-                                <button type="button" data-val="0" class="eval-btn flex flex-col items-center justify-center py-3 rounded-[1rem] border-2 transition-all outline-none active:scale-95 bg-slate-50 border-transparent">
-                                    <span class="eval-icon text-[2rem] leading-none mb-1 drop-shadow-sm grayscale opacity-30">
-                                        <img src="img/face/face_normal.png" alt="normal">
-                                    </span>
-                                    <span class="eval-label text-[0.8rem] font-bold tracking-wider text-slate-400">まぁまぁ</span>
-                                </button>
-                                <!-- data-val を 1 に -->
-                                <button type="button" data-val="1" class="eval-btn flex flex-col items-center justify-center py-3 rounded-[1rem] border-2 transition-all outline-none active:scale-95 bg-slate-50 border-transparent">
-                                    <span class="eval-icon text-[2rem] leading-none mb-1 drop-shadow-sm grayscale opacity-30">
-                                        <img src="img/face/face_good.png" alt="good">
-                                    </span>
-                                    <span class="eval-label text-[0.8rem] font-bold tracking-wider text-slate-400">よかった</span>
-                                </button>
+                            <!-- 環境エフェクト -->
+                            <div>
+                                <label class="block font-bold text-slate-600 text-[0.9rem] mb-1 uppercase tracking-wider">エフェクト</label>
+                                <div class="flex items-center justify-between border-b-2 border-brand-2 pb-1">
+                                    <button id="btn-atmosphere-trigger" type="button" class="h-8 w-full text-right text-[1rem] outline-none active:scale-95 font-bold text-brand-5 tracking-widest">
+                                        <span id="span-atmosphere-preview">0000</span>
+                                        <input name="weather_code" id="detail-edit-weather_code" type="hidden">
+                                    </button>
+                                </div>
                             </div>
+                        </div>
+                        <!-- 表情選択 -->
+                        <div class="w-full">
+                            <label class="block font-bold text-slate-600 text-[0.9rem] mb-2 uppercase tracking-wider">表情アイコン</label>
+                            <div id="detail-edit-feel-group" class="flex flex-nowrap overflow-x-auto gap-4 pb-4 no-scrollbar w-full justify-start"></div>
                         </div>
                         <!-- 移動音源 -->
                         <div class="w-full">
                             <label class="block font-bold text-slate-600 text-[0.9rem] mb-2 uppercase tracking-wider">次の明細への移動音源</label>
                             <!-- justify-start を追加して左寄せを強制 -->
-                            <div id="detail-edit-sound-group" class="flex flex-nowrap overflow-x-auto gap-4 pb-2 no-scrollbar w-full justify-start">
+                            <div id="detail-edit-sound-group" class="flex flex-nowrap overflow-x-auto gap-4 pb-4 no-scrollbar w-full justify-start">
                                 <!-- JSでボタンが生成されます -->
                             </div>
                         </div>

@@ -80,7 +80,7 @@ const _MarkerCore = {
                 iconContainer.innerHTML = `<img src="${imgPath}" class="bg-white w-full h-full object-contain">`;
             } else {
                 // Emojiモード：絵文字テキストを表示
-                iconContainer.textContent = row.face_emoji || '😀';
+                iconContainer.textContent = row.face_emoji || '🚩';
             }
             const customIcon = L.divIcon({
                 html: el.outerHTML,

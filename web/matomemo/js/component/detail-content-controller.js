@@ -14,7 +14,6 @@ const _DetailContentCore = {
                     this.displayDateContainer = $Dom.GetElementById("detail-display-date-container");
                     this.displayFaceEmoji = $Dom.GetElementById("detail-display-face_emoji");
                     this.displayFeelImage = $Dom.GetElementById("detail-display-feel_image");
-                    this.displayFeelText = $Dom.GetElementById("detail-display-feel_text");
                     this.displayWeatherEmoji = $Dom.GetElementById("detail-display-weather_code");
                     this.displayTitle = $Dom.GetElementById("detail-display-title");
                     this.displayBody = $Dom.GetElementById("detail-display-body");
@@ -43,9 +42,6 @@ const _DetailContentCore = {
                     this.editFaceTrigger = $Dom.GetElementById("btn-face-trigger");
                     this.editFacePreview = $Dom.GetElementById("span-face-preview"); // IDを span 用のものに修正
                     this.editFaceEmoji = $Dom.GetElementById("detail-edit-face_emoji");
-                    this.editFaceTrigger2 = $Dom.GetElementById("btn-face-trigger2");
-                    this.editFacePreview2 = $Dom.GetElementById("span-face-preview2"); // IDを span 用のものに修正
-                    this.editFaceEmoji2 = $Dom.GetElementById("detail-edit-face_emoji2");
                     // 
                     this.btnAtmosphereTrigger = $Dom.GetElementById("btn-atmosphere-trigger");
                     this.spanAtmospherePreview = $Dom.GetElementById("span-atmosphere-preview");
@@ -56,10 +52,6 @@ const _DetailContentCore = {
                     this.countTitle = $Dom.GetElementById("detail-count-title");
                     this.countBody = $Dom.GetElementById("detail-count-body");
                     this.countUrl = $Dom.GetElementById("detail-count-url");
-                    // ▼ 評価エリアの要素取得
-                    this.editEvalGroup = $Dom.GetElementById("detail-edit-feel-group");
-                    this.editEvalInput = $Dom.GetElementById("detail-edit-feel");
-                    this.evalBtns = $Dom.QuerySelectorAll(".eval-btn", this.editEvalGroup);
                     // 音源選択ボタンの動的生成
                     this.editSoundGroup = $Dom.GetElementById("detail-edit-sound-group");
                     this.editSoundInput = $Dom.GetElementById("detail-edit-move_sound_id");
@@ -68,6 +60,16 @@ const _DetailContentCore = {
                             ${s.emoji}
                         </button>
                     `).join('');
+                    // 表情選択ボタンの動的生成（ラベルなし・音源UIと同じレイアウト）
+                    this.editFeel2Group = $Dom.GetElementById("detail-edit-feel-group");
+                    this.editFeel2Input = $Dom.GetElementById("detail-edit-feel");
+                    if (this.editFeel2Group) {
+                        this.editFeel2Group.innerHTML = Object.values($Const.FEEL_TYPE).map(f => `
+                            <button type="button" data-val="${f.val}" class="js-feel2-btn shrink-0 w-14 h-14 rounded-xl bg-white border-2 border-slate-200 flex items-center justify-center active:scale-90 transition-all overflow-hidden p-1">
+                                <img src="${f.path}" class="w-full h-full object-contain pointer-events-none" alt="">
+                            </button>
+                        `).join('');
+                    }
                 }
             }
             // イベント登録
@@ -93,14 +95,20 @@ const _DetailContentCore = {
                         this.editFaceEmoji.value = emoji;
                     });
                 });
-                // ボタンクリック時のイベント設定例
-                this.editFaceTrigger2.addEventListener('click', () => {
-                    $Dialog.ShowMarkerLibrary((emoji) => {
-                        // プレビュー（span等）のテキストを更新
-                        this.editFacePreview2.textContent = emoji;
-                        // 隠しフィールド等に値をセット
-                        this.editFaceEmoji2.value = emoji;
-                    });
+                // // ボタンクリック時のイベント設定例
+                // this.editFaceTrigger2.addEventListener('click', () => {
+                //     $Dialog.ShowMarkerLibrary((emoji) => {
+                //         // プレビュー（span等）のテキストを更新
+                //         this.editFacePreview2.textContent = emoji;
+                //         // 隠しフィールド等に値をセット
+                //         this.editFaceEmoji2.value = emoji;
+                //     });
+                // });
+                $Dom.QuerySelectorAll(".js-feel2-btn", this.editFeel2Group).forEach(btn=>{
+                    btn.onclick=()=>{
+                        this.editFeel2Input.value=btn.dataset.val;
+                        this._updateFeel2UI(btn.dataset.val);
+                    }
                 });
                 // プラスに入力されたらマイナスをクリア
                 this.editPricePlus.addEventListener('input', () => {
@@ -116,17 +124,17 @@ const _DetailContentCore = {
                     this.editUrl.value = "";
                     this.countUrl.textContent = "0"; // 文字数カウントもリセット
                 });
-                // ▼ 評価ボタンのクリックイベント
-                if (this.evalBtns) {
-                    this.evalBtns.forEach(btn => {
-                        btn.addEventListener('click', () => {
-                            const val = btn.dataset.val;
-                            this.editEvalInput.value = val;
-                            this._updateEvalUI(val); // UIを更新
-                        });
-                    });
-                }
-                // 追加：本文入力欄をクリックした時にエディタを開く
+                // // ▼ 評価ボタンのクリックイベント
+                // if (this.evalBtns) {
+                //     this.evalBtns.forEach(btn => {
+                //         btn.addEventListener('click', () => {
+                //             const val = btn.dataset.val;
+                //             this.editEvalInput.value = val;
+                //             this._updateEvalUI(val); // UIを更新
+                //         });
+                //     });
+                // }
+                // 本文入力欄をクリックした時にエディタを開く
                 this.editBody.addEventListener('click', async () => {
                     const result = await $Dialog.ShowTextEditor({
                         title: "内容を入力",
@@ -165,45 +173,45 @@ const _DetailContentCore = {
             }
         }
     },
-    // ▼ 評価UIの更新（未選択はグレー、選択時は色・枠線で強調）
-    _updateEvalUI(val) {
-        if (!this.evalBtns) return;
-        // 定数を参照
-        const EV = $Const.FEEL_TYPE;
-        const config = {
-            [EV.GOOD.val]:   { bg: "bg-emerald-50", border: "border-emerald-400", text: "text-emerald-500" },
-            [EV.NORMAL.val]: { bg: "bg-slate-100",  border: "border-slate-400",   text: "text-slate-600" },
-            [EV.BAD.val]:    { bg: "bg-red-50",     border: "border-red-400",     text: "text-red-500" }
-        };
-        this.evalBtns.forEach(btn => {
-            const bVal = Number(btn.dataset.val);
-            const icon = $Dom.QuerySelector(".eval-icon", btn);
-            const label = $Dom.QuerySelector(".eval-label", btn);
-            // 状態によって切り替わる可能性のあるクラスを一旦すべて remove
-            btn.classList.remove(
-                "bg-emerald-50", "border-emerald-400", "shadow-md",
-                "bg-slate-100", "border-slate-400",
-                "bg-red-50", "border-red-400",
-                "bg-slate-50", "border-transparent", "shadow-sm"
-            );
-            icon.classList.remove("grayscale", "opacity-30", "grayscale-0", "opacity-100");
-            label.classList.remove("text-emerald-500", "text-slate-600", "text-red-500", "text-slate-400");
-            // ターゲットの値と一致するかどうかで add するクラスを変える
-            if (bVal === Number(val)) {
-                const c = config[bVal];
-                if (c) {
-                    btn.classList.add(c.bg, c.border, "shadow-md");
-                    icon.classList.add("grayscale-0", "opacity-100");
-                    label.classList.add(c.text);
-                }
-            } else {
-                // 未選択の場合
-                btn.classList.add("bg-slate-50", "border-transparent", "shadow-sm");
-                icon.classList.add("grayscale", "opacity-30");
-                label.classList.add("text-slate-400");
-            }
-        });
-    },
+    // // ▼ 評価UIの更新（未選択はグレー、選択時は色・枠線で強調）
+    // _updateEvalUI(val) {
+    //     if (!this.evalBtns) return;
+    //     // 定数を参照
+    //     const EV = $Const.FEEL_TYPE;
+    //     const config = {
+    //         [EV.GOOD.val]:   { bg: "bg-emerald-50", border: "border-emerald-400", text: "text-emerald-500" },
+    //         [EV.NORMAL.val]: { bg: "bg-slate-100",  border: "border-slate-400",   text: "text-slate-600" },
+    //         [EV.BAD.val]:    { bg: "bg-red-50",     border: "border-red-400",     text: "text-red-500" }
+    //     };
+    //     this.evalBtns.forEach(btn => {
+    //         const bVal = Number(btn.dataset.val);
+    //         const icon = $Dom.QuerySelector(".eval-icon", btn);
+    //         const label = $Dom.QuerySelector(".eval-label", btn);
+    //         // 状態によって切り替わる可能性のあるクラスを一旦すべて remove
+    //         btn.classList.remove(
+    //             "bg-emerald-50", "border-emerald-400", "shadow-md",
+    //             "bg-slate-100", "border-slate-400",
+    //             "bg-red-50", "border-red-400",
+    //             "bg-slate-50", "border-transparent", "shadow-sm"
+    //         );
+    //         icon.classList.remove("grayscale", "opacity-30", "grayscale-0", "opacity-100");
+    //         label.classList.remove("text-emerald-500", "text-slate-600", "text-red-500", "text-slate-400");
+    //         // ターゲットの値と一致するかどうかで add するクラスを変える
+    //         if (bVal === Number(val)) {
+    //             const c = config[bVal];
+    //             if (c) {
+    //                 btn.classList.add(c.bg, c.border, "shadow-md");
+    //                 icon.classList.add("grayscale-0", "opacity-100");
+    //                 label.classList.add(c.text);
+    //             }
+    //         } else {
+    //             // 未選択の場合
+    //             btn.classList.add("bg-slate-50", "border-transparent", "shadow-sm");
+    //             icon.classList.add("grayscale", "opacity-30");
+    //             label.classList.add("text-slate-400");
+    //         }
+    //     });
+    // },
     // 画面モード変更時
     changeScreenMode(){
         switch ($App.AppData.Context.ScreenMode) {
@@ -309,28 +317,17 @@ const _DetailContentCore = {
             $Dom.ToggleShow(this.displayUrlWrapper, false);
         }
         // 絵文字
-        this.displayFaceEmoji.textContent = detail.face_emoji || '😀';
-        this.displayWeatherEmoji.textContent = detail.weather_code || '0000';
-        // 評価（Feel Type）画像の反映
-        if (this.displayFeelImage && this.displayFeelText) {
-            const feel = (detail.feel_type !== undefined && detail.feel_type !== null) 
-                ? Number(detail.feel_type) 
-                : $Const.FEEL_TYPE.NORMAL.val;
-            this.displayFeelText.classList.remove("text-emerald-500", "text-slate-600", "text-red-500");
-            if (feel === $Const.FEEL_TYPE.GOOD.val) {
-                this.displayFeelImage.src = $Const.FEEL_TYPE.GOOD.path;
-                this.displayFeelText.textContent = $Const.FEEL_TYPE.GOOD.label;
-                this.displayFeelText.classList.add("text-emerald-500");
-            } else if (feel === $Const.FEEL_TYPE.BAD.val) {
-                this.displayFeelImage.src = $Const.FEEL_TYPE.BAD.path;
-                this.displayFeelText.textContent = $Const.FEEL_TYPE.BAD.label;
-                this.displayFeelText.classList.add("text-red-500");
-            } else {
-                this.displayFeelImage.src = $Const.FEEL_TYPE.NORMAL.path;
-                this.displayFeelText.textContent = $Const.FEEL_TYPE.NORMAL.label;
-                this.displayFeelText.classList.add("text-slate-600");
-            }
+        this.displayFaceEmoji.textContent = detail.face_emoji || '🚩';
+        // 表情アイコン
+        if (this.displayFeelImage) {
+            this.displayFeelImage.src = $Util.GetFeelIconPath(detail.feel_type);
         }
+        if (this.displayFeelText) {
+            const f = Object.values($Const.FEEL_TYPE).find(x => x.val === Number(detail.feel_type));
+            this.displayFeelText.textContent = f? f.label : '';
+        }
+        // エフェクト
+        this.displayWeatherEmoji.textContent = detail.weather_code || '0000';
     },
     // 編集用反映
     _renderEditMode(detail) {
@@ -355,8 +352,8 @@ const _DetailContentCore = {
             this.editPriceMinus.value = Math.abs(price);
         }
         // 表情・天気IDとプレビュー画像
-        this.editFaceEmoji.value = detail.face_emoji || '😀';
-        this.editFacePreview.textContent = detail.face_emoji || '😀';
+        this.editFaceEmoji.value = detail.face_emoji || '🚩';
+        this.editFacePreview.textContent = detail.face_emoji || '🚩';
         // this.editWeatherEmoji.value = detail.weather_code || 'はれ'; // select の value に直接セット
         this.editWeatherEmoji.value = detail.weather_code || '0000';
         this.spanAtmospherePreview.textContent = detail.weather_code || '0000';
@@ -366,12 +363,12 @@ const _DetailContentCore = {
         this.editDbid.value = detail.dbid || "";
         this.editLat.value = detail.latitude;
         this.editLng.value = detail.longitude;
-        // ▼ 評価値の反映（0 を判定から漏らさないように null/undefined チェック）
-        const evalVal = (detail.feel_type !== undefined && detail.feel_type !== null) 
-            ? detail.feel_type
-            : $Const.FEEL_TYPE.NORMAL.val;
-        this.editEvalInput.value = evalVal;
-        this._updateEvalUI(evalVal);
+        // 表情アイコン
+        const feelVal = detail.feel_type?? 0;
+        if (this.editFeel2Input) {
+            this.editFeel2Input.value = feelVal;
+            this._updateFeel2UI(feelVal);
+        }
         // 音源の反映
         const soundId = detail.move_sound_id ?? 1;
         this.editSoundInput.value = soundId;
@@ -405,17 +402,20 @@ const _DetailContentCore = {
         // this.editLat.value = pos.lat;
         // this.editLng.value = pos.lng;
         this.setPos(pos.lat, pos.lng);
-        this.editFaceEmoji.value = '😀';
-        this.editFacePreview.textContent = '😀';
+        this.editFaceEmoji.value = '🚩';
+        this.editFacePreview.textContent = '🚩';
         // this.editWeatherEmoji.value = 'はれ'; // 新規時は「はれ」を選択
         this.editWeatherEmoji.value = '0000';
         this.spanAtmospherePreview.textContent = '0000';
-        // ▼ 新規作成時は定数を使って NORMAL を選択状態にする
-        this.editEvalInput.value = $Const.FEEL_TYPE.NORMAL.val;
-        this._updateEvalUI($Const.FEEL_TYPE.NORMAL.val);
+        // // ▼ 新規作成時は定数を使って NORMAL を選択状態にする
+        // this.editEvalInput.value = $Const.FEEL_TYPE.NORMAL.val;
+        // this._updateEvalUI($Const.FEEL_TYPE.NORMAL.val);
         // 音源の初期値をWALK(1)にリセット
         this.editSoundInput.value = 1;
         this._updateSoundUI(1);
+        // 表情アイコン
+        this.editFeel2Input.value = 0;
+        this._updateFeel2UI(0);
         // 文字数カウンターを0にリセット
         if (this.countTitle) this.countTitle.textContent = "0";
         if (this.countBody)  this.countBody.textContent  = "0";
@@ -451,10 +451,7 @@ const _DetailContentCore = {
         data.latitude = Number(data.latitude || 0);
         data.longitude = Number(data.longitude || 0);
         data.memo_price = Number(data.memo_price || 0);
-        // ▼ 空文字の場合は定数の NORMAL にする
-        data.feel_type = (data.feel_type !== "" && data.feel_type !== undefined) 
-            ? Number(data.feel_type)
-            : $Const.FEEL_TYPE.NORMAL.val;
+        data.feel_type = Number(data.feel_type?? data.feel?? 0);
         data.move_sound_id = Number(data.move_sound_id || 1);
         // データストアから元の明細データを取得（新規作成時(seq=0)は空オブジェクト）
         let originalData = {};
@@ -502,7 +499,15 @@ const _DetailContentCore = {
             }
             btn.classList.toggle('shadow-md', isActive);
         });
-    }
+    },
+    // 表情アイコン
+    _updateFeel2UI(v){
+        $Dom.QuerySelectorAll(".js-feel2-btn", this.editFeel2Group).forEach(b=>{
+            b.classList.toggle('border-brand-5', b.dataset.val==v);
+            b.classList.toggle('border-slate-200', b.dataset.val!=v);
+            b.classList.toggle('shadow-md', b.dataset.val==v);
+        });
+    },
 };
 
 // 窓口

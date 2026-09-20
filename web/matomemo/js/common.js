@@ -268,9 +268,11 @@ window.$Util = {
             locale: 'en',
             set: 'native',// ↓ v5.6.0 では「表示するカテゴリ」をここで指定します（除外したいものを省く）
             categories: [
-                'frequent',
-                'people',
-                'nature', 'foods', 'activity', 'places', 'objects', 'symbols', 'flags',
+                // 'frequent',
+                // 'people',
+                'nature', 'foods', 'activity', 'places', 'objects',
+                // 'symbols',
+                'flags',
             ],
             navPosition: 'bottom',
             previewPosition: 'none',
@@ -413,12 +415,7 @@ window.$Util = {
         if (!url) return;
         window.open(url, '_blank', 'noopener,noreferrer');
     },
-    // feel_typeの数値からアイコンパスを取得
-    GetFeelIconPath(val) {
-        const item = Object.values($Const.FEEL_TYPE).find(f => f.val === Number(val));
-        return item ? item.path : $Const.FEEL_TYPE.NORMAL.path;
-    },
-    // 追加：移動音を再生する
+    // 移動音を再生する
     PlayMoveSound(typeId) {
         const sound = Object.values($Const.MOVE_SOUND_TYPE).find(s => s.id === Number(typeId));
         if (!sound) return;
@@ -431,5 +428,10 @@ window.$Util = {
         audio.volume = $App.AppData.Owner.SoundVolume;
         this._currentAudio = audio; // インスタンスを保持
         audio.play().catch(e => console.warn("再生ブロック:", e));
+    },
+    // アイコンファイル取得
+    GetFeelIconPath(val) {
+        const item = Object.values($Const.FEEL_TYPE).find(f => f.val === Number(val));
+        return item ? item.path : this.GetFeelIconPath(21);
     },
 };

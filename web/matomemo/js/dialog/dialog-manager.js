@@ -348,7 +348,7 @@ const DialogController = {
     },
     // 絵文字ピッカー（自作）
     ShowMarkerLibrary(onSelect) {
-        const EMOJIS = [
+        const EMOJIS1 = [
             "😀", "😃", "😄", "😁", "😆", "😅",   "😂", "🤣", "🥹", "😊", "😇", "🙂",
             "🙃", "😉", "😌", "😍", "🥰", "😘",   "😗", "😙", "😚", "😋", "😛", "😝",
             "😜", "🤪", "🤨", "🧐", "🤓", "😎",   "🥸", "🤩", "🥳", "😏", "😒", "😞",
@@ -358,12 +358,17 @@ const DialogController = {
             "😮", "😯", "😲", "🥱", "😴", "🤤",   "😪", "😵", "😵‍💫", "🤐", "🥴", "🤢",
             "🤮", "🤧", "😷", "🤒", "🤕", "🤑",
         ];
+        const EMOJIS = [
+            "😀","😄","😁","😆","😅","🤣","🙂","😊","🥰","😍","😘",
+            "🥲","😋","🤪","🫢","🫣","🤫","🤔","🤨","😑","😏","😒","🙄","🫨","😔","😴","🤮",
+            "🥵","🥶","😵","😵‍💫","🥹","😨","😭","😱","😠","😡","😖"
+        ];
         const el = $Dom.GenerateTemplate("tpl-marker-library");
         const grid = $Dom.QuerySelector("#js-marker-grid", el);
         EMOJIS.forEach(emoji => {
             const btn = document.createElement("button");
             btn.type = "button";
-            btn.className = "w-11 h-11 text-[3.0rem] flex items-center justify-center _rounded-[0.8rem] hover:bg-slate-100 active:scale-95 transition-all";
+            btn.className = "w-11 h-11 text-[3.2rem] flex items-center justify-center hover:bg-slate-100 active:scale-95 transition-all";
             btn.textContent = emoji;
             btn.onclick = () => {
                 if (onSelect) onSelect(emoji);

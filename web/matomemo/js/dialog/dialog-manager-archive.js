@@ -29,7 +29,7 @@ export default {
     ShowDetailsTimeLine() {
         const rawDetails = $Data.Store.GetDetails();
         if (!rawDetails || rawDetails.length === 0) return $Notice.Warn("データはありません。");
-        // 追加：公開まとめモードかどうかを判定（エラー解消のための変数定義）
+        // 公開まとめモードかどうかを判定（エラー解消のための変数定義）
         const isPub = ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.ARCHIVE_PUB);
         // マーカー実体（DOM）を除外して、データプロパティだけをコピーする
         const details = rawDetails.map(d => {
@@ -100,7 +100,7 @@ export default {
             const child = $Dom.GenerateTemplate("tpl-list-child-search");
             // --- 1. 基本情報の反映 ---
             $Dom.QuerySelector(".js-index", child).textContent = (index + 1);
-            $Dom.QuerySelector(".js-face", child).textContent = item.face_emoji || '😀';
+            $Dom.QuerySelector(".js-face", child).textContent = item.face_emoji || '🚩';
             $Dom.QuerySelector(".js-archive-title", child).textContent = item.a_title || "(No Archive)";
             $Dom.QuerySelector(".js-title", child).textContent = item.title || "No Title";
             // $Dom.QuerySelector(".js-body", child).textContent = (item.body || "").replace(/\r?\n/g, ' ');
@@ -368,7 +368,7 @@ export default {
                 $Dom.QuerySelector(".js-time", card).textContent = item.memo_time;
                 $Dom.QuerySelector(".js-title", card).textContent = item.title;
                 $Dom.QuerySelector(".js-body", card).textContent = item.body;
-                $Dom.QuerySelector(".js-emoji", card).textContent = item.face_emoji || '😀';
+                $Dom.QuerySelector(".js-emoji", card).textContent = item.face_emoji || '🚩';
                 card.onclick = () => {
                     if (selectedSeqs.has(item.seq)) selectedSeqs.delete(item.seq);
                     else selectedSeqs.add(item.seq);

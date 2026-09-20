@@ -6,7 +6,7 @@ window.$Const = {
         DESCRIPTION: "「その日、その時、その場所の思い出」をひとまとめに！旅の記録や日常の気づきを、地図と一緒に残せるアプリです。",
         DEVELOPER: "kunkoba",
         OFFICIAL_SITE: "https://hinekulemonstudio.web.app/",
-        VERSION: "1.3.1",
+        VERSION: "1.3.2",
         VERSION_DESCRIPTION: `
 メジャー.マイナー.パッチの形式で表されます。
 
@@ -69,12 +69,6 @@ window.$Const = {
         CAUTION: { id: 8, emoji: '⚠️', label: 'Caution' },
         WARNING: { id: 9, emoji: '🚫', label: 'Warning' },
     },
-    // 明細の評価種別
-    FEEL_TYPE: {
-        GOOD:   { val: 1,  label: 'Good',   path: 'img/face/face_good.png' },
-        NORMAL: { val: 0,  label: 'Normal', path: 'img/face/face_normal.png' },
-        BAD:    { val: -1, label: 'Bad',    path: 'img/face/face_bad.png' },
-    },
     // マーカー表示モード
     MARKER_MODE: {
         EMOJI: 'emoji',
@@ -97,6 +91,37 @@ window.$Const = {
         TRAIN:   { id: 5, emoji: '🚃', file: 'audio/train.wav' },
         PLANE:   { id: 6, emoji: '✈️', file: 'audio/plane.wav' },
         SHIP:    { id: 7, emoji: '🚢', file: 'audio/ship.wav' },
+    },
+    // 明細の評価種別
+    FEEL_TYPE3: {
+        GOOD:   { val: 1,  label: 'Good',   path: 'img/face/face_good.png' },
+        NORMAL: { val: 0,  label: 'Normal', path: 'img/face/face_normal.png' },
+        BAD:    { val: -1, label: 'Bad',    path: 'img/face/face_bad.png' },
+    },
+    // 表情リスト（色順：ピンク ⇒ 緑 ⇒ 紫 ⇒ 青 ⇒ 赤）
+    FEEL_TYPE: {
+        // pink
+        PINK_SMILE_HEARTS:   { val: 11,  path: 'img/feel/pink-smile-hearts.png',   label: 'メロメロ' },
+        PINK_LAUGH_SQUINT:   { val: 12,  path: 'img/feel/pink-laugh-squint.png',   label: '照れ笑い' },
+        PINK_GRIN_HEARTS:    { val: 13,  path: 'img/feel/pink-grin-hearts.png',    label: 'ニヤリハート' },
+        // green
+        GREEN_GRIN_ALT:      { val: 21,  path: 'img/feel/green-grin-alt.png',     label: 'ニヤリ' },
+        GREEN_DROOLING:      { val: 22,  path: 'img/feel/green-drooling.png',     label: 'よだれ' },
+        GREEN_SLEEPING:      { val: 23,  path: 'img/feel/green-sleeping.png',     label: 'スヤァ' },
+        // purple
+        PURPLE_FLUSHED:          { val: 31,  path: 'img/feel/purple-flushed.png',          label: '赤面' },
+        PURPLE_EXPRESSIONLESS:   { val: 32,  path: 'img/feel/purple-expressionless.png',   label: '無表情' },
+        PURPLE_DOWNCAST_SWEAT:   { val: 33,  path: 'img/feel/purple-downcast-sweat.png',   label: '冷や汗' },
+        PURPLE_DIZZY:            { val: 34,  path: 'img/feel/purple-dizzy.png',            label: 'クラクラ' },
+        PURPLE_DISAPPOINTED:     { val: 35, path: 'img/feel/purple-disappointed.png',     label: 'ガッカリ' },
+        // blue
+        BLUE_TIRED:          { val: 41, path: 'img/feel/blue-tired.png',         label: '疲れ' },
+        BLUE_SCREAM:         { val: 42, path: 'img/feel/blue-scream.png',        label: '絶叫' },
+        BLUE_SAD_TEAR:       { val: 43, path: 'img/feel/blue-sad-tear.png',      label: '涙' },
+        BLUE_CONFOUNDED:     { val: 44, path: 'img/feel/blue-confounded.png',    label: '困惑' },
+        BLUE_ANXIOUS_SWEAT:  { val: 45, path: 'img/feel/blue-anxious-sweat.png', label: '不安汗' },
+        // red
+        RED_ANGRY_HORNS:     { val: 51, path: 'img/feel/red-angry-horns.png',    label: '激怒' },
     },
 };
 
