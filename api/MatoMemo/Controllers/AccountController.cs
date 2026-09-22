@@ -26,19 +26,6 @@ public class AccountController(
     /// <summary>
     /// Firebase認証の結果を受け取り、アプリ側へのログインまたは新規登録を行う
     /// </summary>
-    public async Task<IActionResult> FirebaseLogin2([FromBody] RegistrationUserService.FirebaseLoginRequest req)
-    {
-        var result = await registrationUserService.ExecuteAsync(req);
-
-        if (!result.is_success) return BadRequest(new { result.message });
-
-        // コンテキストに情報を一時セット（レスポンス生成用）
-        _user.login_user_id = result.userId ?? Guid.Empty;
-        _user.plan_type = result.plan ?? PlanType.Free.ToString();
-
-        return OkWithBase(new { token = result.token });
-    }
-
     [HttpPost("LoginFirebase")]
     public async Task<IActionResult> FirebaseLogin([FromBody] RegistrationUserService.FirebaseLoginRequest req)
     {

@@ -435,23 +435,6 @@ const AppManager = {
         $Notice.Error(msg);
         return false;
     },
-    // Google認証でメールアドレスを取得し、Firebase経由でログイン処理を行う
-    async ExecuteLoginFlow() {
-        // オフラインチェック
-        if (!this.AppData.Context.IsNetOnline) {
-            $Notice.Error("オフライン中はログインできません");
-            return false;
-        }
-        return await $Warn.CatchAsync(async () => {
-            const email = await $Auth.GetVerifiedEmailByGoogle();
-            if (await $Data.Access.LoginFirebase({ Email: email })) {
-                // this.AppData.Context.IsLoggedIn = true;
-                _AppCore.save(this.AppData.Owner);
-                return true;
-            }
-            return false;
-        })();
-    },
     // Firebaseからサインアウトし、ローカルの認証状態をクリアする
     async Logout() {
         if (firebase.apps.length) {
@@ -463,8 +446,26 @@ const AppManager = {
             _AppCore.save(this.AppData.Owner);
         }
     },
+    // Google認証でメールアドレスを取得し、Firebase経由でログイン処理を行う
+    async ExecuteLoginFlow() {
+        // オフラインチェック
+        if (!this.AppData.Context.IsNetOnline) {
+            $Notice.Error("オフライン中はログインできません");
+            return false;
+        }
+        return await $Warn.CatchAsync(async () => {
+            await $Auth.GetVerifiedEmailByGoogle();
+            const idToken = await firebase.auth().currentUser.getIdToken(true);
+            if (await $Data.Access.LoginFirebase({ IdToken: idToken })) {
+                // this.AppData.Context.IsLoggedIn = true;
+                _AppCore.save(this.AppData.Owner);
+                return true;
+            }
+            return false;
+        })();
+    },
     // メール認証実行フロー
-    async ExecuteEmailAuthFlow(email, password, isSignUp = false) {
+    async ExecuteEmailAuthFlow_2(email, password, isSignUp = false) {
         // オフラインチェック
         if (!this.AppData.Context.IsNetOnline) {
             $Notice.Error("オフライン中はログインできません");
@@ -510,6 +511,50 @@ const AppManager = {
                         msg = `エラー: ${e.message}`;
                 }
                 $Notice.Error(msg);
+            }
+            return false;
+        })();
+    },
+    // メール認証実行フロー
+    async ExecuteEmailAuthFlow(email, password, isSignUp = false) {
+        if (!this.AppData.Context.IsNetOnline) {
+            $Notice.Error("オフライン中はログインできません");
+            return false;
+        }   
+        return await $Warn.CatchAsync(async () => {
+            if (!email || !password) {
+                $Notice.Warn("メールアドレスとパスワードを入力してください");
+                return false;
+            }
+            $Notice.Info(isSignUp ? "処理中..." : "ログイン中...");
+            try {
+                const auth = firebase.auth();
+                if (isSignUp) {
+                    // --- 新規登録フロー ---
+                    const user = await $Auth.SignUpEmail(email, password);
+                    await user.sendEmailVerification();
+                    $Notice.Info("確認メールを送信しました。メール内のリンクをクリックしてからログインしてください。");
+                    await auth.signOut();
+                    return false;
+                } else {
+                    // --- ログインフロー ---
+                    const user = await $Auth.SignInEmail(email, password);
+                    await user.reload(); // ★これが無いと emailVerified が古いまま
+                    if (!user.emailVerified) {
+                        $Notice.Error("メールアドレスが未確認です。メールを確認してください。");
+                        await auth.signOut();
+                        return false;
+                    }
+                    // 確認済みなら自サーバへ
+                    const idToken = await user.getIdToken(true);
+                    if (await $Data.Access.LoginFirebase({ IdToken: idToken })) {
+                        _AppCore.save(this.AppData.Owner);
+                        return true;
+                    }
+                }
+            } catch (e) {
+                $Notice.Error(`エラー: ${e.message}`);
+                // auth/email-already-in-use なら「既に登録済みです」と出す
             }
             return false;
         })();

@@ -23,21 +23,19 @@ const AuthManager = {
     },
     // メールログイン
     async SignInEmail(email, password) {
-        this._ensureInit();
-        const result = await firebase.auth()
-            .signInWithEmailAndPassword(email, password);
-        return result.user?.email;
+        this.Init();
+        const result = await firebase.auth().signInWithEmailAndPassword(email, password);
+        return result.user;
     },
     // メール新規登録
     async SignUpEmail(email, password) {
-        this._ensureInit();
-        const result = await firebase.auth()
-            .createUserWithEmailAndPassword(email, password);
-        return result.user?.email;
+        this.Init();
+        const result = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        return result.user;
     },
     // パスワード再設定メール送信
     async ResetPassword(email) {
-        this._ensureInit();
+        this.Init();
         await firebase.auth().sendPasswordResetEmail(email);
         return true;
     }

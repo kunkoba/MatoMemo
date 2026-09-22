@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using LittleTripMemo.Common;
 using LittleTripMemo.Repository.Sys;
 using LittleTripMemo.Exceptions;
+using FirebaseAdmin.Auth;
 
 namespace LittleTripMemo.Services.Account;
 
@@ -23,7 +24,8 @@ public class RegistrationUserService(
 {
     private readonly MyAppSettings _settings = options.Value;
 
-    public record FirebaseLoginRequest(string Email);
+    // FirebaseのIDトークンを受け取るように変更（Emailの自己申告をやめて検証する）
+    public record FirebaseLoginRequest(string IdToken);
 
     public record Response(
         bool is_success,
@@ -36,26 +38,109 @@ public class RegistrationUserService(
     /// <summary>
     /// Firebaseのメアドを元にログイン処理を行う。未登録なら新規作成する。
     /// </summary>
+    public async Task<Response> ExecuteAsync_2(FirebaseLoginRequest request)
+    {
+        // 1. バリデーション
+        await ValidateAsync(request);
+
+        // 2. Firebase IDトークンの検証（なりすまし防止）
+        FirebaseToken decoded;
+        try
+        {
+            decoded = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(request.IdToken);
+        }
+        catch
+        {
+            return new Response(false, "認証に失敗しました。");
+        }
+
+        // トークンから本物のメールアドレスを取得
+        var email = decoded.Claims.ContainsKey("email") ? decoded.Claims["email"].ToString() : null;
+        if (string.IsNullOrEmpty(email))
+        {
+            // emailが無い場合はuidを仮メールとして使う
+            email = decoded.Uid + "@firebase.local";
+        }
+
+        // 3. 認証情報の確認（Identity）
+        var authUser = await userManager.FindByEmailAsync(email);
+        if (authUser == null)
+        {
+            var regResult = await RegisterInternalAsync(email);
+            if (!regResult.is_success) return regResult;
+
+            authUser = await userManager.FindByEmailAsync(email);
+        }
+
+        // 4. アプリユーザー業務情報の取得
+        var appUser = await appUserRepo.GetByUserIdAsync(authUser!.Id);
+        if (appUser == null) throw new BusinessException("ユーザー業務データが不足しています。");
+
+        // 5. JWTトークンの生成
+        var token = jwtService.CreateToken(authUser, appUser);
+
+        return new Response(true, "成功", token, appUser.user_id, appUser.plan_type);
+    }
+
+    /// <summary>
+    /// Firebaseのメアドを元にログイン処理を行う。未登録なら新規作成する。
+    /// </summary>
     public async Task<Response> ExecuteAsync(FirebaseLoginRequest request)
     {
         // 1. バリデーション
         await ValidateAsync(request);
 
-        // 2. 認証情報の確認（Identity）
-        var authUser = await userManager.FindByEmailAsync(request.Email);
-        if (authUser == null)
+        // 2. Firebase IDトークンの検証（なりすまし防止）
+        FirebaseToken decoded;
+        try
         {
-            var regResult = await RegisterInternalAsync(request.Email);
-            if (!regResult.is_success) return regResult;
-
-            authUser = await userManager.FindByEmailAsync(request.Email);
+            decoded = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(request.IdToken);
+        }
+        catch
+        {
+            return new Response(false, "認証に失敗しました。");
         }
 
-        // 3. アプリユーザー業務情報の取得
+        // 2-1. サーバ側で「確認したこと」を確認するロジック
+        // ローカル(Firebase)で確認メールを踏んだかチェック
+        // emailクレームがある場合のみチェック対象にする
+        if (decoded.Claims.ContainsKey("email"))
+        {
+            var isVerified = false;
+            if (decoded.Claims.TryGetValue("email_verified", out var v))
+            {
+                bool.TryParse(v?.ToString(), out isVerified);
+            }
+
+            if (!isVerified)
+            {
+                return new Response(false, "メールアドレスが確認されていません。メール内のリンクをクリックしてください。");
+            }
+        }
+
+        // トークンから本物のメールアドレスを取得
+        var email = decoded.Claims.ContainsKey("email") ? decoded.Claims["email"].ToString() : null;
+        if (string.IsNullOrEmpty(email))
+        {
+            // emailが無い場合はuidを仮メールとして使う（電話番号ログイン等）
+            email = decoded.Uid + "@firebase.local";
+        }
+
+        // 3. 認証情報の確認（Identity）
+        var authUser = await userManager.FindByEmailAsync(email);
+        if (authUser == null)
+        {
+            var regResult = await RegisterInternalAsync(email);
+            if (!regResult.is_success) return regResult;
+
+            authUser = await userManager.FindByEmailAsync(email);
+        }
+
+        // 4. アプリユーザー業務情報の取得
         var appUser = await appUserRepo.GetByUserIdAsync(authUser!.Id);
         if (appUser == null) throw new BusinessException("ユーザー業務データが不足しています。");
 
-        // 4. JWTトークンの生成
+        // 5. JWTトークンの生成
         var token = jwtService.CreateToken(authUser, appUser);
 
         return new Response(true, "成功", token, appUser.user_id, appUser.plan_type);
@@ -63,7 +148,7 @@ public class RegistrationUserService(
 
     private async Task ValidateAsync(FirebaseLoginRequest req)
     {
-        BusinessException.ThrowIf(string.IsNullOrEmpty(req.Email), "メールアドレスは必須です");
+        BusinessException.ThrowIf(string.IsNullOrEmpty(req.IdToken), "トークンは必須です");
         await Task.CompletedTask;
     }
 
@@ -115,5 +200,4 @@ public class RegistrationUserService(
 
         return (int)target.table_id;
     }
-
 }

@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using LittleTripMemo.Common;
 using LittleTripMemo.Configs;
 using LittleTripMemo.DataAccess;
@@ -11,11 +13,9 @@ using LittleTripMemo.Repository;
 using LittleTripMemo.Services.Common;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using System.Collections.Generic;
 using System.Threading.RateLimiting;
 
 
@@ -26,9 +26,20 @@ using System.Threading.RateLimiting;
 // 1. 起動前設定（Npgsql タイムスタンプ挙動の固定）
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-//Console.WriteLine("DEBUG: Application starting...");
 var builder = WebApplication.CreateBuilder(args);
-//Console.WriteLine("DEBUG: WebApplication.CreateBuilder completed.");
+
+// firebase Admin SDK の初期化（secrets.json を使用）
+if (FirebaseApp.DefaultInstance == null)
+{
+    var firebaseJson = System.Text.Json.JsonSerializer.Serialize(
+        builder.Configuration.GetSection("Firebase").Get<Dictionary<string, object>>()
+    );
+
+    FirebaseApp.Create(new AppOptions()
+    {
+        Credential = GoogleCredential.FromJson(firebaseJson)
+    });
+}
 
 // 環境変数からポート番号を取得し、取得できない場合はローカル用の 5255 をデフォルトとする
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5255";
@@ -49,8 +60,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // 3. DB / Identity 設定
-//var connectionString = builder.Configuration["ConnectionStrings:ConnectionStrings__MatoMemoConnStr"]!;
-var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__MatoMemoConnStr") ?? builder.Configuration["ConnectionStrings:ConnectionStrings__MatoMemoConnStr"]!;
+var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__MatoMemoConnStr") ?? builder.Configuration["ConnectionStrings:MatoMemoConnStr"]!;
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddScoped<ITransactionProvider>(_ => new TransactionProvider(connectionString));
 

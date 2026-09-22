@@ -1,6 +1,6 @@
 export default {
     // ログイン処理
-    ShowLoginDialog() {
+    ShowLoginDialog_2() {
         $Auth.Init(); // ★画面表示と同時に認証エンジンの準備を開始
         const el = $Dom.GenerateTemplate("tpl-login");
         const inEmail = $Dom.QuerySelector("#input-login-email", el);
@@ -32,6 +32,83 @@ export default {
             }
         };
         // パスワード再設定
+        $Dom.QuerySelector("#btn-forgot-password", el).onclick = async () => {
+            const email = inEmail.value.trim();
+            if (!email) return $Notice.Warn("メールアドレスを入力してください");
+            if (await $Auth.ResetPassword(email)) {
+                $Notice.Info("再設定メールを送信しました。受信トレイを確認してください");
+            }
+        };
+        this._core.open({ title: "ログイン", content: el, isModal: true });
+    },
+    ShowLoginDialog() {
+        $Auth.Init();
+        const el = $Dom.GenerateTemplate("tpl-login");
+        const inEmail = $Dom.QuerySelector("#input-login-email", el);
+        const inPass = $Dom.QuerySelector("#input-login-password", el);
+        // --- アコーディオン（hidden対応版） ---
+        const toggleAccordion = (target) => {
+            ['google','email'].forEach(type => {
+                const content = $Dom.QuerySelector(`#${type}-content`, el);
+                const icon = $Dom.QuerySelector(`#${type}-icon`, el);
+                const wrapper = $Dom.QuerySelector(`#${type}-wrapper`, el);
+                const isTarget = type === target;
+                const isOpen = content.classList.contains('open');
+                if (!isTarget) {
+                    // ターゲット以外は必ず閉じる
+                    if (isOpen) {
+                        content.classList.remove('open');
+                        icon.classList.remove('rotate-180');
+                        setTimeout(() => content.classList.add('hidden'), 350); // アニメーション後にhidden
+                        wrapper.classList.remove('border-sky-400','ring-2','ring-sky-100');
+                    }
+                    return;
+                }
+                // ターゲットはトグル
+                if (isOpen) {
+                    // 閉じる
+                    content.classList.remove('open');
+                    icon.classList.remove('rotate-180');
+                    wrapper.classList.remove('border-sky-400','ring-2','ring-sky-100');
+                    setTimeout(() => content.classList.add('hidden'), 350);
+                } else {
+                    // 開く
+                    content.classList.remove('hidden');
+                    // hiddenを外してから1フレーム後にopen（トランジション発火のため）
+                    requestAnimationFrame(() => {
+                        content.classList.add('open');
+                    });
+                    icon.classList.add('rotate-180');
+                    wrapper.classList.add('border-sky-400','ring-2','ring-sky-100');
+                }
+            });
+        };
+        // ヘッダーにイベント付与
+        $Dom.QuerySelectorAll('[data-acc]', el).forEach(b => {
+            b.onclick = () => toggleAccordion(b.dataset.acc);
+        });
+        const onAuthSuccess = async () => {
+            this._core.closeAll();
+            await $App.Init();
+            $Notice.Info("ログインに成功しました");
+        };
+        $Dom.QuerySelector("#btn-login-google", el).onclick = async () => {
+            if (await $App.ExecuteLoginFlow()) await onAuthSuccess();
+        };
+        $Dom.QuerySelector("#btn-login-mail", el).onclick = async () => {
+            const success = await $App.ExecuteEmailAuthFlow(inEmail.value, inPass.value, false);
+            if (success) await onAuthSuccess();
+        };
+        $Dom.QuerySelector("#btn-signup-mail", el).onclick = async () => {
+            const isOk = await this.ShowConfirm({
+                title: "SIGN UP",
+                message: "入力された内容で新しくアカウントを作成しますか？"
+            });
+            if (isOk) {
+                const success = await $App.ExecuteEmailAuthFlow(inEmail.value, inPass.value, true);
+                if (success) await onAuthSuccess();
+            }
+        };
         $Dom.QuerySelector("#btn-forgot-password", el).onclick = async () => {
             const email = inEmail.value.trim();
             if (!email) return $Notice.Warn("メールアドレスを入力してください");
