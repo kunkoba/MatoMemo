@@ -1,45 +1,53 @@
 // firebase設定（google）
 const FirebaseConfig = window.ENV_CONFIG.FIREBASE_CONFIG;
 
-// Firebaseの初期化状態を管理するフラグ
-let _isAuthInitialized = false; // 初期化済みフラグ
+let _isAuthInitialized = false;
 
-// 認証マネージャー（外部にPublicする窓口）
 const AuthManager = {
-    // 認証基盤を事前準備（ブラウザのポップアップブロック対策）
     Init() {
-        if (firebase.apps.length === 0) { // インスタンス未生成なら
-            firebase.initializeApp(window.ENV_CONFIG.FIREBASE_CONFIG); // 初期化
+        if (firebase.apps.length === 0) {
+            firebase.initializeApp(window.ENV_CONFIG.FIREBASE_CONFIG);
         }
-        firebase.auth(); // ★一度実行して通信用iframeを裏でロードさせる
+        // ポップアップブロック対策で auth() を一度実行して iframe を先読み
+        const auth = firebase.auth();
+        // Firebase Authentication の表示言語を日本語にする
+        auth.languageCode = 'ja';
     },
-    // Googleログインを実行
     async GetVerifiedEmailByGoogle() {
-        this.Init(); // 念のため初期化を確認
-        const provider = new firebase.auth.GoogleAuthProvider(); // プロバイダ
-        provider.setCustomParameters({ prompt: 'select_account' }); // 選択画面
-        const result = await firebase.auth().signInWithPopup(provider); // ポップアップ
-        return result.user?.email; // アドレス返却
+        this.Init();
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        const result = await firebase.auth().signInWithPopup(provider);
+        return result.user?.email;
     },
-    // メールログイン
+    // ① ログインを実施：成功時は UserCredential を返し、失敗時は例外をそのまま投げる
+    //    呼び出し元で auth/invalid-credential を判定して新規登録へ分岐できるようにする
     async SignInEmail(email, password) {
         this.Init();
         const result = await firebase.auth().signInWithEmailAndPassword(email, password);
-        return result.user;
+        return result; // result.user と result.user.getIdToken() が使える形で返す
     },
-    // メール新規登録
+    // ② ログインできない場合、かつ重複でない場合に呼ばれる：同様に UserCredential を返す
     async SignUpEmail(email, password) {
         this.Init();
         const result = await firebase.auth().createUserWithEmailAndPassword(email, password);
-        return result.user;
+        return result;
     },
-    // パスワード再設定メール送信
     async ResetPassword(email) {
         this.Init();
         await firebase.auth().sendPasswordResetEmail(email);
         return true;
-    }
+    },
+    async SendVerificationMail() {
+        const u = firebase.auth().currentUser;
+        if (!u) return false;
+        await u.sendEmailVerification();
+        return true;
+    },
+    async SignOut() {
+        this.Init();
+        await firebase.auth().signOut();
+    },
 };
 
-// Public
 export default AuthManager;

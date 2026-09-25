@@ -515,49 +515,73 @@ const AppManager = {
             return false;
         })();
     },
-    // メール認証実行フロー
-    async ExecuteEmailAuthFlow(email, password, isSignUp = false) {
+    // メール認証実行フロー（新1ボタン用：①ログイン→②ダメなら登録して確認メール）
+    async ExecuteEmailAuthFlow(email, password) {
         if (!this.AppData.Context.IsNetOnline) {
             $Notice.Error("オフライン中はログインできません");
             return false;
-        }   
-        return await $Warn.CatchAsync(async () => {
-            if (!email || !password) {
-                $Notice.Warn("メールアドレスとパスワードを入力してください");
+        }
+        if (!email || !password) {
+            $Notice.Warn("メールアドレスとパスワードを入力してください");
+            return false;
+        }
+
+        const auth = firebase.auth();
+
+        try {
+            // ① ログインを実施する
+            $Notice.Info("ログイン中...");
+            const cred = await $Auth.SignInEmail(email, password); // UserCredential を返す版
+            const cur = cred.user || auth.currentUser;
+            if (!cur) throw new Error("Firebase user not found");
+
+            if (!cur.emailVerified) {
+                $Notice.Error("メールアドレスが未確認です。受信トレイを確認してください。");
+                await $Auth.SignOut();
                 return false;
             }
-            $Notice.Info(isSignUp ? "処理中..." : "ログイン中...");
-            try {
-                const auth = firebase.auth();
-                if (isSignUp) {
-                    // --- 新規登録フロー ---
-                    const user = await $Auth.SignUpEmail(email, password);
-                    await user.sendEmailVerification();
-                    $Notice.Info("確認メールを送信しました。メール内のリンクをクリックしてからログインしてください。");
-                    await auth.signOut();
-                    return false;
-                } else {
-                    // --- ログインフロー ---
-                    const user = await $Auth.SignInEmail(email, password);
-                    await user.reload(); // ★これが無いと emailVerified が古いまま
-                    if (!user.emailVerified) {
-                        $Notice.Error("メールアドレスが未確認です。メールを確認してください。");
-                        await auth.signOut();
-                        return false;
-                    }
-                    // 確認済みなら自サーバへ
-                    const idToken = await user.getIdToken(true);
-                    if (await $Data.Access.LoginFirebase({ IdToken: idToken })) {
-                        _AppCore.save(this.AppData.Owner);
-                        return true;
-                    }
-                }
-            } catch (e) {
-                $Notice.Error(`エラー: ${e.message}`);
-                // auth/email-already-in-use なら「既に登録済みです」と出す
+
+            const idToken = await cur.getIdToken(true);
+            if (await $Data.Access.LoginFirebase({ IdToken: idToken })) {
+                _AppCore.save(this.AppData.Owner);
+                return true;
             }
             return false;
-        })();
+
+        } catch (e) {
+            // ② ログインできない場合、かつ重複でない場合 → 登録してメール送信
+            // Firebase v12では user-not-found / wrong-password は全て invalid-credential に統合
+            const isNotFound = e.code === 'auth/invalid-credential' || e.code === 'auth/user-not-found';
+
+            if (isNotFound) {
+                try {
+                    $Notice.Info("アカウントを作成しています...");
+                    const newCred = await $Auth.SignUpEmail(email, password);
+                    await newCred.user.sendEmailVerification();
+                    $Notice.Info("アカウントを作成し確認メールを送信しました。メール内のリンクを開いてからログインしてください。");
+                    await $Auth.SignOut();
+                    return false;
+                } catch (e2) {
+                    if (e2.code === 'auth/email-already-in-use') {
+                        $Notice.Warn("このメールアドレスは既に登録されています。パスワードをご確認ください。");
+                    } else if (e2.code === 'auth/weak-password') {
+                        $Notice.Warn("パスワードが短すぎます（6文字以上必要です）。");
+                    } else {
+                        $Notice.Error(e2.message);
+                    }
+                    return false;
+                }
+            }
+
+            if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') {
+                $Notice.Warn("パスワードが正しくありません。");
+            } else if (e.code === 'auth/invalid-email') {
+                $Notice.Warn("メールアドレスの形式が正しくありません。");
+            } else {
+                $Notice.Error(e.message);
+            }
+            return false;
+        }
     },
     // テーマ変更
     ChangeTheme(theme) {
