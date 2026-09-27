@@ -29,11 +29,17 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
 // firebase Admin SDK の初期化（secrets.json を使用）
-if (FirebaseApp.DefaultInstance == null)
+if(FirebaseApp.DefaultInstance == null)
 {
-    var firebaseJson = System.Text.Json.JsonSerializer.Serialize(
-        builder.Configuration.GetSection("Firebase").Get<Dictionary<string, object>>()
-    );
+    var firebaseDict = builder.Configuration.GetSection("Firebase")
+        .Get<Dictionary<string, string>>();
+
+    if (firebaseDict != null && firebaseDict.TryGetValue("private_key", out var privateKey))
+    {
+        firebaseDict["private_key"] = privateKey.Replace("\\n", "\n");
+    }
+
+    var firebaseJson = System.Text.Json.JsonSerializer.Serialize(firebaseDict);
 
     FirebaseApp.Create(new AppOptions()
     {
