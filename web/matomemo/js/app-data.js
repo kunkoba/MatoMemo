@@ -1,67 +1,67 @@
 const API_ENDPOINTS = {
     // Account
-    LoginFirebase:          { method: 'post', url: '/api/Account/LoginFirebase' },
-    UpdateProfile:          { method: 'post', url: '/api/Account/UpdateProfile' },
-    GetUserProfile:         { method: 'post', url: '/api/Account/GetUserProfile' },
-    Withdrawal:             { method: 'post', url: '/api/Account/Withdrawal' }, // 未使用
-    Logout:                 { method: 'post', url: '/api/Account/Logout' },
+    LoginFirebase:          { method: 'post', url: '/Account/LoginFirebase' },
+    UpdateProfile:          { method: 'post', url: '/Account/UpdateProfile' },
+    GetUserProfile:         { method: 'post', url: '/Account/GetUserProfile' },
+    Withdrawal:             { method: 'post', url: '/Account/Withdrawal' }, // 未使用
+    Logout:                 { method: 'post', url: '/Account/Logout' },
     // Private
-    GetArchiveDetails:      { method: 'post', url: '/api/Private/GetArchiveDetails' },
-    UpdateDetail:           { method: 'post', url: '/api/Private/UpdateDetail' },
-    UpdateArchive:          { method: 'post', url: '/api/Private/UpdateArchive' },
-    MergeDetails:           { method: 'post', url: '/api/Private/MergeDetails' },
-    AddDetails:             { method: 'post', url: '/api/Private/AddDetails' },
-    GetArchiveList:         { method: 'post', url: '/api/Private/GetArchiveList' },
-    GetUnMergeDetails:      { method: 'post', url: '/api/Private/GetUnMergeDetails' },
-    DeleteArchive:          { method: 'post', url: '/api/Private/DeleteArchive' },
-    PublishArchive:         { method: 'post', url: '/api/Private/PublishArchive' },
-    BulkSyncDetails:        { method: 'post', url: '/api/Private/BulkSyncDetails' },
-    DeleteStrayDetails:     { method: 'post', url: '/api/Private/DeleteStrayDetails' },
-    DetachDetails:          { method: 'post', url: '/api/Private/DetachDetails' },
-    RecreatePublicArchive:  { method: 'post', url: '/api/Private/RecreatePublicArchive' }, // 未使用
-    BulkUpdateCoordinates:  { method: 'post', url: '/api/Private/BulkUpdateCoordinates' },
+    GetArchiveDetails:      { method: 'post', url: '/Private/GetArchiveDetails' },
+    UpdateDetail:           { method: 'post', url: '/Private/UpdateDetail' },
+    UpdateArchive:          { method: 'post', url: '/Private/UpdateArchive' },
+    MergeDetails:           { method: 'post', url: '/Private/MergeDetails' },
+    AddDetails:             { method: 'post', url: '/Private/AddDetails' },
+    GetArchiveList:         { method: 'post', url: '/Private/GetArchiveList' },
+    GetUnMergeDetails:      { method: 'post', url: '/Private/GetUnMergeDetails' },
+    DeleteArchive:          { method: 'post', url: '/Private/DeleteArchive' },
+    PublishArchive:         { method: 'post', url: '/Private/PublishArchive' },
+    BulkSyncDetails:        { method: 'post', url: '/Private/BulkSyncDetails' },
+    DeleteStrayDetails:     { method: 'post', url: '/Private/DeleteStrayDetails' },
+    DetachDetails:          { method: 'post', url: '/Private/DetachDetails' },
+    RecreatePublicArchive:  { method: 'post', url: '/Private/RecreatePublicArchive' }, // 未使用
+    BulkUpdateCoordinates:  { method: 'post', url: '/Private/BulkUpdateCoordinates' },
     // Public (Anonymous)
-    GetArchiveDetailsPub:   { method: 'get',  url: '/api/Public/GetArchiveDetailsPub/{encodedId}' },
-    AddClick:               { method: 'post', url: '/api/Public/AddClick' },
+    GetArchiveDetailsPub:   { method: 'get',  url: '/Public/GetArchiveDetailsPub/{encodedId}' },
+    AddClick:               { method: 'post', url: '/Public/AddClick' },
     // Public
-    UpdateDetailPub:        { method: 'post', url: '/api/Public/UpdateDetailPub' },
-    UnpublishArchive:       { method: 'post', url: '/api/Public/UnpublishArchive' },
-    UpdateArchivePub:       { method: 'post', url: '/api/Public/UpdateArchivePub' },
-    SearchByLocationPub:    { method: 'post', url: '/api/Public/SearchByLocationPub' },
-    OpenArchive:            { method: 'post', url: '/api/Public/OpenArchive' },
-    CloseArchive:           { method: 'post', url: '/api/Public/CloseArchive' },
-    BulkSyncReactions:      { method: 'post', url: '/api/Public/BulkSyncReactions' },
-    OpenLimitedArchive:     { method: 'post', url: '/api/Public/OpenLimitedArchive' },
-    GetArchiveListByIds:    { method: 'post', url: '/api/Public/GetArchiveListByIds' },
-    GetArchiveListByUser:   { method: 'post', url: '/api/Public/GetArchiveListByUser' },
+    UpdateDetailPub:        { method: 'post', url: '/Public/UpdateDetailPub' },
+    UnpublishArchive:       { method: 'post', url: '/Public/UnpublishArchive' },
+    UpdateArchivePub:       { method: 'post', url: '/Public/UpdateArchivePub' },
+    SearchByLocationPub:    { method: 'post', url: '/Public/SearchByLocationPub' },
+    OpenArchive:            { method: 'post', url: '/Public/OpenArchive' },
+    CloseArchive:           { method: 'post', url: '/Public/CloseArchive' },
+    BulkSyncReactions:      { method: 'post', url: '/Public/BulkSyncReactions' },
+    OpenLimitedArchive:     { method: 'post', url: '/Public/OpenLimitedArchive' },
+    GetArchiveListByIds:    { method: 'post', url: '/Public/GetArchiveListByIds' },
+    GetArchiveListByUser:   { method: 'post', url: '/Public/GetArchiveListByUser' },
     // Sys
-    UpsertFeedback:         { method: 'post', url: '/api/Sys/UpsertFeedback' },
-    UpsertReport:           { method: 'post', url: '/api/Sys/UpsertReport' },
-    GetMyFeedback:          { method: 'post', url: '/api/Sys/GetMyFeedback' },
-    GetMyReport:            { method: 'post', url: '/api/Sys/GetMyReport' },
-    DeleteMyReport:         { method: 'post', url: '/api/Sys/DeleteMyReport' },
-    GetSystemInfo:          { method: 'post', url: '/api/Sys/GetSystemInfo' },
-    GetMyUserNotifications: { method: 'post', url: '/api/Sys/GetMyUserNotifications' },
-    GetAppInfo:             { method: 'post', url: '/api/Sys/GetAppInfo' },
+    UpsertFeedback:         { method: 'post', url: '/Sys/UpsertFeedback' },
+    UpsertReport:           { method: 'post', url: '/Sys/UpsertReport' },
+    GetMyFeedback:          { method: 'post', url: '/Sys/GetMyFeedback' },
+    GetMyReport:            { method: 'post', url: '/Sys/GetMyReport' },
+    DeleteMyReport:         { method: 'post', url: '/Sys/DeleteMyReport' },
+    GetSystemInfo:          { method: 'post', url: '/Sys/GetSystemInfo' },
+    GetMyUserNotifications: { method: 'post', url: '/Sys/GetMyUserNotifications' },
+    GetAppInfo:             { method: 'post', url: '/Sys/GetAppInfo' },
     // Admin
-    GetAdminAllInfo:        { method: 'post', url: '/api/Admin/GetAdminAllInfo' },
-    UpsertNotification:     { method: 'post', url: '/api/Admin/UpsertNotification' },
-    GetReportDetails:       { method: 'post', url: '/api/Admin/GetReportDetails' },
-    AdminCloseArchive:      { method: 'post', url: '/api/Admin/AdminCloseArchive' },
-    AdminUnpublishArchive:  { method: 'post', url: '/api/Admin/AdminUnpublishArchive' },
-    SendUserNotification:   { method: 'post', url: '/api/Admin/SendUserNotification' },
-    GetAllFeedback:         { method: 'post', url: '/api/Admin/GetAllFeedback' },
-    GetReportSummary:       { method: 'post', url: '/api/Admin/GetReportSummary' },
-    GetAdminNotifications:  { method: 'post', url: '/api/Admin/GetAdminNotifications' },
-    GetSentUserMailList:    { method: 'post', url: '/api/Admin/GetSentUserMailList' },
-    GetUserHistory:         { method: 'post', url: '/api/Admin/GetUserHistory' },
-    UpdateUserBanStatus:    { method: 'post', url: '/api/Admin/UpdateUserBanStatus' },
-    GetBanUsers:            { method: 'post', url: '/api/Admin/GetBanUsers' },
+    GetAdminAllInfo:        { method: 'post', url: '/Admin/GetAdminAllInfo' },
+    UpsertNotification:     { method: 'post', url: '/Admin/UpsertNotification' },
+    GetReportDetails:       { method: 'post', url: '/Admin/GetReportDetails' },
+    AdminCloseArchive:      { method: 'post', url: '/Admin/AdminCloseArchive' },
+    AdminUnpublishArchive:  { method: 'post', url: '/Admin/AdminUnpublishArchive' },
+    SendUserNotification:   { method: 'post', url: '/Admin/SendUserNotification' },
+    GetAllFeedback:         { method: 'post', url: '/Admin/GetAllFeedback' },
+    GetReportSummary:       { method: 'post', url: '/Admin/GetReportSummary' },
+    GetAdminNotifications:  { method: 'post', url: '/Admin/GetAdminNotifications' },
+    GetSentUserMailList:    { method: 'post', url: '/Admin/GetSentUserMailList' },
+    GetUserHistory:         { method: 'post', url: '/Admin/GetUserHistory' },
+    UpdateUserBanStatus:    { method: 'post', url: '/Admin/UpdateUserBanStatus' },
+    GetBanUsers:            { method: 'post', url: '/Admin/GetBanUsers' },
     // Core
-    GetCoreConfig:          { method: 'post', url: '/api/Core/GetCoreConfig' },
-    UpdateCoreConfig:       { method: 'post', url: '/api/Core/UpdateCoreConfig' },
-    GetLegalConfigs:        { method: 'post', url: '/api/Core/GetLegalConfigs' },
-    UpdateLegalConfig:      { method: 'post', url: '/api/Core/UpdateLegalConfig' },
+    GetCoreConfig:          { method: 'post', url: '/Core/GetCoreConfig' },
+    UpdateCoreConfig:       { method: 'post', url: '/Core/UpdateCoreConfig' },
+    GetLegalConfigs:        { method: 'post', url: '/Core/GetLegalConfigs' },
+    UpdateLegalConfig:      { method: 'post', url: '/Core/UpdateLegalConfig' },
 };
 // APIメソッドの自動生成
 const ApiModule = {};
@@ -243,7 +243,7 @@ window.$Data = {
             // 物理的なネットワーク接続がない場合は通信せずに終了
             if (!navigator.onLine) return false; // 接続なし
             const baseUrl = window.ENV_CONFIG.BASE_URL; // ベースURL
-            const url = baseUrl + '/api/Account/EnsureLoginUser'; // 接続先
+            const url = baseUrl + '/Account/EnsureLoginUser'; // 接続先
             // const token = $App.AppData.Owner.Token; // トークン取得
             const ver = $Const.APP_INFO.VERSION; // バージョン取得
             const options = { // 通信設定
@@ -272,7 +272,7 @@ window.$Data = {
         async GetArchiveDetailsPub(params = {}) {
             const encodedId = $Util.EncodeId(params.archive_id);
             // // 引数 params.archive_id を使用して URL を構築
-            // const url = `/api/Public/GetArchiveDetailsPub/${encodedId}`;
+            // const url = `/Public/GetArchiveDetailsPub/${encodedId}`;
             // 共通定数リストから取得
             const { method, url } = API_ENDPOINTS["GetArchiveDetailsPub"];
             const finalUrl = url.replace('{encodedId}', encodedId);
