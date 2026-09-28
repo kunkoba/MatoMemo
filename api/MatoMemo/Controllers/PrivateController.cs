@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LittleTripMemo.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 [CustomAuthorize]
 public class PrivateController(
     UserContext userContext,

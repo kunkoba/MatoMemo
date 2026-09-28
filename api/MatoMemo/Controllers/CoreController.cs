@@ -11,7 +11,7 @@ namespace LittleTripMemo.Controllers;
 /// アプリケーションの基盤設定（メンテナンスモードやバージョン等）を管理するコントローラー
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 [CustomAuthorize] // 認証必須
 public class CoreController(
     UserContext userContext,

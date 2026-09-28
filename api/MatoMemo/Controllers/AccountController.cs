@@ -10,7 +10,7 @@ namespace LittleTripMemo.Controllers;
 /// ユーザーのアカウント管理、プロフィール操作、認証連携を行うコントローラー
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class AccountController(
     UserContext userContext,
     JwtService jwtService,

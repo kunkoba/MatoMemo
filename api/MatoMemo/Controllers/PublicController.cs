@@ -13,7 +13,7 @@ namespace LittleTripMemo.Controllers;
 /// 全ユーザー（未ログイン含む）が利用可能な、公開データの参照・操作を行うコントローラー
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 [CustomAuthorize]
 public class PublicController(
     UserContext userContext,
