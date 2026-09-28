@@ -96,7 +96,7 @@ window.$Data = {
         // サーバー通信の基礎
         async _fetchData(method, url, params) {// 設定ファイルから取得
             const BaseUrl = window.ENV_CONFIG.BASE_URL;
-            console.log("▼ Access:", BaseUrl + url, params);
+            console.log("▼ Access:", method, BaseUrl + url, params);
             // 通信ガード判定
             const isHealthCheck = url.includes("EnsureLoginUser") || url.includes("GetAppInfo");
             // オフライン時はヘルスチェック以外、即遮断
