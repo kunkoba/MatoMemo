@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/backend/:path*",
-      "destination": "${RENDER_API_URL}/api/:path*"
+      "destination": "https://matomemo-1.onrender.com/:path*"
     },
     {
       "source": "/(.*)",
