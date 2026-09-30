@@ -104,14 +104,14 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityRequirement(new OpenApiSecurityRequirement { { new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }, Array.Empty<string>() } });
 });
 
-//builder.Services.AddCors(options => options.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 builder.Services.AddCors(options => options.AddDefaultPolicy(p =>
-    p.WithOrigins(
-        "http://127.0.0.1:5501",
-        "http://localhost:5501",
-        "https://mato-memo.vercel.app",
-        "https://mato-memo-three.vercel.app/"
-    )
+    p.SetIsOriginAllowed(origin =>
+    {
+        // localhostは全部OK、vercel.appは全部OKにする
+        return origin.StartsWith("http://localhost")
+            || origin.StartsWith("http://127.0.0.1")
+            || origin.EndsWith(".vercel.app");
+    })
     .AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials()
