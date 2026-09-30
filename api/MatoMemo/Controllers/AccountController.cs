@@ -85,14 +85,18 @@ public class AccountController(
     [HttpPost("Logout")]
     public IActionResult Logout()
     {
-        // ログイン時に発行しているクッキー名を指定してください
-        // 例: "session" や ".AspNetCore.Identity.Application" など
-        Response.Cookies.Delete(AuthConstants.TokenCookieName, new CookieOptions
+        var opt = AuthConstants.DefaultCookieOptions(Request, _env.IsDevelopment());
+        // Delete用に過去日付にするのが確実
+        var deleteOpt = new CookieOptions
         {
-            Path = "/",
-            Secure = true,
-            SameSite = SameSiteMode.None
-        });
+            Path = opt.Path,
+            Secure = opt.Secure,
+            SameSite = opt.SameSite,
+            HttpOnly = opt.HttpOnly,
+            Expires = DateTimeOffset.UnixEpoch
+        };
+        Response.Cookies.Delete(AuthConstants.TokenCookieName, deleteOpt);
+        Response.Cookies.Delete(AuthConstants.TokenCookieName, new CookieOptions { Path = "/" }); //保険
 
         return OkWithBase(null);
     }

@@ -109,15 +109,6 @@ window.$Data = {
             const controller = new AbortController(); // 通信中断用コントローラー
             const timeoutId = setTimeout(() => controller.abort(), $Const.APP_CONFIG.NETWORK_TIMEOUT_SEC * 1000); // タイマー起動
             // メイン処理
-            // const token = $App.AppData.Owner.Token;
-            // const options = {
-            //     method: method.toUpperCase(),
-            //     signal: controller.signal, // 中断シグナルを紐付け
-            //     headers: {
-            //         "ngrok-skip-browser-warning": "69420", // ngrok対応
-            //         "X-App-Version": $Const.APP_INFO.VERSION // ★これを追加。すべてのリクエストに載せる
-            //     }
-            // };
             const options = {
                 method: method.toUpperCase(),
                 signal: controller.signal,
@@ -127,10 +118,6 @@ window.$Data = {
                     "X-App-Version": $Const.APP_INFO.VERSION
                 }
             };
-            // // トークンがある場合のみヘッダーに追加（空文字を送らない）
-            // if (token) {
-            //     options.headers["Authorization"] = `Bearer ${token}`;
-            // }
             if (options.method !== "GET" && params) {
                 options.headers["Content-Type"] = "application/json";
                 options.body = JSON.stringify(params);
@@ -251,7 +238,6 @@ window.$Data = {
                 credentials: 'include',
                 headers: { // ヘッダー
                     'Content-Type': 'application/json', // コンテンツ
-                    // 'Authorization': `Bearer ${token}`, // 認証
                     'X-App-Version': ver // アプリVer
                 },
                 body: JSON.stringify(params) // ボディ
