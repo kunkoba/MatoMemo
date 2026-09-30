@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LittleTripMemo.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [CustomAuthorize]
 public class AdminController(
     UserContext userContext,

@@ -11,7 +11,7 @@ namespace LittleTripMemo.Controllers;
 /// システム共通機能（お知らせ、フィードバック、通報等）を提供するコントローラー
 /// </summary>
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [CustomAuthorize]
 public class SysController(
     UserContext userContext,
