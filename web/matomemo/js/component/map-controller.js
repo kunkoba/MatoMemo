@@ -188,21 +188,20 @@ const MapController = {
         },
         LIGHT: {
             key: 'LIGHT',
-            name: '白地図（Carto Light）',
-            url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-            maxZoom: 18
+            name: '白地図（Stadia Alidade Smooth）',
+            url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
         },
         PHOTO: {
             key: 'PHOTO',
             name: '航空写真（Esri）',
-            url: 'https://server.arcgIsNetOnline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             maxZoom: 18
         },
         // 世界地形図（Esri）
         WORLD_TOPO: {
             key: 'WORLD_TOPO',
             name: '世界地形図',
-            url: 'https://server.arcgIsNetOnline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
             maxZoom: 18,
             attribution: 'Esri'
         },

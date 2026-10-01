@@ -184,37 +184,9 @@ const _DetailFrameCore = {
                 this.btnClose.addEventListener("click", () => this.handleCloseOrCancel());
                 this.btnCancel.addEventListener("click", () => this.handleCloseOrCancel());
                 this.btnCancel2.addEventListener("click", () => this.handleCloseOrCancel());
-                // // 最初へ
-                // this.btnMoveFirst.addEventListener("click", async () => {
-                //     const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最初に戻りますか？" });
-                //     if (isOk) await this._moveAndRender(() => $Marker.FocusFirst());
-                // });
-                // // 前へ
-                // this.btnMovePrev.addEventListener("click", async () => {
-                //     await this._moveAndRender(() => $Marker.FocusPrev());
-                // });
-                // // 次へ
-                // this.btnMoveNext.addEventListener("click", async () => {
-                //     const details = $Data.Store.GetDetails();
-                //     const isLast = ($Marker._currentIndex >= details.length - 1);
-                //     if (isLast) {
-                //         const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最後まで到達しました。最初に戻りますか？", label: "最初に戻る" });
-                //         if (isOk) await this._moveAndRender(() => $Marker.FocusFirst());
-                //     } else {
-                //         // 次の地点の音源IDを取得（WALK:1 をデフォルトとする）
-                //         const nextDetail = $Data.Store.GetDetails()[$Marker._currentIndex];
-                //         const soundId = nextDetail?.move_sound_id ?? 1;
-                //         $Util.PlayMoveSound(soundId);
-                //         await this._moveAndRender(() => $Marker.FocusNext());
-                //     }
-                // });
                 // 最初へ
                 this.btnMoveFirst.addEventListener("click", async () => {
-                    const isOk = await $Dialog.ShowConfirm({
-                        title: "Navigation",
-                        message: "最初に戻りますか？"
-                    });
-                    if (isOk) await this._moveAndRender(
+                    await this._moveAndRender(
                         () => $Marker.FocusFirst(),
                         $Const.MAP_CONFIG.MOVE_DEFAULT_SEC
                     );
@@ -252,6 +224,12 @@ const _DetailFrameCore = {
                     }
                 });
                 // this.btnMoveLast.addEventListener("click", async () => await this._moveAndRender(() => $Marker.FocusLast()));
+                this.btnMoveLast.addEventListener("click", async () => {
+                    await this._moveAndRender(
+                        () => $Marker.FocusLast(),
+                        $Const.MAP_CONFIG.MOVE_DEFAULT_SEC
+                    );
+                });
                 this.mapBarrier.addEventListener("click", () => this.handleCloseOrCancel());
             }
         }

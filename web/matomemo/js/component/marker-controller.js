@@ -395,13 +395,13 @@ const MarkerController = {
             this.FocusToCurrentMarker(200, null, true); 
         }
     },
-    // FocusLast() {
-    //     const details = $Data.Store.GetDetails();
-    //     if (details) {
-    //         this._currentIndex = details.length - 1;
-    //         this.FocusToCurrentMarker();
-    //     }
-    // },
+    FocusLast() {
+        const details = $Data.Store.GetDetails();
+        if (details) {
+            this._currentIndex = details.length - 1;
+            this.FocusToCurrentMarker();
+        }
+    },
     FocusToLocationMarker() {
         _MarkerCore.focusToLocationMarker();
     },

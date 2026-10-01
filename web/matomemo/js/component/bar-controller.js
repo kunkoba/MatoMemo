@@ -87,8 +87,7 @@ const _BarCore = {
         };
         // 最初へ
         this.btnFirst.onclick = async () => {
-            const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最初に戻りますか？" });
-            if (isOk) await moveWithLock(() => {
+            await moveWithLock(() => {
                 $Marker.FocusFirst(false);
                 return $Const.MAP_CONFIG.MOVE_DEFAULT_SEC;
             });
@@ -103,7 +102,13 @@ const _BarCore = {
             const details = $Data.Store.GetDetails();
             const isLast = ($Marker._currentIndex >= details.length - 1);
             if ($App.AppData.Context.ScreenMode !== $Const.SCREEN_MODE.CREATE && isLast) {
-                const isOk = await $Dialog.ShowConfirm({ title: "Navigation", message: "最後まで到達しました。最初に戻りますか？", label: "最初に戻る" });
+                const isOk = await $Dialog.ShowConfirm(
+                    { 
+                        title: "Navigation", 
+                        message: "最後まで到達しました。最初に戻りますか？", 
+                        label: "最初に戻る" 
+                    }
+                );
                 if (isOk) {
                     $Marker.FocusFirst(false);
                     return $Const.MAP_CONFIG.MOVE_ANIMATION_SEC;
@@ -117,7 +122,7 @@ const _BarCore = {
                 return $Const.MAP_CONFIG.MOVE_ANIMATION_SEC;
             }
         });
-        // this.btnLast.onclick  = () => moveWithLock(() => $Marker.FocusLast());
+        this.btnLast.onclick  = () => moveWithLock(() => $Marker.FocusLast());
         // 
         this.btnOpen.onclick = () => $DetailFrame.Open($Marker.GetDataWithCurrentIndex());
         this.btnCreate.onclick = () => {

@@ -1,52 +1,11 @@
 export default {
     // ログイン処理
-    ShowLoginDialog_2() {
-        $Auth.Init(); // ★画面表示と同時に認証エンジンの準備を開始
-        const el = $Dom.GenerateTemplate("tpl-login");
-        const inEmail = $Dom.QuerySelector("#input-login-email", el);
-        const inPass = $Dom.QuerySelector("#input-login-password", el);
-        // ログイン成功時の共通後処理
-        const onAuthSuccess = async () => {
-            this._core.closeAll();
-            await $App.Init();
-            $Notice.Info("ログインに成功しました");
-        };
-        // Googleログイン
-        $Dom.QuerySelector("#btn-login-google", el).onclick = async () => {
-            if (await $App.ExecuteLoginFlow()) await onAuthSuccess();
-        };
-        // メールログイン
-        $Dom.QuerySelector("#btn-login-mail", el).onclick = async () => {
-            const success = await $App.ExecuteEmailAuthFlow(inEmail.value, inPass.value, false);
-            if (success) await onAuthSuccess();
-        };
-        // メール新規登録
-        $Dom.QuerySelector("#btn-signup-mail", el).onclick = async () => {
-            const isOk = await this.ShowConfirm({
-                title: "SIGN UP",
-                message: "入力された内容で新しくアカウントを作成しますか？"
-            });
-            if (isOk) {
-                const success = await $App.ExecuteEmailAuthFlow(inEmail.value, inPass.value, true);
-                if (success) await onAuthSuccess();
-            }
-        };
-        // パスワード再設定
-        $Dom.QuerySelector("#btn-forgot-password", el).onclick = async () => {
-            const email = inEmail.value.trim();
-            if (!email) return $Notice.Warn("メールアドレスを入力してください");
-            if (await $Auth.ResetPassword(email)) {
-                $Notice.Info("再設定メールを送信しました。受信トレイを確認してください");
-            }
-        };
-        this._core.open({ title: "ログイン", content: el, isModal: true });
-    },
     ShowLoginDialog() {
         $Auth.Init();
         const el = $Dom.GenerateTemplate("tpl-login"); // 新アコーディオン版 tpl-login を使用
         const inEmail = $Dom.QuerySelector("#input-login-email", el);
         const inPass = $Dom.QuerySelector("#input-login-password", el);
-
+        const btnEmail = $Dom.QuerySelector("#btn-email-action", el);
         // アコーディオン開閉
         const toggleAccordion = (target) => {
             ['google','email'].forEach(type => {
@@ -80,29 +39,29 @@ export default {
                 }
             });
         };
-        $Dom.QuerySelectorAll('[data-acc]', el).forEach(b => b.onclick = () => toggleAccordion(b.dataset.acc));
-
+        $Dom.QuerySelectorAll('[data-acc]', el).forEach(b => b.onclick = () => {
+            toggleAccordion(b.dataset.acc);
+            setTimeout(() => {
+                bottomButton.focus();
+            }, 1000);
+        });
         const onAuthSuccess = async () => {
             this._core.closeAll();
             await $App.Init();
             $Notice.Info("ログインに成功しました");
         };
-
         $Dom.QuerySelector("#btn-login-google", el).onclick = async () => {
             if (await $App.ExecuteLoginFlow()) await onAuthSuccess();
         };
-
         // ①②を1ボタンで完結
-        $Dom.QuerySelector("#btn-email-action", el).onclick = async () => {
+        btnEmail.onclick = async () => {
             const email = inEmail.value.trim();
             const pass = inPass.value;
             if (!email || !pass) return $Notice.Warn("メールアドレスとパスワードを入力してください");
-
             const ok = await $App.ExecuteEmailAuthFlow(email, pass);
             if (ok) await onAuthSuccess();
             // 新規登録時は ExecuteEmailAuthFlow 内で確認メール送信まで完了し false を返すのでここでは閉じません
         };
-
         $Dom.QuerySelector("#btn-forgot-password", el).onclick = async () => {
             const email = inEmail.value.trim();
             if (!email) return $Notice.Warn("メールアドレスを入力してください");
@@ -110,7 +69,6 @@ export default {
                 $Notice.Info("再設定メールを送信しました。受信トレイを確認してください");
             }
         };
-
         this._core.open({ title: "ログイン", content: el, isModal: true });
     },
     // 【📱 メインメニュー】
