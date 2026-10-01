@@ -179,7 +179,7 @@ export default {
                     this._core.closeAll(); 
                     $App.Logout(); 
                     console.log("ログアウト完了");
-                    setTimeout(() => location.reload(), 1000);
+                    // setTimeout(() => location.reload(), 500);
                 }
             } else {
                 this.ShowLoginDialog();
@@ -194,7 +194,7 @@ export default {
         });
     },
     // 【⚙️ システムメニュー】
-    ShowSystemMenu() {
+    ShowSystemMenu_2() {
         if (!$App.AppData.Context.IsLoggedIn) return this.ShowLoginDialog();
         const el = $Dom.GenerateTemplate('tpl-menu-sys');
         const isLoggedIn = $App.AppData.Context.IsLoggedIn;
@@ -223,6 +223,7 @@ export default {
                 if (await this.ShowConfirm({ title: "LOGOUT", message: "ログアウトしますか？" })) {
                     this._core.closeAll();
                     $App.Logout();
+                    console.log("ログアウト完了");
                     setTimeout(() => location.reload(), 500);
                 }
             } else {
@@ -237,7 +238,7 @@ export default {
         this._core.open({ title: "システムメニュー", content: el });
     },
     // 【👤 ユーザーメニュー】
-    ShowUserMenu() {
+    ShowUserMenu_2() {
         if (!$App.AppData.Context.IsLoggedIn) return this.ShowLoginDialog();
         const el = $Dom.GenerateTemplate('tpl-menu-user');
         const profile = $App.AppData.Owner.SystemInfo?.ownerProfile;
