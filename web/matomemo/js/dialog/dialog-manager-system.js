@@ -220,12 +220,12 @@ export default {
         b.version.onclick = () => this.ShowAppInfo();
         b.login.onclick = async () => {
             if (isLoggedIn) {
-                if (await this.ShowConfirm({ title: "LOGOUT", message: "ログアウトしますか？" })) {
-                    this._core.closeAll();
-                    $App.Logout();
-                    console.log("ログアウト完了");
-                    setTimeout(() => location.reload(), 500);
-                }
+                // if (await this.ShowConfirm({ title: "LOGOUT", message: "ログアウトしますか？" })) {
+                //     this._core.closeAll();
+                //     $App.Logout();
+                //     console.log("ログアウト完了");
+                //     setTimeout(() => location.reload(), 500);
+                // }
             } else {
                 this.ShowLoginDialog();
             }
