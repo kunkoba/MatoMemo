@@ -207,7 +207,7 @@ window.$Util = {
         try {
             res = await fetch(url);
         } catch (err) {
-            console.log("err:", err);
+            console.error("err:", err);
             // ネットワーク断（オフライン）などの物理エラー
             await $App.HandleServerFailure();
             return null;

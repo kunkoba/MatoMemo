@@ -129,7 +129,7 @@ window.$Data = {
                 // サーバ接続
                 response = await fetch(BaseUrl + url, options);
             } catch (err) {
-                console.log("err:", err);
+                console.error("err:", err);
                 // 中断（AbortError）だった場合はタイムアウトフラグを true にする
                 const isTimeout = (err.name === 'AbortError');
                 // 判定会議へタイムアウト情報を渡す

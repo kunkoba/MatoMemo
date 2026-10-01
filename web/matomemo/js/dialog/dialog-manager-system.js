@@ -41,8 +41,9 @@ export default {
         };
         $Dom.QuerySelectorAll('[data-acc]', el).forEach(b => b.onclick = () => {
             toggleAccordion(b.dataset.acc);
+            // 画面下部へスクロールしたいけど、うまく動かない
             setTimeout(() => {
-                bottomButton.focus();
+                btnEmail.focus();
             }, 1000);
         });
         const onAuthSuccess = async () => {
@@ -175,7 +176,10 @@ export default {
         b.loginTgl.onclick  = async () => {
             if (isLoggedIn) {
                 if (await this.ShowConfirm({ title: "LOGOUT", message: "ログアウトしますか？" })) {
-                    this._core.closeAll(); $App.Logout(); setTimeout(() => location.reload(), 1000);
+                    this._core.closeAll(); 
+                    $App.Logout(); 
+                    console.log("ログアウト完了");
+                    setTimeout(() => location.reload(), 1000);
                 }
             } else {
                 this.ShowLoginDialog();
