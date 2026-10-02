@@ -179,7 +179,7 @@ export default {
                     this._core.closeAll(); 
                     $App.Logout(); 
                     console.log("ログアウト完了");
-                    // setTimeout(() => location.reload(), 500);
+                    setTimeout(() => location.reload(), 500);
                 }
             } else {
                 this.ShowLoginDialog();

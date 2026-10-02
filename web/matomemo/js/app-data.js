@@ -112,7 +112,7 @@ window.$Data = {
             const options = {
                 method: method.toUpperCase(),
                 signal: controller.signal,
-                credentials: 'include', // ★これ追加。クッキーを自動で送る
+                credentials: 'include',
                 headers: {
                     "ngrok-skip-browser-warning": "69420",
                     "X-App-Version": $Const.APP_INFO.VERSION
