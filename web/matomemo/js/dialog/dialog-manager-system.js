@@ -180,7 +180,7 @@ export default {
             if (isLoggedIn) {
                 if (await this.ShowConfirm({ title: "LOGOUT", message: "ログアウトしますか？" })) {
                     this._core.closeAll(); 
-                    $App.Logout(); 
+                    await $App.Logout(); 
                     console.log("ログアウト完了");
                     setTimeout(() => location.reload(), 1000);
                 }
