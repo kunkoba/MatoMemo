@@ -51,10 +51,13 @@ export default {
             await $App.Init();
             $Notice.Info("ログインに成功しました");
         };
+        // google認証
         $Dom.QuerySelector("#btn-login-google", el).onclick = async () => {
-            if (await $App.ExecuteLoginFlow()) await onAuthSuccess();
+            // if (await $App.ExecuteLoginFlow()) await onAuthSuccess();
+            const ok = await $App.ExecuteLoginFlow();
+            if (ok) await onAuthSuccess();
         };
-        // ①②を1ボタンで完結
+        // メルパス認証
         btnEmail.onclick = async () => {
             const email = inEmail.value.trim();
             const pass = inPass.value;
@@ -191,80 +194,6 @@ export default {
             content: el,
             size: "lg",
             help: "アプリの全22機能にアクセスできます。" 
-        });
-    },
-    // 【⚙️ システムメニュー】
-    ShowSystemMenu_2() {
-        if (!$App.AppData.Context.IsLoggedIn) return this.ShowLoginDialog();
-        const el = $Dom.GenerateTemplate('tpl-menu-sys');
-        const isLoggedIn = $App.AppData.Context.IsLoggedIn;
-        const isAdmin = isLoggedIn && $App.AppData.Owner.Plan === "Admin";
-        const b = {
-            notice:  $Dom.QuerySelector('#btn-sys-notice', el),
-            version: $Dom.QuerySelector('#btn-sys-version', el),
-            legal:   $Dom.QuerySelector('#btn-sys-legal', el),
-            login:   $Dom.QuerySelector('#btn-sys-login', el),
-            admin:   $Dom.QuerySelector('#btn-sys-admin', el),
-        };
-        // 表示制御
-        $Dom.ToggleShow(b.admin, isAdmin);
-        const loginLabel = $Dom.QuerySelector('span:last-child', b.login);
-        loginLabel.textContent = isLoggedIn ? "ログアウトする" : "ログイン／サインインする";
-        // 新着バッジ更新
-        $UI.Generator.ApplyNewBadge(b.notice, $App.AppData.Context.UnreadNoticeCount > 0, 'label');
-        // 規約更新がある場合「NEW」ラベルを表示
-        const hasLegal = !!$App.AppData.Context.HasLegalUpdate;
-        $UI.Generator.ApplyNewBadge(b.legal, hasLegal, 'label');
-        // 各種イベント
-        b.notice.onclick = () => this.ShowNoticeList();
-        b.version.onclick = () => this.ShowAppInfo();
-        b.login.onclick = async () => {
-            if (isLoggedIn) {
-                // if (await this.ShowConfirm({ title: "LOGOUT", message: "ログアウトしますか？" })) {
-                //     this._core.closeAll();
-                //     $App.Logout();
-                //     console.log("ログアウト完了");
-                //     setTimeout(() => location.reload(), 500);
-                // }
-            } else {
-                this.ShowLoginDialog();
-            }
-        };
-        b.admin.onclick = async () => {
-            this.ShowAdminMenu();
-        };
-        b.legal.onclick = () => this.ShowLegalDocuments();
-        //
-        this._core.open({ title: "システムメニュー", content: el });
-    },
-    // 【👤 ユーザーメニュー】
-    ShowUserMenu_2() {
-        if (!$App.AppData.Context.IsLoggedIn) return this.ShowLoginDialog();
-        const el = $Dom.GenerateTemplate('tpl-menu-user');
-        const profile = $App.AppData.Owner.SystemInfo?.ownerProfile;
-        const b = {
-            profile: $Dom.QuerySelector('#btn-sys-user-profile', el),
-            mail:    $Dom.QuerySelector('#btn-user-mail', el),
-            config:  $Dom.QuerySelector('#btn-sys-user-config', el),
-            reports: $Dom.QuerySelector('#btn-sys-my-report', el),
-            history: $Dom.QuerySelector('#btn-user-history', el),
-        };
-        // 新着バッヂ更新
-        $UI.Generator.ApplyNewBadge(b.mail, $App.AppData.Context.UnreadMailCount > 0, 'label');
-        // ① 閲覧履歴が0件（または存在しない）場合はボタンを非表示にする
-        // const hasHistory = profile.view_history && profile.view_history.length > 0;
-        const hasHistory = profile?.view_history && profile.view_history.length > 0;
-        $Dom.ToggleShow(b.history, hasHistory);
-        // 各種イベント
-        b.profile.onclick = () => this.ShowUserProfile($App.AppData.Owner.SystemInfo.ownerProfile, true);
-        b.mail.onclick    = () => this.ShowUserMailList();
-        b.config.onclick  = () => this.ShowUserSettingsMenu();
-        b.reports.onclick = () => this.ShowMyReportList();
-        b.history.onclick = () => this.ShowViewHistory(profile.view_history);
-        //
-        this._core.open({ 
-            title: "ユーザメニュー", 
-            content: el 
         });
     },
     // （ユーザ設定）ユーザー設定メニュー（第2階層）
