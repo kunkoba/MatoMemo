@@ -59,17 +59,17 @@ public static class AuthConstants
 
     public static CookieOptions DefaultCookieOptions(HttpRequest request, bool isDevelopment)
     {
-        //if (isDevelopment)
-        //{
-        //    return new CookieOptions
-        //    {
-        //        HttpOnly = true,
-        //        Secure = false,
-        //        SameSite = SameSiteMode.Lax,
-        //        Path = "/",
-        //        Expires = DateTimeOffset.UtcNow.AddDays(TokenExpiryDays)
-        //    };
-        //}
+        if (isDevelopment)
+        {
+            return new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+                Path = "/",
+                Expires = DateTimeOffset.UtcNow.AddDays(TokenExpiryDays)
+            };
+        }
         return new CookieOptions
         {
             HttpOnly = true,

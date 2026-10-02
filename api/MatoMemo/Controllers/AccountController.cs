@@ -86,7 +86,6 @@ public class AccountController(
     public IActionResult Logout()
     {
         var opt = AuthConstants.DefaultCookieOptions(Request, _env.IsDevelopment());
-        // Delete用に過去日付にするのが確実
         var deleteOpt = new CookieOptions
         {
             Path = opt.Path,
@@ -96,9 +95,19 @@ public class AccountController(
             Expires = DateTimeOffset.UnixEpoch
         };
         Response.Cookies.Delete(AuthConstants.TokenCookieName, deleteOpt);
-        Response.Cookies.Delete(AuthConstants.TokenCookieName, new CookieOptions { Path = "/" }); //保険
-
-        return OkWithBase(null);
+        Response.Cookies.Delete(AuthConstants.TokenCookieName, new CookieOptions { Path = "/", Secure = true, SameSite = SameSiteMode.None });
+        Response.Cookies.Delete(AuthConstants.TokenCookieName, new CookieOptions { Path = "/", Secure = false, SameSite = SameSiteMode.Lax });
+        _user.login_user_id = Guid.Empty;
+        _user.table_id = 0;
+        _user.plan_type = PlanType.Free.ToString();
+        _user.UpdatedUser = null;
+        return Ok(new
+        {
+            is_logged_in = false,
+            login_user_id = Guid.Empty,
+            plan = PlanType.Free.ToString(),
+            data = new { }
+        });
     }
 
 }

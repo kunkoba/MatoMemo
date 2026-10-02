@@ -182,7 +182,7 @@ export default {
                     this._core.closeAll(); 
                     await $App.Logout(); 
                     console.log("ログアウト完了");
-                    // setTimeout(() => location.reload(), 1000);
+                    // setTimeout(() => location.reload(), 500);
                 }
             } else {
                 this.ShowLoginDialog();
