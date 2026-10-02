@@ -227,14 +227,13 @@ window.$Data = {
         ...ApiModule,
         // ユーザーアカウント確認（UI非干渉・完全非同期）
         async EnsureLoginUser(params = {}) {
-            // ネットが無いならCは不明なので一旦失敗扱い
             if (!navigator.onLine) return false;
             const baseUrl = window.ENV_CONFIG.BASE_URL;
             const url = baseUrl + '/api/Account/EnsureLoginUser';
             const ver = $Const.APP_INFO.VERSION;
             const options = {
                 method: 'POST',
-                credentials: 'include', // Cookieを必ず送る
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-App-Version': ver
@@ -243,22 +242,18 @@ window.$Data = {
             };
             try {
                 const response = await fetch(url, options);
-                // 401は明確にログアウトとみなす（サーバーダウンと区別）
                 if (response.status === 401) {
                     await $App.HandleServerFailure(response);
                     return false;
                 }
                 if (!response.ok) {
-                    // 500系などはサーバー側の問題なのでログアウト扱いにしない
                     return false;
                 }
                 const result = await response.json();
-                // Cの真実をBに反映（ここが一本化のキモ）
                 $App.AppData.Context.IsLoggedIn = result.is_logged_in ?? false;
                 if (result.login_user_id) {
                     $App.AppData.Owner.LoginUserId = result.login_user_id;
                 }
-                // 401でないのに is_logged_in=falseならCookie切れ
                 if (result.is_logged_in === false) {
                     $App.AppData.Owner.LoginUserId = '';
                     $App.AppData.Context.IsLoggedIn = false;
@@ -266,7 +261,6 @@ window.$Data = {
                 this._setData(result.data);
                 return result.is_logged_in ?? false;
             } catch (err) {
-                // ネット断はログアウト扱いにしない
                 return false;
             }
         },

@@ -24,9 +24,13 @@ const _AppCore = {
             check();
         });
     },
-    // localStorageの設定復元 → URLパラメータ解析 → DB接続 の順で行う
+    // localStorageの設定復元（認証情報は復元しない版）
     async restoreLocal(AppData) {
-        // localStorage から設定と ID を復元
+        const raw = localStorage.getItem(this.settingsKey);
+        if (raw && raw.includes('loginUserId')) {
+            // 旧形式なら一度全削除
+            localStorage.removeItem(this.settingsKey);
+        }
         const saved = JSON.parse(localStorage.getItem(this.settingsKey) || '{}');
         AppData.Owner.Theme = saved.theme;
         AppData.Owner.MapStyle = $Map.MAP_STYLE[saved.mapStyleKey];
@@ -34,87 +38,62 @@ const _AppCore = {
         AppData.Owner.GpsTrackingSec = saved.gpsTrackingSec ?? 0;
         AppData.Owner.Currency_unit = saved.currency_unit || '円';
         AppData.Owner.FontSize = saved.fontSize || 'standard';
-        // AppData.Owner.Token = saved.token;
         AppData.Owner.LastLoginDate = saved.lastLoginDate;
         AppData.Owner.SoundVolume = saved.soundVolume ?? 0.5;
-        if (saved.loginUserId) {
-            AppData.Owner.LoginUserId = saved.loginUserId;
-            AppData.Owner.SystemInfo = { 
-                // login_user_id: saved.loginUserId, // ID復元
-                ownerProfile: saved.ownerProfile // プロフィール情報をローカルから復元
-            };
-        }
-        // URLパラメータ解析
+        // loginUserId と ownerProfile はここでは復元しない
+        // Cの確認が終わるまで Guest にしておく
+        AppData.Owner.LoginUserId = null;
+        AppData.Owner.SystemInfo = null;
         const params = new URLSearchParams(location.search);
         const targetId = $Util.DecodeId(params.get("encodedId"));
         const urlMode = params.get("mode");
         AppData.Context.TargetArchiveId = targetId;
         if (urlMode) {
-            // モード指定がある場合はそれを優先
             AppData.Context.ScreenMode = urlMode;
         } else {
-            // 指定が無い場合はターゲットIDの有無からモードを推定
             AppData.Context.ScreenMode = targetId ? $Const.SCREEN_MODE.ARCHIVE_PUB : $Const.SCREEN_MODE.CREATE;
         }
-        // 身分確定後にDB接続
         await $LocalDb.Init();
-        // 起動時にローカルDBから法的情報をメモリへロード
-        const legalData = await $LocalDb.Legal.GetAll(); // 全取得
-        legalData.forEach(d => { // 取得データをループ
-            if (AppData.Legal.hasOwnProperty(d.id)) { // 定義済みキーか確認
-                AppData.Legal[d.id] = d; // メモリに展開
+        const legalData = await $LocalDb.Legal.GetAll();
+        legalData.forEach(d => {
+            if (AppData.Legal.hasOwnProperty(d.id)) {
+                AppData.Legal[d.id] = d;
             }
         });
-        // 初期ロード後に未読バッジ状態を確認
-        await $Data.LocalDb.CheckLegalUnread(); // 未読チェック
+        await $Data.LocalDb.CheckLegalUnread();
     },
-    // 設定とIDの永続化
+    // 設定とIDの永続化（認証情報は保存しない - 二重管理を物理的に消す）
     save(Owner) {
         localStorage.setItem(this.settingsKey, JSON.stringify({
-            theme:          Owner.Theme, // テーマ
-            mapStyleKey:    Owner.MapStyle?.key, // 地図
-            isMapGrayscale: Owner.IsMapGrayscale, // 白黒
-            gpsTrackingSec: Owner.GpsTrackingSec, // GPS
-            currency_unit:  Owner.Currency_unit, // 通貨
-            fontSize:       Owner.FontSize, // 文字サイズ
-            lastLoginDate:  Owner.LastLoginDate, // ログイン日
-            ownerProfile:   Owner.SystemInfo?.ownerProfile, // プロフィール情報を追加
-            soundVolume:    Owner.SoundVolume,     // 音量
-            // token:          Owner.Token, // トークン
-            // loginUserId:    Owner.SystemInfo?.login_user_id, // ユーザID
-            loginUserId:    Owner.LoginUserId,   // ユーザID
+            theme: Owner.Theme,
+            mapStyleKey: Owner.MapStyle?.key,
+            isMapGrayscale: Owner.IsMapGrayscale,
+            gpsTrackingSec: Owner.GpsTrackingSec,
+            currency_unit: Owner.Currency_unit,
+            fontSize: Owner.FontSize,
+            lastLoginDate: Owner.LastLoginDate,
+            soundVolume: Owner.SoundVolume
+            // loginUserId と ownerProfile は保存しない
         }));
     },
-    // オフライン監視・GPS追従・データ同期などのポーリング処理をまとめて登録する
+    // ポーリング登録（ログイン要求を出さない版）
     initPollingTasks() {
         const checkSec = 1;
         const saveDetailSec = $Const.APP_CONFIG.SAVE_DETAIL_SEC;
         const saveReactionSec = $Const.APP_CONFIG.SAVE_REACTION_SEC;
         const activityCheckSec = 300;
         $Polling.Init();
-        // オフライン監視
         $Polling.Add($Polling.TASKS.OFFLINE_CHECK, () => {
             const isNowNetOnline = navigator.onLine;
-            // 状態が「オンライン」から「オフライン」に変わった瞬間
             if ($App.AppData.Context.IsNetOnline && !isNowNetOnline) {
                 $App.AppData.Context.IsNetOnline = false;
-                $App.AppData.Context.IsServerOnline = false; // ネットがなければサーバもオフ扱い
+                $App.AppData.Context.IsServerOnline = false;
                 $Notice.Offline.Show("インターネットに接続できません");
-            }
-            // 状態が「オフライン」から「オンライン」に変わった瞬間
-            else if (!$App.AppData.Context.IsNetOnline && isNowNetOnline) {
+            } else if (!$App.AppData.Context.IsNetOnline && isNowNetOnline) {
                 $App.AppData.Context.IsNetOnline = true;
-                // // ネットが復帰したら即座にサーバ疎通チェック（Check ②④）を走らせる
-                // this.syncActivityLog();
             }
         }, checkSec);
-        // GPS追従（初期登録）
-        $Polling.Add(
-            $Polling.TASKS.GPS_FOLLOW,
-            () => $Marker.RefreshCurrentLocation(),
-            $App.AppData.Owner.GpsTrackingSec || 60
-        );
-        // データ同期：地点メモ（詳細情報）
+        $Polling.Add($Polling.TASKS.GPS_FOLLOW, () => $Marker.RefreshCurrentLocation(), $App.AppData.Owner.GpsTrackingSec || 60);
         $Polling.Add($Polling.TASKS.DATA_DETAIL, async () => {
             if (!$App.AppData.Context.IsLoggedIn || await $LocalDb.Detail.GetCount() === 0) {
                 return;
@@ -124,7 +103,6 @@ const _AppCore = {
                 $Notice.Info("同期完了：地点メモ");
             }
         }, saveDetailSec);
-        // データ同期：リアクション
         $Polling.Add($Polling.TASKS.DATA_REACTION, async () => {
             if (!$App.AppData.Context.IsLoggedIn) {
                 return;
@@ -134,54 +112,41 @@ const _AppCore = {
                 $Notice.Info("同期完了：リアクション");
             }
         }, saveReactionSec);
-        // 最終利用日の同期チェック（未ログイン扱いになっていないか確認）
+        // 最終利用日の同期チェック（ログイン要求は出さない - 画面遷移時のみ判定）
         $Polling.Add($Polling.TASKS.SYNC_ACTIVITY, async () => {
-            if (!await this.syncActivityLog()) {
-                $Dialog.ShowLoginDialog();
-            }
+            await this.syncActivityLog();
+            // ここでShowLoginDialogは呼ばない
         }, activityCheckSec);
         $Polling.Start($Polling.TASKS.OFFLINE_CHECK);
     },
     // 最終利用日の同期およびサーバ復帰確認
     async syncActivityLog() {
-        // 端末自体がオフラインなら何もしない
         if (!navigator.onLine) return false;
-        let isSuccess = false;
-        // Aがあるなら必ずCに問い合わせる（IsLoggedInは見ない）
-        const hasLocalId = !!$App.AppData.Owner.LoginUserId;
-        if (hasLocalId) {
-            // ログイン中と推定：ユーザチェック＋生存確認（Check ③）
-            isSuccess = await $Data.Access.EnsureLoginUser();
-        } else {
-            // 未ログイン確定：生存確認のみ
-            isSuccess = await $Data.Access.GetAppInfo();
-        }
-        if (isSuccess) {
-            // サーバ疎通成功
+        // 常にEnsureを呼ぶ。CookieがあればC=true、なければC=falseが返る
+        const isLoggedIn = await $Data.Access.EnsureLoginUser();
+        if (isLoggedIn) {
             $App.AppData.Context.IsServerOnline = true;
             $Notice.Offline.Hide();
-            // Cがtrueの時だけ最終利用日を更新し、Aに保存
-            if ($App.AppData.Context.IsLoggedIn) {
-                const today = new Date().setHours(0, 0, 0, 0);
-                $App.AppData.Owner.LastLoginDate = $Util.FormatDate(today, 'YYYY-MM-DD');
-                this.save($App.AppData.Owner);
-            } else {
-                // CがfalseならAもBもクリアして同期
-                if (hasLocalId) {
-                    $App.AppData.Owner.LoginUserId = '';
-                    this.save($App.AppData.Owner);
-                }
-            }
+            const today = new Date().setHours(0, 0, 0, 0);
+            $App.AppData.Owner.LastLoginDate = $Util.FormatDate(today, 'YYYY-MM-DD');
+            // LastLoginDateだけ保存（認証は保存しない）
+            this.save($App.AppData.Owner);
             return true;
         } else {
-            // 失敗原因を区別
+            // isLoggedIn=falseでも通信自体は成功してる可能性があるので、IsNetOnlineで区別
+            // Ensure内で401ならHandleServerFailureがIsLoggedInをfalseにしてる
+            if ($App.AppData.Context.IsLoggedIn === false) {
+                // C=false確定なのでサーバーは生きてる
+                $App.AppData.Context.IsServerOnline = true;
+                $Notice.Offline.Hide();
+                return true; // サーバーは生きてるのでtrueを返す（ログイン要求は出さない）
+            }
             if (!navigator.onLine) {
                 $App.AppData.Context.IsNetOnline = false;
                 $App.AppData.Context.IsServerOnline = false;
                 $Notice.Offline.Show("インターネットに接続できません");
                 return false;
             }
-            // 401はEnsure内でHandle済みなのでここはサーバダウン扱い
             $App.AppData.Context.IsServerOnline = false;
             $Notice.Offline.Show("サーバーに接続できません");
             return false;
@@ -232,12 +197,9 @@ const _AppCore = {
             .register(`./sw.js?v=${$Const.APP_INFO.VERSION}`)
             .catch(e => console.error(e));
     },
-    // ユーザ情報の整合性チェックとローカル補完（同期処理追加版）
+    // ユーザ情報の整合性チェック（旧localStorageは一切見ない版）
     ensureUserInfo(AppData) {
-        const saved = JSON.parse(localStorage.getItem(this.settingsKey) || '{}');
-        // CがfalseなのにAのキャッシュで復元するのを防ぐ
         if (!AppData.Context.IsLoggedIn) {
-            // ログアウト状態ならゲスト固定
             AppData.Owner.SystemInfo = {
                 login_user_id: 'anonymous',
                 ownerProfile: {
@@ -249,26 +211,18 @@ const _AppCore = {
             $Bar.UpdateUserIcon();
             return;
         }
-        // ログイン中のみキャッシュ復元を許可
+        // ログイン中は SystemInfo が既に _setData で入ってるはず
+        // 無ければ Guest に倒すだけで、localStorageは見ない
         if (!AppData.Owner.SystemInfo || !AppData.Owner.SystemInfo.ownerProfile) {
-            if (saved.loginUserId && saved.ownerProfile) {
-                console.log("◆ユーザ復元");
-                AppData.Owner.SystemInfo = {
-                    login_user_id: saved.loginUserId,
-                    ownerProfile: saved.ownerProfile
-                };
-            } else {
-                console.log("◆ユーザなし");
-                AppData.Owner.SystemInfo = {
-                    login_user_id: 'anonymous',
-                    ownerProfile: {
-                        nick_name: 'Guest',
-                        icon: '👤'
-                    }
-                };
-            }
-            $Data.Store.Restore();
+            AppData.Owner.SystemInfo = {
+                login_user_id: 'anonymous',
+                ownerProfile: {
+                    nick_name: 'Guest',
+                    icon: '👤'
+                }
+            };
         }
+        $Data.Store.Restore();
         $Bar.UpdateUserIcon();
     },
 };
@@ -316,43 +270,26 @@ const AppManager = {
     async Init() {
         console.log("★$Const.APP_INFO.VERSION", $Const.APP_INFO.VERSION);
         try {
-            // 描画基盤とローカル設定の復元
             {
                 await _AppCore.setupShell();
                 $Auth.Init();
                 await _AppCore.restoreLocal(this.AppData);
-                // Aがあるかチェック
-                const savedId = this.AppData.Owner.LoginUserId;
-                console.log("- savedId:", savedId);
-                if (savedId) {
-                    // 仮でIsLoggedIn=trueにしない。Cに問い合わせてから決める
-                    this.AppData.Context.IsLoggedIn = false;
-                    if (navigator.onLine) {
-                        const cIsLoggedIn = await _AppCore.syncActivityLog();
-                        // sync内でIsLoggedInが確定する
-                        if (cIsLoggedIn && this.AppData.Context.IsLoggedIn) {
-                            await $Data.Access.GetSystemInfo();
-                        } else {
-                            // C=falseならAも消す
-                            this.AppData.Owner.LoginUserId = '';
-                            _AppCore.save(this.AppData.Owner);
-                        }
+                // 起動時は必ずCに聞く。Aは見ない
+                this.AppData.Context.IsLoggedIn = false;
+                if (navigator.onLine) {
+                    const ok = await _AppCore.syncActivityLog();
+                    if (ok && this.AppData.Context.IsLoggedIn) {
+                        await $Data.Access.GetSystemInfo();
                     }
-                } else {
-                    this.AppData.Context.IsLoggedIn = false;
-                    this.AppData.Owner.LoginUserId = '';
                 }
                 _AppCore.ensureUserInfo(this.AppData);
             }
-            // 見た目設定を復元・適用
             {
                 this.ChangeTheme(this.AppData.Owner.Theme || $UI.UI_THEME.BLUE);
                 this.ChangeMapStyle(this.AppData.Owner.MapStyle || $Map.MAP_STYLE.STANDARD, this.AppData.Owner.IsMapGrayscale);
                 this.ChangeFontSize(this.AppData.Owner.FontSize);
-                // C確定後に画面描画
                 await this.RefreshScreen();
             }
-            // 定期タスクの登録・開始
             {
                 _AppCore.initPollingTasks();
                 if (!navigator.onLine || !this.AppData.Context.IsNetOnline) {
@@ -364,7 +301,6 @@ const AppManager = {
             }
             _AppCore.registerSW();
             _AppCore.refreshLegalConfigs();
-            // 二重のEnsure呼び出しは削除（Init内で確定済みのため）
         } catch (e) {
             $Err.Handle(e, 'fatal');
         }
