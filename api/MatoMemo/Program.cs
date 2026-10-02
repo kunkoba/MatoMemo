@@ -162,7 +162,6 @@ var app = builder.Build();
 
 // 11. リクエストログ出力（デバッグ用）
 app.Use(async (HttpContext context, RequestDelegate next) => {
-    //Console.WriteLine($"[REQ IN] {context.Request.Method} {context.Request.Path}");
     await next(context);
 });
 
