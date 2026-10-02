@@ -227,31 +227,47 @@ window.$Data = {
         ...ApiModule,
         // ユーザーアカウント確認（UI非干渉・完全非同期）
         async EnsureLoginUser(params = {}) {
-            // 物理的なネットワーク接続がない場合は通信せずに終了
-            if (!navigator.onLine) return false; // 接続なし
-            const baseUrl = window.ENV_CONFIG.BASE_URL; // ベースURL
-            const url = baseUrl + '/api/Account/EnsureLoginUser'; // 接続先
-            // const token = $App.AppData.Owner.Token; // トークン取得
-            const ver = $Const.APP_INFO.VERSION; // バージョン取得
-            const options = { // 通信設定
-                method: 'POST', // メソッド
-                credentials: 'include',
-                headers: { // ヘッダー
-                    'Content-Type': 'application/json', // コンテンツ
-                    'X-App-Version': ver // アプリVer
+            // ネットが無いならCは不明なので一旦失敗扱い
+            if (!navigator.onLine) return false;
+            const baseUrl = window.ENV_CONFIG.BASE_URL;
+            const url = baseUrl + '/api/Account/EnsureLoginUser';
+            const ver = $Const.APP_INFO.VERSION;
+            const options = {
+                method: 'POST',
+                credentials: 'include', // Cookieを必ず送る
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-App-Version': ver
                 },
-                body: JSON.stringify(params) // ボディ
+                body: JSON.stringify(params)
             };
             try {
-                const response = await fetch(url, options); // 通信実行
-                if (!response.ok) { // ステータス異常
-                    return false; // 沈黙して終了
+                const response = await fetch(url, options);
+                // 401は明確にログアウトとみなす（サーバーダウンと区別）
+                if (response.status === 401) {
+                    await $App.HandleServerFailure(response);
+                    return false;
                 }
-                const result = await response.json(); // 解析
-                this._setData(result.data); // データ同期
-                return true; // 成功
-            } catch (err) { // ネットワーク断など
-                return false; // 沈黙して終了
+                if (!response.ok) {
+                    // 500系などはサーバー側の問題なのでログアウト扱いにしない
+                    return false;
+                }
+                const result = await response.json();
+                // Cの真実をBに反映（ここが一本化のキモ）
+                $App.AppData.Context.IsLoggedIn = result.is_logged_in ?? false;
+                if (result.login_user_id) {
+                    $App.AppData.Owner.LoginUserId = result.login_user_id;
+                }
+                // 401でないのに is_logged_in=falseならCookie切れ
+                if (result.is_logged_in === false) {
+                    $App.AppData.Owner.LoginUserId = '';
+                    $App.AppData.Context.IsLoggedIn = false;
+                }
+                this._setData(result.data);
+                return result.is_logged_in ?? false;
+            } catch (err) {
+                // ネット断はログアウト扱いにしない
+                return false;
             }
         },
         // 個別実装（パスパラメータ等を含む特殊なAPI）

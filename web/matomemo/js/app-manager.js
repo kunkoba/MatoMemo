@@ -144,38 +144,44 @@ const _AppCore = {
     },
     // 最終利用日の同期およびサーバ復帰確認
     async syncActivityLog() {
-        // 端末自体がオフラインなら何もしない（監視スレッド側で処理するため）
+        // 端末自体がオフラインなら何もしない
         if (!navigator.onLine) return false;
         let isSuccess = false;
-        // ログイン状態によって、使用するAPIを切り替える（Check ③ の分離）
-        // if ($App.AppData.Context.IsLoggedIn && $App.AppData.Owner.Token) {
-        if ($App.AppData.Context.IsLoggedIn) {
-            // ログイン中：ユーザチェック ＋ 生存確認
+        // Aがあるなら必ずCに問い合わせる（IsLoggedInは見ない）
+        const hasLocalId = !!$App.AppData.Owner.LoginUserId;
+        if (hasLocalId) {
+            // ログイン中と推定：ユーザチェック＋生存確認（Check ③）
             isSuccess = await $Data.Access.EnsureLoginUser();
         } else {
-            // 未ログイン：生存確認のみ（ユーザチェックは行わない）
+            // 未ログイン確定：生存確認のみ
             isSuccess = await $Data.Access.GetAppInfo();
         }
         if (isSuccess) {
-            // サーバ疎通成功 ＋ アプリ有効
+            // サーバ疎通成功
             $App.AppData.Context.IsServerOnline = true;
             $Notice.Offline.Hide();
-            // ログイン中の場合は最終利用日を更新
+            // Cがtrueの時だけ最終利用日を更新し、Aに保存
             if ($App.AppData.Context.IsLoggedIn) {
                 const today = new Date().setHours(0, 0, 0, 0);
                 $App.AppData.Owner.LastLoginDate = $Util.FormatDate(today, 'YYYY-MM-DD');
                 this.save($App.AppData.Owner);
+            } else {
+                // CがfalseならAもBもクリアして同期
+                if (hasLocalId) {
+                    $App.AppData.Owner.LoginUserId = '';
+                    this.save($App.AppData.Owner);
+                }
             }
             return true;
         } else {
-            // 失敗した原因が「そもそもネットが切れたから」でないか確認
+            // 失敗原因を区別
             if (!navigator.onLine) {
                 $App.AppData.Context.IsNetOnline = false;
                 $App.AppData.Context.IsServerOnline = false;
                 $Notice.Offline.Show("インターネットに接続できません");
                 return false;
             }
-            // ネットはあるのに失敗した（サーバダウン・メンテ）場合のみ表示
+            // 401はEnsure内でHandle済みなのでここはサーバダウン扱い
             $App.AppData.Context.IsServerOnline = false;
             $Notice.Offline.Show("サーバーに接続できません");
             return false;
@@ -228,33 +234,42 @@ const _AppCore = {
     },
     // ユーザ情報の整合性チェックとローカル補完（同期処理追加版）
     ensureUserInfo(AppData) {
-        // ローカルストレージから設定読み込み
-        const saved = JSON.parse(localStorage.getItem(this.settingsKey) || '{}'); // JSON解析
-        // メモリ上のプロフ情報が欠落しているかチェック
+        const saved = JSON.parse(localStorage.getItem(this.settingsKey) || '{}');
+        // CがfalseなのにAのキャッシュで復元するのを防ぐ
+        if (!AppData.Context.IsLoggedIn) {
+            // ログアウト状態ならゲスト固定
+            AppData.Owner.SystemInfo = {
+                login_user_id: 'anonymous',
+                ownerProfile: {
+                    nick_name: 'Guest',
+                    icon: '👤'
+                }
+            };
+            $Data.Store.Restore();
+            $Bar.UpdateUserIcon();
+            return;
+        }
+        // ログイン中のみキャッシュ復元を許可
         if (!AppData.Owner.SystemInfo || !AppData.Owner.SystemInfo.ownerProfile) {
-            // ローカルにキャッシュがあるか判定
             if (saved.loginUserId && saved.ownerProfile) {
                 console.log("◆ユーザ復元");
-                // ローカルキャッシュから復元
                 AppData.Owner.SystemInfo = {
-                    login_user_id: saved.loginUserId, // ID復元
-                    ownerProfile: saved.ownerProfile  // プロフ復元
+                    login_user_id: saved.loginUserId,
+                    ownerProfile: saved.ownerProfile
                 };
             } else {
                 console.log("◆ユーザなし");
-                // キャッシュも無い場合はゲスト情報を生成
                 AppData.Owner.SystemInfo = {
-                    login_user_id: 'anonymous', // ゲストID
+                    login_user_id: 'anonymous',
                     ownerProfile: {
-                        nick_name: 'Guest', // 名前
-                        icon: '👤' // アイコン
+                        nick_name: 'Guest',
+                        icon: '👤'
                     }
                 };
             }
-            // 決定した情報を他コンポーネントに反映させる
-            $Data.Store.Restore(); // データストアへ同期（ダイアログ用）
+            $Data.Store.Restore();
         }
-        $Bar.UpdateUserIcon(); // バーのアイコンを更新（メニュー用）
+        $Bar.UpdateUserIcon();
     },
 };
 // --- 公開窓口 ---
@@ -297,45 +312,49 @@ const AppManager = {
             License: null         // ライセンス
         }
     },
-    // アプリ起動時の一連の初期化処理（描画基盤 → ローカル復元 → ログイン確認 → 画面描画 → ポーリング開始 → SW登録）をまとめて実行する
+    // アプリ起動時の一連の初期化処理
     async Init() {
         console.log("★$Const.APP_INFO.VERSION", $Const.APP_INFO.VERSION);
         try {
             // 描画基盤とローカル設定の復元
             {
-                await _AppCore.setupShell(); // UI準備
-                $Auth.Init(); // ★認証基盤を事前初期化（ポップアップブロック対策）
-                await _AppCore.restoreLocal(this.AppData); // 基本設定復元
-                // ログイン維持処理（クッキー方式）
+                await _AppCore.setupShell();
+                $Auth.Init();
+                await _AppCore.restoreLocal(this.AppData);
+                // Aがあるかチェック
                 const savedId = this.AppData.Owner.LoginUserId;
                 console.log("- savedId:", savedId);
                 if (savedId) {
-                    // 一旦ログイン扱いにしておく（サーバ側でクッキー検証してダメなら401で落とされる）
+                    // 仮でIsLoggedIn=trueにしない。Cに問い合わせてから決める
+                    this.AppData.Context.IsLoggedIn = false;
                     if (navigator.onLine) {
-                        await _AppCore.syncActivityLog(); // ここで EnsureLoginUser → 401なら IsLoggedIn=falseになる
-                        if (this.AppData.Context.IsLoggedIn) {
+                        const cIsLoggedIn = await _AppCore.syncActivityLog();
+                        // sync内でIsLoggedInが確定する
+                        if (cIsLoggedIn && this.AppData.Context.IsLoggedIn) {
                             await $Data.Access.GetSystemInfo();
+                        } else {
+                            // C=falseならAも消す
+                            this.AppData.Owner.LoginUserId = '';
+                            _AppCore.save(this.AppData.Owner);
                         }
                     }
-                    _AppCore.ensureUserInfo(this.AppData);
                 } else {
-                    // ローカルにログインIDが無ければログアウトと判定
                     this.AppData.Context.IsLoggedIn = false;
                     this.AppData.Owner.LoginUserId = '';
                 }
+                _AppCore.ensureUserInfo(this.AppData);
             }
-            // 見た目設定（テーマ・地図スタイル・フォントサイズ）を復元・適用
+            // 見た目設定を復元・適用
             {
                 this.ChangeTheme(this.AppData.Owner.Theme || $UI.UI_THEME.BLUE);
                 this.ChangeMapStyle(this.AppData.Owner.MapStyle || $Map.MAP_STYLE.STANDARD, this.AppData.Owner.IsMapGrayscale);
                 this.ChangeFontSize(this.AppData.Owner.FontSize);
-                // 画面描画
+                // C確定後に画面描画
                 await this.RefreshScreen();
             }
-            // 定期タスク（ポーリング）の登録・開始
+            // 定期タスクの登録・開始
             {
                 _AppCore.initPollingTasks();
-                // 起動時にすでにオフラインなら即表示
                 if (!navigator.onLine || !this.AppData.Context.IsNetOnline) {
                     $Notice.Offline.Show("サーバーに接続できません");
                 }
@@ -343,17 +362,9 @@ const AppManager = {
                     $Polling.Start($Polling.TASKS.GPS_FOLLOW);
                 }
             }
-            // // 未ログイン・共有リンクでもない・オンラインの場合はログインダイアログを表示
-            // if (!this.AppData.Context.TargetArchiveId && !this.AppData.Context.IsLoggedIn && navigator.onLine) {
-            //     $Dialog.ShowLoginDialog();
-            // }
-            // その他
             _AppCore.registerSW();
             _AppCore.refreshLegalConfigs();
-            // ログイン中の場合のみユーザーチェックを実行する
-            if (this.AppData.Context.IsLoggedIn) {
-                $Data.Access.EnsureLoginUser();
-            }
+            // 二重のEnsure呼び出しは削除（Init内で確定済みのため）
         } catch (e) {
             $Err.Handle(e, 'fatal');
         }
@@ -399,34 +410,17 @@ const AppManager = {
     // サーバ通信エラー処理（画面を中断せず通知のみに留める）
     async HandleServerFailure(response, isTimeout = false) {
         $Notice.Loading.Hide();
-        // タイムアウト時の専用メッセージを表示
         if (isTimeout) {
             $Notice.Error("通信がタイムアウトしました。");
             return false;
         }
-        // 1. ログインエラー (401) は認証をクリアするのみ
+        // 1. ログインエラー (401) はC=falseとしてBとAをクリア
         if (response && response.status === 401) {
             this.AppData.Owner.LoginUserId = '';
             this.AppData.Context.IsLoggedIn = false;
+            _AppCore.save(this.AppData.Owner);
             $Notice.Warn("引き続き利用される際は、ログインをしてください。");
             return false;
-        }
-        {
-            // // 2. 通信・サーバエラーの判定
-            // let msg = "サーバへ接続できません。ローカル機能のみ利用可能です。";
-            // if (response) {
-            //     try {
-            //         const res = await response.json();
-            //         msg = res.message || "サーバでエラーが発生しました。";
-            //     } catch (e) {
-            //         msg = "データの取得に失敗しました。";
-            //     }
-            // } else if (!navigator.onLine) {
-            //     msg = "オフラインのため通信をスキップしました。";
-            // }
-            // // 全てトースト通知で処理し、例外は投げない
-            // $Notice.Error(msg);
-            // return false;
         }
         // 接続失敗時は論理オフラインへ移行
         this.AppData.Context.IsNetOnline = false;
@@ -437,13 +431,23 @@ const AppManager = {
     },
     // Firebaseからサインアウトし、ローカルの認証状態をクリアする
     async Logout() {
-        if (firebase.apps.length) {
-            await firebase.auth().signOut();
+        // BとAを先にクリア（Cより先にUIをログアウト状態にする）
+        this.AppData.Owner.LoginUserId = '';
+        this.AppData.Context.IsLoggedIn = false;
+        this.AppData.Owner.SystemInfo = null;
+        _AppCore.save(this.AppData.Owner);
+        // Firebaseとサーバーはベストエフォートで切る（失敗してもローカルは残さない）
+        try {
+            if (firebase.apps.length) {
+                await firebase.auth().signOut();
+            }
+        } catch (e) {
+            console.warn("Firebase signOut失敗", e);
         }
-        if (await $Data.Access.Logout()) {
-            this.AppData.Owner.LoginUserId = '';
-            this.AppData.Context.IsLoggedIn = false;
-            _AppCore.save(this.AppData.Owner);
+        try {
+            await $Data.Access.Logout();
+        } catch (e) {
+            console.warn("Server Logout失敗", e);
         }
     },
     // Google認証でメールアドレスを取得し、Firebase経由でログイン処理を行う
