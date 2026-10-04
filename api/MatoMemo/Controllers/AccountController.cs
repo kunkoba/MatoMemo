@@ -1,7 +1,8 @@
 ﻿using LittleTripMemo.Common;
-using LittleTripMemo.Repository;
 using LittleTripMemo.JWT;
+using LittleTripMemo.Repository;
 using LittleTripMemo.Services.Account;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LittleTripMemo.Controllers;
@@ -32,51 +33,15 @@ public class AccountController(
         var result = await registrationUserService.ExecuteAsync(req);
         if (!result.is_success) return BadRequest(new { result.message });
 
-        // Cookieだけセット
-        Response.Cookies.Append(
-            AuthConstants.TokenCookieName,
-            result.token,
-            AuthConstants.DefaultCookieOptions(Request, _env.IsDevelopment())
-        );
-
         _user.login_user_id = result.userId ?? Guid.Empty;
-        _user.plan_type = result.plan ?? "Free";
+        _user.plan_type = result.plan ?? PlanType.Free.ToString();
 
-        // dataにtoken入れない。空でいい
-        return OkWithBase(new { });
+        // OkWithBase に流す。 new_token = result.token でフロントに直接渡す
+        return OkWithBase(
+            new { token = result.token }, // data
+            result.token // new_token
+        );
     }
-
-    /// <summary>
-    /// ログイン中のユーザーのプロフィール（ニックネームやアイコン等）を更新する
-    /// </summary>
-    [HttpPost("UpdateProfile")]
-    [CustomAuthorize]
-    public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileService.UpdateUserReq req)
-        => OkWithBase(await updateUserProfileService.ExecuteAsync(req));
-
-    /// <summary>
-    /// ログイン中のユーザーの状態を確認し、最新のユーザー情報を取得する
-    /// </summary>
-    [HttpPost("EnsureLoginUser")]
-    [CustomAuthorize]
-    public async Task<IActionResult> EnsureLoginUser([FromBody] EnsureLoginUserService.EnsureLoginUserReq req)
-        => OkWithBase(await ensureLoginUserService.ExecuteAsync(req));
-
-    /// <summary>
-    /// 指定されたユーザーの公開プロフィール情報を取得する
-    /// </summary>
-    [HttpPost("GetUserProfile")]
-    public async Task<IActionResult> GetUserProfile([FromBody] GetUserProfileService.GetUserProfileReq req)
-        => OkWithBase(await getUserProfileService.ExecuteAsync(req));
-
-    /// <summary>
-    /// ユーザーの退会処理を行い、データを論理削除する
-    /// </summary>
-    [HttpPost("Withdrawal")]
-    [CustomAuthorize]
-    public async Task<IActionResult> Withdrawal([FromBody] WithdrawalUserService.WithdrawalReq req)
-        => OkWithBase(await withdrawalUserService.ExecuteAsync(req));
-
 
     /// <summary>
     /// ログアウト（クッキーの消去）
@@ -85,29 +50,44 @@ public class AccountController(
     [HttpPost("Logout")]
     public IActionResult Logout()
     {
-        var opt = AuthConstants.DefaultCookieOptions(Request, _env.IsDevelopment());
-        var deleteOpt = new CookieOptions
-        {
-            Path = opt.Path,
-            Secure = opt.Secure,
-            SameSite = opt.SameSite,
-            HttpOnly = opt.HttpOnly,
-            Expires = DateTimeOffset.UnixEpoch
-        };
-        Response.Cookies.Delete(AuthConstants.TokenCookieName, deleteOpt);
-        Response.Cookies.Delete(AuthConstants.TokenCookieName, new CookieOptions { Path = "/", Secure = true, SameSite = SameSiteMode.None });
-        Response.Cookies.Delete(AuthConstants.TokenCookieName, new CookieOptions { Path = "/", Secure = false, SameSite = SameSiteMode.Lax });
         _user.login_user_id = Guid.Empty;
         _user.table_id = 0;
         _user.plan_type = PlanType.Free.ToString();
         _user.UpdatedUser = null;
-        return Ok(new
-        {
-            is_logged_in = false,
-            login_user_id = Guid.Empty,
-            plan = PlanType.Free.ToString(),
-            data = new { }
-        });
+
+        // 本当の OkWithBase を直接呼ぶ。強制的に new_token = null
+        return OkWithBase(new { }, null);
     }
+
+    /// <summary>
+    /// ログイン中のユーザーのプロフィール（ニックネームやアイコン等）を更新する
+    /// </summary>
+    [HttpPost("UpdateProfile")]
+    [CustomAuthorize]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileService.UpdateUserReq req)
+        => OkWithNewToken(await updateUserProfileService.ExecuteAsync(req));
+
+    /// <summary>
+    /// ログイン中のユーザーの状態を確認し、最新のユーザー情報を取得する
+    /// </summary>
+    [HttpPost("EnsureLoginUser")]
+    [CustomAuthorize]
+    public async Task<IActionResult> EnsureLoginUser([FromBody] EnsureLoginUserService.EnsureLoginUserReq req)
+        => OkWithNewToken(await ensureLoginUserService.ExecuteAsync(req));
+
+    /// <summary>
+    /// 指定されたユーザーの公開プロフィール情報を取得する
+    /// </summary>
+    [HttpPost("GetUserProfile")]
+    public async Task<IActionResult> GetUserProfile([FromBody] GetUserProfileService.GetUserProfileReq req)
+        => OkWithNewToken(await getUserProfileService.ExecuteAsync(req));
+
+    /// <summary>
+    /// ユーザーの退会処理を行い、データを論理削除する
+    /// </summary>
+    [HttpPost("Withdrawal")]
+    [CustomAuthorize]
+    public async Task<IActionResult> Withdrawal([FromBody] WithdrawalUserService.WithdrawalReq req)
+        => OkWithNewToken(await withdrawalUserService.ExecuteAsync(req));
 
 }

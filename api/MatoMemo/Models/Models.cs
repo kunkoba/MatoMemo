@@ -10,7 +10,7 @@ public class TAppUser
 {
     public Guid user_id { get; set; }
     public int table_id { get; set; }
-    public string plan_type { get; set; } = "Free";
+    public string plan_type { get; set; } = PlanType.Free.ToString();
     public long member_no { get; set; }
     public string user_category { get; set; } = "通りすがり";
     public int user_rank { get; set; } = 0;

@@ -1,6 +1,7 @@
 // --- 内部プロセス（プライベート） ---
 const _AppCore = {
     settingsKey: "matomemo_settings",
+    jwtKey: "matomemo_jwt", // ① matomemo_jwt フィールドを追加
     // ビューポート制御（キーボード対策）とUI初期化を行う
     async setupShell() {
         // ビューポート制御（キーボード対策）
@@ -28,7 +29,6 @@ const _AppCore = {
     async restoreLocal(AppData) {
         const raw = localStorage.getItem(this.settingsKey);
         if (raw && raw.includes('loginUserId')) {
-            // 旧形式なら一度全削除
             localStorage.removeItem(this.settingsKey);
         }
         const saved = JSON.parse(localStorage.getItem(this.settingsKey) || '{}');
@@ -40,8 +40,15 @@ const _AppCore = {
         AppData.Owner.FontSize = saved.fontSize || 'standard';
         AppData.Owner.LastLoginDate = saved.lastLoginDate;
         AppData.Owner.SoundVolume = saved.soundVolume ?? 0.5;
-        // loginUserId と ownerProfile はここでは復元しない
-        // Cの確認が終わるまで Guest にしておく
+        const storedJwt = localStorage.getItem(this.jwtKey);
+        if (storedJwt) {
+            AppData.Owner.Token = storedJwt;
+            // ③ デフォルトFALSE、ローカルからトークンが取得できたらTRUE（オフライン対応）
+            AppData.Context.IsLoggedIn = true;
+        } else {
+            // デフォルトFALSE
+            AppData.Context.IsLoggedIn = false;
+        }
         AppData.Owner.LoginUserId = null;
         AppData.Owner.SystemInfo = null;
         const params = new URLSearchParams(location.search);
@@ -354,6 +361,9 @@ const AppManager = {
         if (response && response.status === 401) {
             this.AppData.Owner.LoginUserId = '';
             this.AppData.Context.IsLoggedIn = false;
+            this.AppData.Owner.Token = null;
+            // localStorage.removeItem(this.jwtKey);
+            localStorage.removeItem(this.jwtKey || _AppCore.jwtKey || 'matomemo_jwt');
             _AppCore.save(this.AppData.Owner);
             $Notice.Warn("引き続き利用される際は、ログインをしてください。");
             return false;
@@ -367,10 +377,12 @@ const AppManager = {
     },
     // Firebaseからサインアウトし、ローカルの認証状態をクリアする
     async Logout() {
-        // BとAを先にクリア（Cより先にUIをログアウト状態にする）
         this.AppData.Owner.LoginUserId = '';
         this.AppData.Context.IsLoggedIn = false;
         this.AppData.Owner.SystemInfo = null;
+        this.AppData.Owner.Token = null;
+        // localStorage.removeItem(this.jwtKey);
+        localStorage.removeItem(this.jwtKey || _AppCore.jwtKey || 'matomemo_jwt');
         _AppCore.save(this.AppData.Owner);
         // Firebaseとサーバーはベストエフォートで切る（失敗してもローカルは残さない）
         try {

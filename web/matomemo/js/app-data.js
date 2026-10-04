@@ -109,13 +109,16 @@ window.$Data = {
             const controller = new AbortController(); // 通信中断用コントローラー
             const timeoutId = setTimeout(() => controller.abort(), $Const.APP_CONFIG.NETWORK_TIMEOUT_SEC * 1000); // タイマー起動
             // メイン処理
+            // ① credentials: 'include' 削除
+            // ② Authorization: Bearer 付与
+            const jwt = localStorage.getItem('matomemo_jwt') || $App?.AppData?.Owner?.Token;
             const options = {
                 method: method.toUpperCase(),
                 signal: controller.signal,
-                credentials: 'include',
                 headers: {
                     "ngrok-skip-browser-warning": "69420",
-                    "X-App-Version": $Const.APP_INFO.VERSION
+                    "X-App-Version": $Const.APP_INFO.VERSION,
+                    ...(jwt ? { "Authorization": `Bearer ${jwt}` } : {})
                 }
             };
             if (options.method !== "GET" && params) {
@@ -147,6 +150,12 @@ window.$Data = {
             $Notice.Loading.Hide();
             const result = await response.json();
             console.log("■ Result:", url, result);
+            // ③ new_token保存
+            const newToken = result.new_token || result.data?.token;
+            if (newToken) {
+                localStorage.setItem('matomemo_jwt', newToken);
+                if ($App?.AppData) $App.AppData.Owner.Token = newToken;
+            }
             const data = structuredClone(result.data);  // 値渡し
             // メイン処理
             $App.AppData.Context.IsLoggedIn = result.is_logged_in ?? false;
@@ -227,16 +236,16 @@ window.$Data = {
         ...ApiModule,
         // ユーザーアカウント確認（UI非干渉・完全非同期）
         async EnsureLoginUser(params = {}) {
-            if (!navigator.onLine) return false;
             const baseUrl = window.ENV_CONFIG.BASE_URL;
             const url = baseUrl + '/api/Account/EnsureLoginUser';
             const ver = $Const.APP_INFO.VERSION;
+            const jwt = localStorage.getItem('matomemo_jwt') || $App?.AppData?.Owner?.Token;
             const options = {
                 method: 'POST',
-                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-App-Version': ver
+                    'X-App-Version': ver,
+                    ...(jwt ? { "Authorization": `Bearer ${jwt}` } : {})
                 },
                 body: JSON.stringify(params)
             };
@@ -250,6 +259,12 @@ window.$Data = {
                     return false;
                 }
                 const result = await response.json();
+                // ③ new_token保存
+                const newToken = result.new_token || result.data?.token;
+                if (newToken) {
+                    localStorage.setItem('matomemo_jwt', newToken);
+                    if ($App?.AppData) $App.AppData.Owner.Token = newToken;
+                }
                 $App.AppData.Context.IsLoggedIn = result.is_logged_in ?? false;
                 if (result.login_user_id) {
                     $App.AppData.Owner.LoginUserId = result.login_user_id;

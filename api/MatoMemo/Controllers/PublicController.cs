@@ -45,7 +45,7 @@ public class PublicController(
     {
         int archiveId = ServiceUtilities.DecodeId(encodedId);
         if (archiveId <= 0) return NotFound();
-        return OkWithBase(await getArchiveDetailsPubService.ExecuteAsync(new(archiveId)));
+        return OkWithNewToken(await getArchiveDetailsPubService.ExecuteAsync(new(archiveId)));
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class PublicController(
     [AllowAnonymous]
     [HttpPost("AddClick")]
     public async Task<IActionResult> AddClick([FromBody] AddCountQueueService.AddCountReq req)
-        => OkWithBase(await addClickQueueService.ExecuteAsync(req));
+        => OkWithNewToken(await addClickQueueService.ExecuteAsync(req));
 
     #endregion
 
@@ -65,49 +65,49 @@ public class PublicController(
     /// </summary>
     [HttpPost("SearchByLocationPub")]
     public async Task<IActionResult> SearchByLocationPub([FromBody] SearchByLocationPubService.SearchByLocationPubReq req)
-        => OkWithBase(await searchByLocationPubService.ExecuteAsync(req));
+        => OkWithNewToken(await searchByLocationPubService.ExecuteAsync(req));
 
     /// <summary>
     /// 自分の公開データを非公開に戻し、秘密側（自分専用）へ移動する
     /// </summary>
     [HttpPost("UnpublishArchive")]
     public async Task<IActionResult> UnpublishArchive([FromBody] UnpublishArchiveService.UnpublishArchiveReq req)
-        => OkWithBase(await unpublishArchiveService.ExecuteAsync(req));
+        => OkWithNewToken(await unpublishArchiveService.ExecuteAsync(req));
 
     /// <summary>
     /// 公開中のまとめを「公開」状態にする（検索にヒットするようにする）
     /// </summary>
     [HttpPost("OpenArchive")]
     public async Task<IActionResult> OpenArchive([FromBody] OpenArchiveService.OpenArchiveReq req)
-        => OkWithBase(await openArchiveService.ExecuteAsync(req)); // ※内部的には同じ公開切替処理
+        => OkWithNewToken(await openArchiveService.ExecuteAsync(req)); // ※内部的には同じ公開切替処理
 
     /// <summary>
     /// 公開中のまとめを「一時クローズ」状態にする（URLを知っている人のみ閲覧可）
     /// </summary>
     [HttpPost("CloseArchive")]
     public async Task<IActionResult> CloseArchive([FromBody] CloseArchiveService.CloseArchiveReq req)
-        => OkWithBase(await closeArchiveService.ExecuteAsync(req));
+        => OkWithNewToken(await closeArchiveService.ExecuteAsync(req));
 
     /// <summary>
     /// 公開されているまとめの親情報を更新する
     /// </summary>
     [HttpPost("UpdateArchivePub")]
     public async Task<IActionResult> UpdateArchivePub([FromBody] UpdateArchivePubService.UpdateArchivePubReq req)
-        => OkWithBase(await updateArchivePubService.ExecuteAsync(req));
+        => OkWithNewToken(await updateArchivePubService.ExecuteAsync(req));
 
     /// <summary>
     /// 公開されている特定の明細情報を更新する
     /// </summary>
     [HttpPost("UpdateDetailPub")]
     public async Task<IActionResult> UpdateDetailPub([FromBody] UpdateDetailPubService.UpdateDetailPubReq req)
-        => OkWithBase(await updateDetailPubService.ExecuteAsync(req));
+        => OkWithNewToken(await updateDetailPubService.ExecuteAsync(req));
 
     /// <summary>
     /// 複数のリアクション（いいね等）の状態を一括で同期する
     /// </summary>
     [HttpPost("BulkSyncReactions")]
     public async Task<IActionResult> BulkSyncReactions([FromBody] BulkSyncReactionService.BulkSyncReactionReq req)
-        => OkWithBase(await bulkSyncReactionService.ExecuteAsync(req));
+        => OkWithNewToken(await bulkSyncReactionService.ExecuteAsync(req));
 
     /// <summary>
     /// アーカイブを更新（非公開 → 限定公開）
@@ -116,7 +116,7 @@ public class PublicController(
     /// <returns></returns>
     [HttpPost("OpenLimitedArchive")]
     public async Task<IActionResult> OpenLimitedArchive([FromBody] OpenLimitedArchiveService.OpenLimitedArchiveReq req)
-    => OkWithBase(await openLimitedArchiveService.ExecuteAsync(req));
+    => OkWithNewToken(await openLimitedArchiveService.ExecuteAsync(req));
 
     /// <summary>
     /// 閲覧履歴用のまとめリスト
@@ -125,7 +125,7 @@ public class PublicController(
     /// <returns></returns>
     [HttpPost("GetArchiveListByIds")]
     public async Task<IActionResult> GetArchiveListByIds([FromBody] GetArchiveListByIdsService.GetArchiveListByIdsReq req)
-        => OkWithBase(await getArchiveListByIdsService.ExecuteAsync(req));
+        => OkWithNewToken(await getArchiveListByIdsService.ExecuteAsync(req));
 
     /// <summary>
     /// ユーザに紐づくまとめリスト
@@ -134,7 +134,7 @@ public class PublicController(
     /// <returns></returns>
     [HttpPost("GetArchiveListByUser")]
     public async Task<IActionResult> GetArchiveListByIds([FromBody] GetArchiveListByUserService.GetArchiveListByUserReq req)
-        => OkWithBase(await getArchiveListByUserService.ExecuteAsync(req));
+        => OkWithNewToken(await getArchiveListByUserService.ExecuteAsync(req));
 
     #endregion
 

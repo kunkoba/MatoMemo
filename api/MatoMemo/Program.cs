@@ -114,7 +114,7 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(p =>
     })
     .AllowAnyHeader()
     .AllowAnyMethod()
-    .AllowCredentials()
+    //.AllowCredentials()
 ));
 
 // 9. 定期バッチ実行
@@ -132,7 +132,7 @@ builder.Services.AddRateLimiter(options => {
 
         // レスポンスは今まで通りサイレント200で返す
         http.Response.StatusCode = StatusCodes.Status200OK;
-        await http.Response.WriteAsJsonAsync(new { is_logged_in = false, plan = "Free", data = new { is_success = true } }, token);
+        await http.Response.WriteAsJsonAsync(new { is_logged_in = false, plan = PlanType.Free.ToString(), data = new { is_success = true } }, token);
     };
     options.AddPolicy("PublicApiPolicy", httpContext => {
         var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";

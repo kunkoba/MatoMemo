@@ -29,14 +29,14 @@ public class CoreController(
     /// </summary>
     [HttpPost("GetCoreConfig")]
     public async Task<IActionResult> GetCoreConfig()
-        => OkWithBase(await getCoreConfigService.ExecuteAsync());
+        => OkWithNewToken(await getCoreConfigService.ExecuteAsync());
 
     /// <summary>
     /// システム設定を更新（管理者のみ）
     /// </summary>
     [HttpPost("UpdateCoreConfig")]
     public async Task<IActionResult> UpdateCoreConfig([FromBody] UpdateCoreConfigService.UpdateCoreConfigReq req)
-        => OkWithBase(await updateCoreConfigService.ExecuteAsync(req));
+        => OkWithNewToken(await updateCoreConfigService.ExecuteAsync(req));
 
     /// <summary>
     /// 法的文書（規約・ポリシー等）を差分取得する（未ログイン可）
@@ -46,7 +46,7 @@ public class CoreController(
     [AllowAnonymous]
     [HttpPost("GetLegalConfigs")]
     public async Task<IActionResult> GetLegalConfigs([FromBody] GetLegalConfigsService.GetLegalConfigsReq req)
-        => OkWithBase(await getLegalConfigsService.ExecuteAsync(req));
+        => OkWithNewToken(await getLegalConfigsService.ExecuteAsync(req));
 
     /// <summary>
     /// 法的文書（規約・ポリシー等）を個別に更新する（管理者のみ）
@@ -55,6 +55,6 @@ public class CoreController(
     /// <returns></returns>
     [HttpPost("UpdateLegalConfig")]
     public async Task<IActionResult> UpdateLegalConfig([FromBody] UpdateLegalConfigService.UpdateLegalConfigReq req)
-        => OkWithBase(await updateLegalConfigService.ExecuteAsync(req));
+        => OkWithNewToken(await updateLegalConfigService.ExecuteAsync(req));
 
 }

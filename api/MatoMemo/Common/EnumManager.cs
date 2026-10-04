@@ -49,35 +49,3 @@ public enum PublicStatus : short
     Delete
 }
 
-/// <summary>
-/// 認証用
-/// </summary>
-public static class AuthConstants
-{
-    public const string TokenCookieName = "matomemo_token";
-    public const int TokenExpiryDays = 7;
-
-    public static CookieOptions DefaultCookieOptions(HttpRequest request, bool isDevelopment)
-    {
-        //if (isDevelopment)
-        //{
-        //    return new CookieOptions
-        //    {
-        //        HttpOnly = true,
-        //        Secure = false,
-        //        SameSite = SameSiteMode.Lax,
-        //        Path = "/",
-        //        Expires = DateTimeOffset.UtcNow.AddDays(TokenExpiryDays)
-        //    };
-        //}
-        return new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            //SameSite = SameSiteMode.Lax,
-            SameSite = SameSiteMode.None, // <- Lax から None に変更
-            Path = "/",
-            Expires = DateTimeOffset.UtcNow.AddDays(TokenExpiryDays)
-        };
-    }
-}
