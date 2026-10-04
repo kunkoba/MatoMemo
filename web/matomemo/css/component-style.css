@@ -100,3 +100,11 @@
 .leaflet-pane {
     z-index: 400;
 }
+
+/* 2026-10-04 fix: トーストを地図に内包 */
+#toast-container {
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+#ui-map-id {
+    contain: layout paint;
+}

@@ -407,15 +407,12 @@ const _DetailContentCore = {
         // this.editWeatherEmoji.value = 'はれ'; // 新規時は「はれ」を選択
         this.editWeatherEmoji.value = '0000';
         this.spanAtmospherePreview.textContent = '0000';
-        // // ▼ 新規作成時は定数を使って NORMAL を選択状態にする
-        // this.editEvalInput.value = $Const.FEEL_TYPE.NORMAL.val;
-        // this._updateEvalUI($Const.FEEL_TYPE.NORMAL.val);
         // 音源の初期値をWALK(1)にリセット
         this.editSoundInput.value = 1;
-        this._updateSoundUI(1);
+        this._updateSoundUI(this.editSoundInput.value);
         // 表情アイコン
-        this.editFeel2Input.value = 0;
-        this._updateFeel2UI(0);
+        this.editFeel2Input.value = 21;
+        this._updateFeel2UI(this.editFeel2Input.value);
         // 文字数カウンターを0にリセット
         if (this.countTitle) this.countTitle.textContent = "0";
         if (this.countBody)  this.countBody.textContent  = "0";

@@ -125,7 +125,11 @@
                 </div>
             </div>
             <!-- 地図エリア -->
-            <div id="ui-map-id" class="w-full h-full z-1005_">
+            <div id="ui-map-id" class="w-full h-full relative overflow-hidden isolate">
+                <!-- 地図内トースト：地図幅にのみ表示、明細パネルには被らない -->
+                <div id="toast-container" class="absolute top-14 left-0 right-0 z-[9999] flex flex-col gap-2 px-3 pointer-events-none items-center"></div>
+                <!-- 地図内ローディング：ここに tpl-loading が挿入される -->
+                <div id="ui-map-loading-root" class="absolute inset-0 z-[1002] pointer-events-none"></div>
                 <!-- 左：ズーム関連 -->
                 <div id="ui-side-map-group" class="absolute left-4 top-1/2 -translate-y-1/2 z-[1000] flex flex-col items-center gap-4 pointer-events-none">
                     <!-- ① 縦ズームスライダー -->
@@ -447,9 +451,6 @@
                 ✕ CLOSE ALL
             </button>
         </div>
-        <!-- Toast を積み上げるコンテナ -->
-        <!-- <div id="toast-container" class="absolute bottom-[150px] w-full flex flex-col gap-3 z-[9999] pointer-events-none"></div> -->
-        <div id="toast-container" class="absolute top-12 w-full flex flex-col gap-3 z-[9999] pointer-events-none"></div>
         <!-- ヘルプメッセージ -->
         <div id="ui-help-dialog" onclick="if(event.target === this) this.classList.add('hidden')"
             class="fixed inset-0 z-[3000] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
