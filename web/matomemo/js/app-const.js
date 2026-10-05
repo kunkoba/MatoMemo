@@ -2,8 +2,8 @@
 window.$Const = {
     // アプリ情報
     APP_INFO: {
-        NAME: "まとめも（旅の記録を簡単まとめ）",
-        DESCRIPTION: "「その日、その時、その場所の思い出」をひとまとめに！旅の記録や日常の気づきを、地図と一緒に残せるアプリです。",
+        NAME: "まとめも（まとめるメモ）",
+        DESCRIPTION: "「その日、その時、その場所の思い出」をひとまとめに！　旅の記録や日常の気づきを、地図と一緒に残せるアプリです。",
         DEVELOPER: "kunkoba",
         OFFICIAL_SITE: "https://hinekulemonstudio.web.app/",
         VERSION: "1.3.5",
