@@ -1,3 +1,5 @@
+// ■■■■■ vercelビルド時に自動実行されるファイル
+// vercel＞setting＞Build and Deployment＞Framework Settings
 const fs = require('fs');
 const path = require('path');
 const renderUrl = process.env.RENDER_API_URL || "https://matomemo-1.onrender.com";    // 取得できない場合はテスト環境へ
@@ -5,15 +7,14 @@ const renderUrl = process.env.RENDER_API_URL || "https://matomemo-1.onrender.com
 const content = `window.ENV_CONFIG = {
     BASE_URL: "${renderUrl}",
     ADMIN_PW: "8855",
-    DEBUG_MODE: false,
     FIREBASE_CONFIG: {
-        apiKey: "AIzaSyBJ-OSK-D6-NboGQtb1zQiDK7gkwbpXjv8",
-        authDomain: "kunkoba.firebaseapp.com",
-        projectId: "kunkoba",
-        storageBucket: "kunkoba.firebasestorage.app",
-        messagingSenderId: "41251112393",
-        appId: "1:41251112393:web:836d8f5b87ebfdb59c1418",
-        measurementId: "G-6XTLC5G1EY"
+        apiKey: "${process.env.FIREBASE_API_KEY}",
+        authDomain: "${process.env.FIREBASE_AUTH_DOMAIN}",
+        projectId: "${process.env.FIREBASE_PROJECT_ID}",
+        storageBucket: "${process.env.FIREBASE_STORAGE_BUCKET}",
+        messagingSenderId: "${process.env.FIREBASE_SENDER_ID}",
+        appId: "${process.env.FIREBASE_APP_ID}",
+        measurementId: "${process.env.FIREBASE_MEASUREMENT_ID}"
     }
 };
 `;
