@@ -2,7 +2,7 @@
 using System.Data;
 using System.Text.Json;
 
-namespace LittleTripMemo.DataAccess;
+namespace MatoMemo.DataAccess;
 
 /// <summary>
 /// Dapperで JSONB型カラム と Dictionary型プロパティ を相互変換するためのハンドラー

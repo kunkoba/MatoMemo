@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using LittleTripMemo.Models;
+using MatoMemo.Models;
 
-namespace LittleTripMemo.DbContext;
+namespace MatoMemo.DbContext;
 
 // IdentityDbContextを継承することで、ユーザー管理機能が使えるようになります。
 // 継承元の型を MyAppUser に書き換えます

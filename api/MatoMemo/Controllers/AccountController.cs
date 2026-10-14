@@ -1,11 +1,11 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.JWT;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Services.Account;
+﻿using MatoMemo.Common;
+using MatoMemo.JWT;
+using MatoMemo.Repository;
+using MatoMemo.Services.Account;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LittleTripMemo.Controllers;
+namespace MatoMemo.Controllers;
 
 /// <summary>
 /// ユーザーのアカウント管理、プロフィール操作、認証連携を行うコントローラー

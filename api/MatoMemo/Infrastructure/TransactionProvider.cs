@@ -1,4 +1,4 @@
-﻿using LittleTripMemo.Repository;
+﻿using MatoMemo.Repository;
 using Npgsql;
 using System.Data;
 

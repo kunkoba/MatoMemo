@@ -1,5 +1,5 @@
 ﻿// Models/MyAppSettings.cs
-namespace LittleTripMemo.Configs;
+namespace MatoMemo.Configs;
 
 /// <summary>
 /// アプリケーション固有の設定を一括管理するクラス。

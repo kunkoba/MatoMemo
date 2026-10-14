@@ -1,8 +1,8 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Repository.Core;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Repository.Core;
 
-namespace LittleTripMemo.Services.Core;
+namespace MatoMemo.Services.Core;
 
 /// <summary>
 /// システム設定（SYSTEMカテゴリー）の一覧を取得するサービス

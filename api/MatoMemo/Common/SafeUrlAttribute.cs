@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace LittleTripMemo.Common;
+namespace MatoMemo.Common;
 
 /// <summary>
 /// 安全なURL形式であることを検証するアノテーション。

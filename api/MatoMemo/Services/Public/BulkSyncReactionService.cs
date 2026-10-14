@@ -1,12 +1,12 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Repository.App;
-using LittleTripMemo.Services;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository;
+using MatoMemo.Repository.App;
+using MatoMemo.Services;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Public;
+namespace MatoMemo.Services.Public;
 
 /// <summary>リアクション状態の一括同期サービス</summary>
 public class BulkSyncReactionService(

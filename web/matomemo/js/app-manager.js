@@ -371,7 +371,7 @@ const AppManager = {
         // 接続失敗時は論理オフラインへ移行
         this.AppData.Context.IsNetOnline = false;
         $Notice.Offline.Show("サーバーに接続できません");
-        let msg = "サーバ接続が切断されました。";
+        let msg = "サーバ接続が失敗しました。";
         $Notice.Error(msg);
         return false;
     },

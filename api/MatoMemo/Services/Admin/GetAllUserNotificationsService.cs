@@ -1,9 +1,9 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository;
 
-namespace LittleTripMemo.Services.Admin; // フォルダ構成に基づき修正
+namespace MatoMemo.Services.Admin; // フォルダ構成に基づき修正
 
 /// <summary>全ユーザー宛の通知送信履歴取得（管理者用）</summary>
 public class GetAllUserNotificationsService(UserContext user, SysUserNotificationRepository repo) : _BaseService(user)

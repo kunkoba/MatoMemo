@@ -1,7 +1,7 @@
 ﻿
-using LittleTripMemo.Models;
+using MatoMemo.Models;
 
-namespace LittleTripMemo.Common;
+namespace MatoMemo.Common;
 
 /// <summary>
 /// ユーザー情報を保持するコンテキストクラス

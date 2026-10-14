@@ -1,6 +1,6 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository;
+﻿using MatoMemo.Common;
+using MatoMemo.Models;
+using MatoMemo.Repository;
 
 public class SysUserNotificationRepository : _BaseRepository
 {

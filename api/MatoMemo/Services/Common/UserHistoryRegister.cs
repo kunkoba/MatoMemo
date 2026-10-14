@@ -1,8 +1,8 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.Sys;
+﻿using MatoMemo.Common;
+using MatoMemo.Models;
+using MatoMemo.Repository.Sys;
 
-namespace LittleTripMemo.Services.Common;
+namespace MatoMemo.Services.Common;
 
 /// <summary>
 /// ユーザーの履歴（t_sys_user_histories）を、DI注入の手間なくどこからでも記録するための静的ゲートウェイ。

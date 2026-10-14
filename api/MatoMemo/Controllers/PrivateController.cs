@@ -1,10 +1,10 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.JWT;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Services.Private;
+﻿using MatoMemo.Common;
+using MatoMemo.JWT;
+using MatoMemo.Repository;
+using MatoMemo.Services.Private;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LittleTripMemo.Controllers;
+namespace MatoMemo.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

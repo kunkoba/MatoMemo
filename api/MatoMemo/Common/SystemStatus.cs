@@ -1,4 +1,4 @@
-﻿namespace LittleTripMemo.Common;
+﻿namespace MatoMemo.Common;
 
 /// <summary>
 /// アプリケーション全体の実行状態（メンテナンス・バージョン等）をメモリ上に保持するクラス。

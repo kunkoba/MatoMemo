@@ -1,10 +1,10 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.App;
-using LittleTripMemo.Repository.Sys;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.App;
+using MatoMemo.Repository.Sys;
 
-namespace LittleTripMemo.Services.Public;
+namespace MatoMemo.Services.Public;
 
 /// <summary>
 /// 公開されているまとめの詳細情報を取得し、閲覧統計を記録するサービス

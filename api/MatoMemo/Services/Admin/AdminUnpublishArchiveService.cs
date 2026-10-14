@@ -1,13 +1,13 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Repository.App;
-using LittleTripMemo.Repository.Sys;
-using LittleTripMemo.Services.Common;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository;
+using MatoMemo.Repository.App;
+using MatoMemo.Repository.Sys;
+using MatoMemo.Services.Common;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Admin;
+namespace MatoMemo.Services.Admin;
 
 /// <summary>
 /// 管理者による強制公開停止処理（公開データの削除と秘密側への復元）および履歴記録を担当するサービス

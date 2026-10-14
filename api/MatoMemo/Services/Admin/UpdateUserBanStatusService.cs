@@ -1,11 +1,11 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.Sys;
-using LittleTripMemo.Services.Common;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.Sys;
+using MatoMemo.Services.Common;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Admin;
+namespace MatoMemo.Services.Admin;
 
 /// <summary>
 /// ユーザーのアカウント凍結（BAN）および凍結解除処理と、その履歴記録を担当するサービス

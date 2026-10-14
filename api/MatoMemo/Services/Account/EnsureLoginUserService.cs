@@ -1,7 +1,7 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.Sys;
-using LittleTripMemo.Services;
+﻿using MatoMemo.Common;
+using MatoMemo.Models;
+using MatoMemo.Repository.Sys;
+using MatoMemo.Services;
 
 /// <summary>ログイン状態の保証と最新情報の取得</summary>
 public class EnsureLoginUserService(

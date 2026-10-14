@@ -1,13 +1,13 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Repository.App;
-using LittleTripMemo.Repository.Sys;
-using LittleTripMemo.Services.Common;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository;
+using MatoMemo.Repository.App;
+using MatoMemo.Repository.Sys;
+using MatoMemo.Services.Common;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Admin;
+namespace MatoMemo.Services.Admin;
 
 /// <summary>
 /// 管理者による公開まとめの強制クローズ（非公開化）および履歴記録を担当するサービス

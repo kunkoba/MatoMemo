@@ -1,13 +1,13 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.JWT;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Services;
-using LittleTripMemo.Services.Public;
+﻿using MatoMemo.Common;
+using MatoMemo.JWT;
+using MatoMemo.Repository;
+using MatoMemo.Services;
+using MatoMemo.Services.Public;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
-namespace LittleTripMemo.Controllers;
+namespace MatoMemo.Controllers;
 
 /// <summary>
 /// 全ユーザー（未ログイン含む）が利用可能な、公開データの参照・操作を行うコントローラー

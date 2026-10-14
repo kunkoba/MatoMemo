@@ -1,9 +1,9 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.App;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.App;
 
-namespace LittleTripMemo.Services.Public;
+namespace MatoMemo.Services.Public;
 
 /// <summary>
 /// 指定されたユーザーが公開している「まとめ」の一覧を取得するサービス

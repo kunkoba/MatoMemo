@@ -1,10 +1,10 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.Sys;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.Sys;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Sys;
+namespace MatoMemo.Services.Sys;
 
 /// <summary>通報の登録・更新</summary>
 public class UpsertReportService(UserContext user, SysReportRepository repo) : _BaseService(user)

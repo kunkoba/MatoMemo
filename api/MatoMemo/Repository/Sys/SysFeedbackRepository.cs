@@ -1,7 +1,7 @@
-﻿using LittleTripMemo.Models;
-using LittleTripMemo.Common;
+﻿using MatoMemo.Models;
+using MatoMemo.Common;
 
-namespace LittleTripMemo.Repository.Sys;
+namespace MatoMemo.Repository.Sys;
 
 public class SysFeedbackRepository : _BaseRepository
 {

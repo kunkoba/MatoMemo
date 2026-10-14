@@ -1,13 +1,13 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Configs;
-using LittleTripMemo.Models;
+﻿using MatoMemo.Common;
+using MatoMemo.Configs;
+using MatoMemo.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace LittleTripMemo.JWT;
+namespace MatoMemo.JWT;
 
 public class JwtService
 {

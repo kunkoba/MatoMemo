@@ -1,11 +1,11 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.App;
-using LittleTripMemo.Services;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.App;
+using MatoMemo.Services;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Public;
+namespace MatoMemo.Services.Public;
 
 /// <summary>閲覧数やクリック数を集計キューに登録するサービス</summary>
 public class AddCountQueueService(UserContext u, CountQueueRepository r) : _BaseService(u)

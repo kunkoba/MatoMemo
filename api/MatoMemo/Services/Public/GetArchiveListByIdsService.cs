@@ -1,8 +1,8 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.App;
-using LittleTripMemo.Services;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.App;
+using MatoMemo.Services;
 
 public class GetArchiveListByIdsService(UserContext u, ArchivePubRepository repo) : _BaseService(u)
 {

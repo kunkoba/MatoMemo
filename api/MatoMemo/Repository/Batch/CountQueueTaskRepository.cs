@@ -1,7 +1,7 @@
-﻿using LittleTripMemo.Common;
+﻿using MatoMemo.Common;
 using System.Text.Json;
 
-namespace LittleTripMemo.Repository.Batch;
+namespace MatoMemo.Repository.Batch;
 
 public class CountQueueTaskRepository : _BaseRepository
 {

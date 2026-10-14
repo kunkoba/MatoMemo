@@ -1,11 +1,11 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.Sys;
-using LittleTripMemo.Services.Common;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.Sys;
+using MatoMemo.Services.Common;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Account;
+namespace MatoMemo.Services.Account;
 
 /// <summary>
 /// ユーザー自身の操作による退会処理（論理削除）および履歴の記録を担当するサービス

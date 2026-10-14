@@ -1,11 +1,11 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.Sys;
-using LittleTripMemo.Services.Admin;
-using LittleTripMemo.Services.Sys;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.Sys;
+using MatoMemo.Services.Admin;
+using MatoMemo.Services.Sys;
 
-namespace LittleTripMemo.Services.Admin;
+namespace MatoMemo.Services.Admin;
 
 /// <summary>
 /// 管理者ダッシュボード用の一括情報取得サービス。

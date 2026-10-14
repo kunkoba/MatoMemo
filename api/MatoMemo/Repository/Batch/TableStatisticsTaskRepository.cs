@@ -1,6 +1,6 @@
-﻿using LittleTripMemo.Common;
+﻿using MatoMemo.Common;
 
-namespace LittleTripMemo.Repository.Batch;
+namespace MatoMemo.Repository.Batch;
 
 /// <summary>
 /// 定期バッチ専用：テーブル統計情報の更新処理を担当するリポジトリ

@@ -1,11 +1,11 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Repository.Sys;
-using LittleTripMemo.Services.Common;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository;
+using MatoMemo.Repository.Sys;
+using MatoMemo.Services.Common;
 
-namespace LittleTripMemo.Services.Sys;
+namespace MatoMemo.Services.Sys;
 
 /// <summary>
 /// ユーザーからのフィードバック登録および履歴への保存を担当するサービス

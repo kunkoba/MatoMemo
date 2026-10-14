@@ -1,6 +1,6 @@
-﻿using LittleTripMemo.Common;
+﻿using MatoMemo.Common;
 
-namespace LittleTripMemo.Repository.Sys;
+namespace MatoMemo.Repository.Sys;
 
 public class TableStatisticsRepository : _BaseRepository
 {

@@ -1,4 +1,4 @@
-﻿namespace LittleTripMemo.Exceptions;
+﻿namespace MatoMemo.Exceptions;
 
 /// <summary>
 /// クライアント（JS）へ返すエラー情報の標準形式。

@@ -1,8 +1,8 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Repository.Core;
-using LittleTripMemo.Services;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Repository;
+using MatoMemo.Repository.Core;
+using MatoMemo.Services;
 using System.ComponentModel.DataAnnotations;
 
 /// <summary>システム設定（SYSTEMカテゴリー）を一括更新するサービス</summary>

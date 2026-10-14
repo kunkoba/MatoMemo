@@ -1,7 +1,7 @@
-﻿using LittleTripMemo.Common;
+﻿using MatoMemo.Common;
 using Serilog.Context;
 
-namespace LittleTripMemo.Exceptions;
+namespace MatoMemo.Exceptions;
 
 /// <summary>
 /// アプリケーション全体の例外を統合的にキャッチし、ログ記録とレスポンス整形を行うミドルウェア

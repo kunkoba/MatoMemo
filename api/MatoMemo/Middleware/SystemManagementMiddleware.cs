@@ -1,8 +1,8 @@
-﻿using LittleTripMemo.Common;
+﻿using MatoMemo.Common;
 using System.Net;
 using System.Text.Json;
 
-namespace LittleTripMemo.Middleware;
+namespace MatoMemo.Middleware;
 
 /// <summary>
 /// アプリケーションのバージョンチェックおよびメンテナンスモードの判定を行うミドルウェア

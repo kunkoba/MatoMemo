@@ -1,9 +1,9 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.Sys;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.Sys;
 
-namespace LittleTripMemo.Services;
+namespace MatoMemo.Services;
 
 public abstract class _BaseService
 {

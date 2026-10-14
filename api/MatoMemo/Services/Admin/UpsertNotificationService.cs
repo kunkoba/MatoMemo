@@ -1,11 +1,11 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.Sys;
-using LittleTripMemo.Services;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.Sys;
+using MatoMemo.Services;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Admin;
+namespace MatoMemo.Services.Admin;
 
 public class UpsertNotificationService : _BaseService
 {

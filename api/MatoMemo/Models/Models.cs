@@ -1,7 +1,7 @@
 ﻿
-using LittleTripMemo.Common;
+using MatoMemo.Common;
 
-namespace LittleTripMemo.Models;
+namespace MatoMemo.Models;
 
 #region "App"
 

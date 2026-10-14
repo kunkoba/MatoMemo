@@ -1,8 +1,8 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.Sys;
+﻿using MatoMemo.Common;
+using MatoMemo.Models;
+using MatoMemo.Repository.Sys;
 
-namespace LittleTripMemo.Services.Sys;
+namespace MatoMemo.Services.Sys;
 
 /// <summary>
 /// アプリ情報（mgr_app_info id=1）を取得するサービス

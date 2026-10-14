@@ -1,9 +1,9 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.Sys;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.Sys;
 
-namespace LittleTripMemo.Services.Sys;
+namespace MatoMemo.Services.Sys;
 
 /// <summary>特定のアーカイブに対する自分の通報取得</summary>
 public class GetMyReportService(UserContext user, SysReportRepository repo) : _BaseService(user)

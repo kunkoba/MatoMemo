@@ -1,6 +1,6 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Repository.Core;
-using LittleTripMemo.Services;
+﻿using MatoMemo.Common;
+using MatoMemo.Repository.Core;
+using MatoMemo.Services;
 
 /// <summary>法的文書（規約・ポリシー等）を差分取得するサービス</summary>
 public class GetLegalConfigsService(

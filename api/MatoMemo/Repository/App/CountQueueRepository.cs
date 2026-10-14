@@ -1,7 +1,7 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Models;
+﻿using MatoMemo.Common;
+using MatoMemo.Models;
 
-namespace LittleTripMemo.Repository.App;
+namespace MatoMemo.Repository.App;
 
 public class CountQueueRepository : _BaseRepository
 {

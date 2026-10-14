@@ -1,10 +1,10 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Repository.App;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Repository;
+using MatoMemo.Repository.App;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Private;
+namespace MatoMemo.Services.Private;
 
 /// <summary>まとめ削除（解除）ユースケース</summary>
 public class DeleteArchiveService(

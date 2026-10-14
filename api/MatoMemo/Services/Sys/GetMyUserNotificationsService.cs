@@ -1,9 +1,9 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository;
 
-namespace LittleTripMemo.Services.Sys;
+namespace MatoMemo.Services.Sys;
 
 /// <summary>自分宛の通知一覧取得</summary>
 public class GetMyUserNotificationsService(UserContext user, SysUserNotificationRepository repo) : _BaseService(user)

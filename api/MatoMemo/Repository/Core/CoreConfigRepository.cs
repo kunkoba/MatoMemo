@@ -1,6 +1,6 @@
-﻿using LittleTripMemo.Common;
+﻿using MatoMemo.Common;
 
-namespace LittleTripMemo.Repository.Core;
+namespace MatoMemo.Repository.Core;
 
 /// <summary>
 /// アプリ基盤設定（mgr_sys_config）の読み書きを担当するリポジトリ

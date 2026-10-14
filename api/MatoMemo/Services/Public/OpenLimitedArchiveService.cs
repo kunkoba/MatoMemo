@@ -1,7 +1,7 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Repository.App;
-using LittleTripMemo.Services;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Repository.App;
+using MatoMemo.Services;
 using System.ComponentModel.DataAnnotations;
 
 /// <summary>

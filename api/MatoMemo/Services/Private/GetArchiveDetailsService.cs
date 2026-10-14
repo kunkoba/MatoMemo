@@ -1,11 +1,11 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.App;
-using LittleTripMemo.Repository.Sys;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.App;
+using MatoMemo.Repository.Sys;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Private;
+namespace MatoMemo.Services.Private;
 
 /// <summary>特定のアーカイブ（まとめ）の詳細情報と、紐づく明細一覧を取得するサービス</summary>
 public class GetArchiveDetailsService(

@@ -1,14 +1,14 @@
-﻿using LittleTripMemo.Configs;
-using LittleTripMemo.JWT;
-using LittleTripMemo.Models;
+﻿using MatoMemo.Configs;
+using MatoMemo.JWT;
+using MatoMemo.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using LittleTripMemo.Common;
-using LittleTripMemo.Repository.Sys;
-using LittleTripMemo.Exceptions;
+using MatoMemo.Common;
+using MatoMemo.Repository.Sys;
+using MatoMemo.Exceptions;
 using FirebaseAdmin.Auth;
 
-namespace LittleTripMemo.Services.Account;
+namespace MatoMemo.Services.Account;
 
 /// <summary>
 /// 外部認証情報に基づき、アプリユーザーのログインまたは新規登録を行うサービス

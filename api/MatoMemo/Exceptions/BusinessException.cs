@@ -1,4 +1,4 @@
-﻿namespace LittleTripMemo.Exceptions;
+﻿namespace MatoMemo.Exceptions;
 
 /// <summary>
 /// 業務上のルール違反（例：日付の逆転など）を通知するための例外。

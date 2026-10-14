@@ -1,9 +1,9 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.App;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.App;
 
-namespace LittleTripMemo.Services.Private;
+namespace MatoMemo.Services.Private;
 
 /// <summary>
 /// 未まとめ明細（archive_id = 0）の一覧を取得するサービス

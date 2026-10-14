@@ -1,15 +1,15 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Configs;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.App;
-using LittleTripMemo.Repository.Batch;
-using LittleTripMemo.Repository.Core;
-using LittleTripMemo.Repository.Sys;
+﻿using MatoMemo.Common;
+using MatoMemo.Configs;
+using MatoMemo.Models;
+using MatoMemo.Repository.App;
+using MatoMemo.Repository.Batch;
+using MatoMemo.Repository.Core;
+using MatoMemo.Repository.Sys;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
 using System.Text.Json;
 
-namespace LittleTripMemo.Worker;
+namespace MatoMemo.Worker;
 
 /// <summary>
 /// 統計集計やゴミ掃除など、定期的なシステムメンテナンス処理を実行するバックグラウンドサービス

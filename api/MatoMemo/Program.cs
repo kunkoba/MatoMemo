@@ -1,16 +1,16 @@
 ﻿using Dapper;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
-using LittleTripMemo.Common;
-using LittleTripMemo.Configs;
-using LittleTripMemo.DataAccess;
-using LittleTripMemo.DbContext;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Extensions; 
-using LittleTripMemo.JWT;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Services.Common;
+using MatoMemo.Common;
+using MatoMemo.Configs;
+using MatoMemo.DataAccess;
+using MatoMemo.DbContext;
+using MatoMemo.Exceptions;
+using MatoMemo.Extensions; 
+using MatoMemo.JWT;
+using MatoMemo.Models;
+using MatoMemo.Repository;
+using MatoMemo.Services.Common;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -118,7 +118,7 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(p =>
 ));
 
 // 9. 定期バッチ実行
-builder.Services.AddHostedService<LittleTripMemo.Worker.SystemMaintenanceWorker>();
+builder.Services.AddHostedService<MatoMemo.Worker.SystemMaintenanceWorker>();
 
 // 10. レート制限（大量アクセス制限）
 builder.Services.AddRateLimiter(options => {
@@ -185,7 +185,7 @@ app.UseCors();
 app.UseRateLimiter();
 
 app.UseMiddleware<JwtMiddleware>(); // 認証情報の抽出
-app.UseMiddleware<LittleTripMemo.Middleware.SystemManagementMiddleware>(); // メンテナンス・バージョンチェック
+app.UseMiddleware<MatoMemo.Middleware.SystemManagementMiddleware>(); // メンテナンス・バージョンチェック
 
 //app.UseAuthentication();
 app.UseAuthorization();

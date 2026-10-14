@@ -1,11 +1,11 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.JWT;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Services.Sys;
+﻿using MatoMemo.Common;
+using MatoMemo.JWT;
+using MatoMemo.Repository;
+using MatoMemo.Services.Sys;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LittleTripMemo.Controllers;
+namespace MatoMemo.Controllers;
 
 /// <summary>
 /// システム共通機能（お知らせ、フィードバック、通報等）を提供するコントローラー

@@ -1,11 +1,11 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.JWT;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Services.Core;
+﻿using MatoMemo.Common;
+using MatoMemo.JWT;
+using MatoMemo.Repository;
+using MatoMemo.Services.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LittleTripMemo.Controllers;
+namespace MatoMemo.Controllers;
 
 /// <summary>
 /// アプリケーションの基盤設定（メンテナンスモードやバージョン等）を管理するコントローラー

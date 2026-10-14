@@ -1,10 +1,10 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Repository.App;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Repository;
+using MatoMemo.Repository.App;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Private;
+namespace MatoMemo.Services.Private;
 
 /// <summary>アーカイブ内の明細の地点情報を一括更新するサービス</summary>
 public class BulkUpdateCoordinatesService(

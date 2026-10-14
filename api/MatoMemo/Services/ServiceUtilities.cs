@@ -1,5 +1,5 @@
 ﻿
-namespace LittleTripMemo.Services;
+namespace MatoMemo.Services;
 
 /// <summary>
 /// サービス層専用の補助処理をまとめたユーティリティクラス。

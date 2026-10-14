@@ -1,10 +1,10 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository.App;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository.App;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Private;
+namespace MatoMemo.Services.Private;
 
 /// <summary>
 /// 秘密側のまとめ（アーカイブ）情報を更新するサービス

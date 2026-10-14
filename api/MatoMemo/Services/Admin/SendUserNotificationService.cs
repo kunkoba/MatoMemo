@@ -1,12 +1,12 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Repository.Sys;
-using LittleTripMemo.Services.Common;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Models;
+using MatoMemo.Repository;
+using MatoMemo.Repository.Sys;
+using MatoMemo.Services.Common;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Admin;
+namespace MatoMemo.Services.Admin;
 
 /// <summary>
 /// 管理者から特定のユーザーに対して個別通知を送信し、その記録を履歴に残すサービス

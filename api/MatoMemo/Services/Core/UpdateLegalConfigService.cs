@@ -1,9 +1,9 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Repository.Core;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Repository.Core;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Core;
+namespace MatoMemo.Services.Core;
 
 /// <summary>
 /// 管理者権限で法的文書（利用規約やポリシー等）を更新するサービス

@@ -1,9 +1,9 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Repository.App;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Repository.App;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Public;
+namespace MatoMemo.Services.Public;
 
 /// <summary>非公開（クローズ）のまとめを一般公開にするサービス</summary>
 public class OpenArchiveService(UserContext userContext, ArchivePubRepository archivePubRepo) : _BaseService(userContext)

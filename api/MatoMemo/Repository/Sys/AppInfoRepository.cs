@@ -1,7 +1,7 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Models;
+﻿using MatoMemo.Common;
+using MatoMemo.Models;
 
-namespace LittleTripMemo.Repository.Sys;
+namespace MatoMemo.Repository.Sys;
 
 public class AppInfoRepository(ITransactionProvider p, ILogger<AppInfoRepository> l, UserContext u)
     : _BaseRepository(p, l, u)

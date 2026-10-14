@@ -1,7 +1,7 @@
-﻿using LittleTripMemo.Models;
-using LittleTripMemo.Common;
+﻿using MatoMemo.Models;
+using MatoMemo.Common;
 
-namespace LittleTripMemo.Repository.App;
+namespace MatoMemo.Repository.App;
 
 public class ArchivePubRepository : _BaseRepository
 {

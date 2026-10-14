@@ -1,12 +1,12 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.JWT;
-using LittleTripMemo.Models;
-using LittleTripMemo.Repository;
+﻿using MatoMemo.Common;
+using MatoMemo.JWT;
+using MatoMemo.Models;
+using MatoMemo.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace LittleTripMemo.Controllers;
+namespace MatoMemo.Controllers;
 
 [ApiController]
 public abstract class _BaseController(

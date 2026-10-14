@@ -2,9 +2,9 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using LittleTripMemo.Common;
+using MatoMemo.Common;
 
-namespace LittleTripMemo.JWT;
+namespace MatoMemo.JWT;
 
 public class JwtMiddleware(RequestDelegate next, IConfiguration configuration)
 {

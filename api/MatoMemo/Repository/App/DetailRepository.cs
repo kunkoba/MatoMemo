@@ -1,8 +1,8 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Models;
+﻿using MatoMemo.Common;
+using MatoMemo.Models;
 using Npgsql;
 
-namespace LittleTripMemo.Repository.App;
+namespace MatoMemo.Repository.App;
 
 /// <summary>
 /// 旅の詳細履歴（t_memo_detail_n）用リポジトリ。

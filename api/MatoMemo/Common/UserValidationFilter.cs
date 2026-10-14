@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
+using MatoMemo.Common;
+using MatoMemo.Exceptions;
 
-namespace LittleTripMemo.Common;
+namespace MatoMemo.Common;
 
 /// <summary>
 /// 全リクエストの入力モデル（ILoginUserRequest実装クラス）と

@@ -1,4 +1,4 @@
-﻿namespace LittleTripMemo.Common;
+﻿namespace MatoMemo.Common;
 
 // 料金プラン・権限
 public enum PlanType

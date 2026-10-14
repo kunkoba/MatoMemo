@@ -1,16 +1,16 @@
-﻿using LittleTripMemo.Repository;
-using LittleTripMemo.Repository.App;
-using LittleTripMemo.Repository.Batch;
-using LittleTripMemo.Repository.Core;
-using LittleTripMemo.Repository.Sys;
-using LittleTripMemo.Services.Account;
-using LittleTripMemo.Services.Admin;
-using LittleTripMemo.Services.Core;
-using LittleTripMemo.Services.Private;
-using LittleTripMemo.Services.Public;
-using LittleTripMemo.Services.Sys;
+﻿using MatoMemo.Repository;
+using MatoMemo.Repository.App;
+using MatoMemo.Repository.Batch;
+using MatoMemo.Repository.Core;
+using MatoMemo.Repository.Sys;
+using MatoMemo.Services.Account;
+using MatoMemo.Services.Admin;
+using MatoMemo.Services.Core;
+using MatoMemo.Services.Private;
+using MatoMemo.Services.Public;
+using MatoMemo.Services.Sys;
 
-namespace LittleTripMemo.Extensions;
+namespace MatoMemo.Extensions;
 
 public static class ServiceExtensions
 {

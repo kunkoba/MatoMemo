@@ -1,9 +1,9 @@
-﻿using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Repository.Sys;
+﻿using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Repository.Sys;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Sys;
+namespace MatoMemo.Services.Sys;
 
 /// <summary>自分の通報の削除</summary>
 public class DeleteMyReportService(UserContext user, SysReportRepository repo) : _BaseService(user)

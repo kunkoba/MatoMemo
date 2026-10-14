@@ -1,12 +1,12 @@
 ﻿
-using LittleTripMemo.Common;
-using LittleTripMemo.Exceptions;
-using LittleTripMemo.Repository;
-using LittleTripMemo.Repository.App;
-using LittleTripMemo.Services;
+using MatoMemo.Common;
+using MatoMemo.Exceptions;
+using MatoMemo.Repository;
+using MatoMemo.Repository.App;
+using MatoMemo.Services;
 using System.ComponentModel.DataAnnotations;
 
-namespace LittleTripMemo.Services.Public;
+namespace MatoMemo.Services.Public;
 
 /// <summary>
 /// 公開されているデータを非公開（論理削除）にするサービス。

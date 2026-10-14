@@ -1,4 +1,4 @@
-﻿namespace LittleTripMemo.Common
+﻿namespace MatoMemo.Common
 {
     public interface IAppRecord
     {

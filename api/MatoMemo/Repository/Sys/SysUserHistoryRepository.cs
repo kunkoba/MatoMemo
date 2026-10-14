@@ -1,7 +1,7 @@
-﻿using LittleTripMemo.Models;
-using LittleTripMemo.Common;
+﻿using MatoMemo.Models;
+using MatoMemo.Common;
 
-namespace LittleTripMemo.Repository.Sys;
+namespace MatoMemo.Repository.Sys;
 
 /// <summary>
 /// ユーザーの行動履歴（t_sys_user_histories）の保存・取得を担当するリポジトリ

@@ -1,9 +1,9 @@
 ﻿using Dapper;
-using LittleTripMemo.Common;
+using MatoMemo.Common;
 using System.Data;
 using System.Runtime.CompilerServices; // ★追加
 
-namespace LittleTripMemo.Repository;
+namespace MatoMemo.Repository;
 
 /// <summary>
 /// 全リポジトリの共通基底クラス。
