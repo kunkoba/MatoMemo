@@ -37,8 +37,10 @@ const Notice = {
         Show() {
             if (!this.el) {
                 // 地図内の専用ルートに生成して地図に内包
-                const mapLoadingRoot = document.getElementById('ui-map-loading-root') || document.getElementById('ui-map-id');
-                this.el = $Dom.GenerateTemplate("tpl-loading", mapLoadingRoot? mapLoadingRoot.id : "ui-template-root");
+                // const mapLoadingRoot = document.getElementById('ui-map-loading-root') || document.getElementById('ui-map-id');
+                // this.el = $Dom.GenerateTemplate("tpl-loading", mapLoadingRoot? mapLoadingRoot.id : "ui-template-root");
+                const topRoot = document.getElementById('app-root') || document.getElementById('ui-template-root');
+                this.el = $Dom.GenerateTemplate("tpl-loading", topRoot? topRoot.id : "ui-template-root");
             }
             this.el.classList.remove("opacity-0", "pointer-events-none");
             this.el.classList.add("pointer-events-auto");
