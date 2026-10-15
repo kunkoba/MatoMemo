@@ -205,23 +205,33 @@ const _BarCore = {
         $Marker.RefreshPointMarker();
     },
     // まとめタイトル更新
+        // まとめタイトル更新
     changeTitle(title) {
         const arc = $Data.Store.GetArchive();
         const icon = $Dom.QuerySelector('.js-icon', this.btnArchiveTitle);
         const text = $Dom.QuerySelector('.js-text', this.btnArchiveTitle);
+        const badge = $Dom.QuerySelector('.js-badge', this.btnArchiveTitle);
         if (text) text.textContent = title;
         if (!arc) return;
-        this.btnArchiveTitle.classList.remove("bg-black/50", "bg-brand-5", "bg-slate-800/50");
+        this.btnArchiveTitle.classList.remove("bg-black/50", "bg-brand-5", "bg-slate-800/50", "bg-orange-500/80");
+
         if (!arc.is_public) {
             this.btnArchiveTitle.classList.add("bg-black/50");
             if (icon) icon.textContent = "🔒";
+            if (badge) $Dom.ToggleShow(badge, false);
         } else {
             if (arc.closed_flg) {
                 this.btnArchiveTitle.classList.add("bg-slate-800/50");
                 if (icon) icon.textContent = "－";
+                if (badge) $Dom.ToggleShow(badge, false);
+            } else if (arc.limited_open_flg) {
+                this.btnArchiveTitle.classList.add("bg-brand-4");
+                if (icon) icon.textContent = "〇";
+                if (badge) $Dom.ToggleShow(badge, true);
             } else {
                 this.btnArchiveTitle.classList.add("bg-brand-5");
                 if (icon) icon.textContent = "◎";
+                if (badge) $Dom.ToggleShow(badge, false);
             }
         }
     },

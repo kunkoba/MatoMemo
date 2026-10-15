@@ -3,7 +3,8 @@ const _AppCore = {
     settingsKey: "matomemo_settings",
     jwtKey: "matomemo_jwt", // ① matomemo_jwt フィールドを追加
     // ビューポート制御（キーボード対策）とUI初期化を行う
-    async setupShell() {
+    // Base: データに依存しない基盤UIの初期化
+    async setupBase() {
         // ビューポート制御（キーボード対策）
         if (window.visualViewport) {
             const root = document.getElementById('app-root');
@@ -24,6 +25,10 @@ const _AppCore = {
             const check = () => document.getElementById('tpl-dialog-error') ? resolve() : setTimeout(check, 30);
             check();
         });
+    },
+    // 互換用：旧名称
+    async setupShell() {
+        return this.setupBase();
     },
     // localStorageの設定復元（認証情報は復元しない版）
     async restoreLocal(AppData) {
@@ -277,26 +282,30 @@ const AppManager = {
     async Init() {
         console.log("★$Const.APP_INFO.VERSION", $Const.APP_INFO.VERSION);
         try {
+            // Phase 1: 基盤初期化＆ローカル復元（通信なし・最速で終わる）
             {
-                await _AppCore.setupShell();
+                await _AppCore.setupBase();
                 $Auth.Init();
                 await _AppCore.restoreLocal(this.AppData);
                 // 起動時は必ずCに聞く。Aは見ない
                 this.AppData.Context.IsLoggedIn = false;
-                if (navigator.onLine) {
-                    const ok = await _AppCore.syncActivityLog();
-                    if (ok && this.AppData.Context.IsLoggedIn) {
-                        await $Data.Access.GetSystemInfo();
-                    }
-                }
                 _AppCore.ensureUserInfo(this.AppData);
             }
+            // Phase 2: Base UIの先行描画（データ待ちせず画面を出す）
             {
+                // Base: データに依存しないUIは先に描画（画面が固まらないように）
                 this.ChangeTheme(this.AppData.Owner.Theme || $UI.UI_THEME.BLUE);
                 this.ChangeMapStyle(this.AppData.Owner.MapStyle || $Map.MAP_STYLE.STANDARD, this.AppData.Owner.IsMapGrayscale);
                 this.ChangeFontSize(this.AppData.Owner.FontSize);
-                await this.RefreshScreen();
+                // Baseの画面モード反映（通知バー、バーの殻、詳細フレームの殻）
+                if ($UI.ChangeScreenModeBase) {
+                    $UI.ChangeScreenModeBase();
+                } else {
+                    $UI.ChangeScreenMode();
+                }
+                $Marker.ChangeScreenMode();
             }
+            // Phase 3: 常駐監視の開始（GPS・オフライン・同期ポーリング）
             {
                 _AppCore.initPollingTasks();
                 if (!navigator.onLine || !this.AppData.Context.IsNetOnline) {
@@ -307,12 +316,20 @@ const AppManager = {
                 }
             }
             _AppCore.registerSW();
+            // BaseWithData: 重い通信は後追いで非同期実行（awaitしない）
+            _AppCore.syncActivityLog().then(async (ok) => {
+                if (ok && this.AppData.Context.IsLoggedIn) {
+                    await $Data.Access.GetSystemInfo();
+                    _AppCore.ensureUserInfo(this.AppData);
+                }
+            });
+            this.RefreshScreenBaseWithData();
             _AppCore.refreshLegalConfigs();
         } catch (e) {
             $Err.Handle(e, 'fatal');
         }
     },
-    // 現在のスクリーンモードに応じてデータを取得し直し、UI・マーカーを更新する
+    // 現在のスクリーンモードに応じてデータを取得し直し、UI・マーカーを更新する（互換用：Base + BaseWithData を両方呼ぶ）
     async RefreshScreen() {
         $Data.Clear();
         const mode = this.AppData.Context.ScreenMode;
@@ -347,8 +364,62 @@ const AppManager = {
         } else if (mode === $Const.SCREEN_MODE.SEARCH) {
             $Marker.Clear();
         }
-        $UI.ChangeScreenMode();
+        // 互換：旧UIマネージャでも動くようにフォールバック
+        if ($UI.ChangeScreenModeBase && $UI.ChangeScreenModeBaseWithData) {
+            $UI.ChangeScreenModeBase();
+            $UI.ChangeScreenModeBaseWithData();
+        } else {
+            $UI.ChangeScreenMode();
+        }
         $Marker.ChangeScreenMode();
+    },
+    // 現在のスクリーンモードに応じてデータを取得し直し、UI・マーカーを更新する（BaseWithData版：重い通信だけ）
+    async RefreshScreenBaseWithData() {
+        $Notice.Loading.Show();
+        try {
+            $Data.Clear();
+            const mode = this.AppData.Context.ScreenMode;
+            const aid = this.AppData.Context.TargetArchiveId;
+            if (mode === $Const.SCREEN_MODE.CREATE && this.AppData.Context.IsLoggedIn) {
+                // 作成モード：未マージの地点メモをサーバ・ローカルDB両方から取得
+                await $Data.Access.GetUnMergeDetails({});
+                (await $LocalDb.Detail.GetAll()).forEach(d => $Data.Store.UpdateDetail(d));
+            } else if (mode === $Const.SCREEN_MODE.ARCHIVE && this.AppData.Context.IsLoggedIn) {
+                if (await $Data.Access.GetArchiveDetails({ archive_id: aid })) {
+                    // 取得成功時にタイトルを反映
+                    $Bar.ChangeTitle($Data.Store.GetArchive()?.title || "");
+                } else {
+                    this.AppData.Context.ScreenMode = $Const.SCREEN_MODE.CREATE;
+                }
+            } else if (mode === $Const.SCREEN_MODE.ARCHIVE_PUB && aid) {
+                // 公開アーカイブモード：取得成功時はリアクションもローカルDBへ反映
+                if (await $Data.Access.GetArchiveDetailsPub({ archive_id: aid })) {
+                    if (this.AppData.Context.IsLoggedIn) {
+                        await $Data.LocalDb.SetReactionsToLocalDb();
+                    }
+                    // 取得成功時にタイトルを反映
+                    $Bar.ChangeTitle($Data.Store.GetArchive()?.title || "");
+                } else {
+                    // ★未ログインならログイン要求
+                    if (!this.AppData.Context.IsLoggedIn) {
+                        $Dialog.ShowLoginDialog();
+                        return;
+                    }
+                    this.AppData.Context.ScreenMode = $Const.SCREEN_MODE.CREATE;
+                }
+            } else if (mode === $Const.SCREEN_MODE.SEARCH) {
+                $Marker.Clear();
+            }
+            // BaseWithDataだけ更新（Baseは既に描画済み）
+            if ($UI.ChangeScreenModeBaseWithData) {
+                $UI.ChangeScreenModeBaseWithData();
+            } else if ($UI.ChangeScreenMode) {
+                $UI.ChangeScreenMode();
+            }
+            $Marker.ChangeScreenMode();
+        } finally {
+            $Notice.Loading.Hide();
+        }
     },
     // サーバ通信エラー処理（画面を中断せず通知のみに留める）
     async HandleServerFailure(response, isTimeout = false) {

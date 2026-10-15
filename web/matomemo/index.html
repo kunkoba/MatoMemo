@@ -414,10 +414,11 @@
                 <!-- 【最下部ベースエリア】タイトル・移動バー -->
                 <div id="bot-dynamic-area" class="w-full flex flex-col items-center gap-4">
                     <!-- まとめタイトル -->
-                    <button id="ui-archive-title" 
-                        class="hidden max-w-[95%] h-12 py-1 px-5 flex items-center justify-center gap-2 bg-slate-800/50 backdrop-blur-sm rounded-full text-white shadow-md pointer-events-auto active:scale-95 transition-all">
+                    <button id="ui-archive-title"
+                        class="hidden max-w-[95%] h-12 py-1 px-5 flex items-center justify-center gap-2 bg-slate-800/50 backdrop-blur-sm rounded-full text-white shadow-md pointer-events-auto active:scale-95 transition-all relative">
                         <span class="js-icon shrink-0 kb-icon-emoji-sm">🔒</span>
                         <span class="js-text truncate text-[1rem] font-bold">タイトル</span>
+                        <span class="js-badge hidden absolute p-2 -top-3 -right-3 bg-amber-100 text-amber-600 rounded-full font-black leading-none shadow-md">限定</span>
                     </button>
                     <!-- 移動ナビゲーションバー -->
                     <div id="bot-group-move" class="hidden h-12 w-[90%] max-w-[500px] flex items-center justify-between bg-black/70 backdrop-blur-md rounded-full px-6 py-1 shadow-lg pointer-events-auto">

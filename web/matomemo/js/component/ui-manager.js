@@ -14,7 +14,22 @@ const _UI_Core = {
 		if (this.noticeText) {
 			this.noticeText.textContent = word;
 		}
-	}
+	},
+    // 通知バーの文言取得（Base用に分離）
+    getNoticeTextByMode(mode){
+        switch (mode) {
+            case $Const.SCREEN_MODE.CREATE:
+                return "「＋」ボタンで地点メモを作成することができます";
+            case $Const.SCREEN_MODE.ARCHIVE:
+                return "画面下部の「操作ボタン」で各メモを移動できます";
+            case $Const.SCREEN_MODE.ARCHIVE_PUB:
+                return "公開データは「Open」にしないと公開されません";
+            case $Const.SCREEN_MODE.SEARCH:
+                return "画面範囲内のメモを検索できます";
+            default:
+                return "";
+        }
+    }
 };
 
 // 窓口
@@ -38,7 +53,7 @@ const UI_Manager = {
             const btn = $Dom.GenerateTemplate("tpl-link-button", "ui-template-root");
             // 1. アイコンDOMの注入
             const iconContainer = $Dom.QuerySelector('.js-icon-container', btn);
-            iconContainer.innerHTML = ""; 
+            iconContainer.innerHTML = "";
             iconContainer.appendChild(iconDom);
             // 2. URLテキストの注入
             const urlText = $Dom.QuerySelector('.js-url-text', btn);
@@ -56,7 +71,7 @@ const UI_Manager = {
                     url: safeUrl,
                     onOpen: () => {
                         // 直接開く選択時のみ、オーナー以外ならクリック集計を送信
-                        if (params && !isOwner) $Data.Access.AddClick(params);
+                        if (params &&!isOwner) $Data.Access.AddClick(params);
                     }
                 });
             };
@@ -69,9 +84,9 @@ const UI_Manager = {
 			if (!parentEl) return;
 			parentEl.innerHTML = "";	// 消しちゃダメ
 			const type = options.type || 'button'; // 'button' or 'badge'
-			const isOwner = !!options.isOwner;
+			const isOwner =!!options.isOwner;
 			// テンプレートの生成
-			const tplId = (type === 'button') ? 'tpl-user-button' : 'tpl-user-badge';
+			const tplId = (type === 'button')? 'tpl-user-button' : 'tpl-user-badge';
 			const el = $Dom.GenerateTemplate(tplId, "ui-template-root");
 			// データの流し込み
 			$Dom.QuerySelector(".js-icon", el).textContent = profile.icon || "👤";
@@ -81,7 +96,7 @@ const UI_Manager = {
 				el.onclick = async (e) => {
 					e.stopPropagation();
                     // 匿名かつ自分以外（管理者以外）なら中断
-                    if (profile.anonymous_flg && !isOwner && $App.AppData.Owner.Plan !== "Admin") {
+                    if (profile.anonymous_flg &&!isOwner && $App.AppData.Owner.Plan!== "Admin") {
                         $Notice.Warn("このユーザーは情報を公開していません");
                         return;
                     }
@@ -104,10 +119,10 @@ const UI_Manager = {
 			// parentEl.innerHTML = "";	// 消しちゃダメ
 			let badge = parentEl.querySelector('.js-unread-badge');
 			// const isShow = count > 0;
-			if (isShow && !badge) {
+			if (isShow &&!badge) {
 				parentEl.classList.add('relative');
 				badge = document.createElement('span');
-				badge.className = 'js-unread-badge absolute bg-red-500 text-white font-bold flex items-center justify-center pointer-events-none  whitespace-nowrap ';
+				badge.className = 'js-unread-badge absolute bg-red-500 text-white font-bold flex items-center justify-center pointer-events-none whitespace-nowrap ';
 				if (type === 'dot') {
 					badge.className += 'w-3 h-3 rounded-full top-0 right-0 border-2 border-brand-1';
 				} else {
@@ -120,7 +135,7 @@ const UI_Manager = {
 		},
 		// 日付ラベルを生成
 		MemoDateFormatter(parentEl, detail, size = 'sm') {
-			if (!parentEl || !detail) return;
+			if (!parentEl ||!detail) return;
 			parentEl.innerHTML = "";
 			const el = $Dom.GenerateTemplate("tpl-date-label", "ui-template-root");
 			// 1. デザイン設定（smなら小さめ、lgなら大きめ）
@@ -131,14 +146,14 @@ const UI_Manager = {
 				$Dom.QuerySelector(".js-day-badge", el).classList.add('w-20', 'h-10', 'text-[1.2rem]');
 			} else {
 				el.classList.add('gap-4');
-				$Dom.QuerySelector(".js-main-text", el).classList.add('text-[1rem]');
-				$Dom.QuerySelector(".js-time-text", el).classList.add('text-[1rem]');
+				$Dom.QuerySelector(".js-main-text", el).classList.add('text-');
+				$Dom.QuerySelector(".js-time-text", el).classList.add('text-');
 				$Dom.QuerySelector(".js-day-badge", el).classList.add('w-16', 'h-8', 'text-[0.9rem]');
 			}
 			// 2. 「日付を隠す（マスクする）」かどうかの判定
 			// 条件：【他人のデータ】かつ【公開まとめモード】の時だけ隠す
 			const isPublicArchive = ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.ARCHIVE_PUB);
-			const needsMask = !detail.is_owner && isPublicArchive;
+			const needsMask =!detail.is_owner && isPublicArchive;
 			let dateText = detail.memo_date; // 基本は実日付
 			if (needsMask && dateText) {
 				// 隠す必要がある場合（他人の公開データ）
@@ -146,7 +161,7 @@ const UI_Manager = {
 				if (detail.display_day > 1) {
 					dateText = `${detail.display_day} Day`; // 2日目以降は「2 Day」とだけ表示
 				} else {
-					dateText = (detail.display_day === 1) ? `${mask} 1 Day` : mask;
+					dateText = (detail.display_day === 1)? `${mask} 1 Day` : mask;
 				}
 			}
 			// 3. 画面への反映
@@ -177,43 +192,43 @@ const UI_Manager = {
 		this.ChangeTheme($App.AppData.Owner.Theme);
 		// アイコンバー
 		$Bar.Init();
-		$Bar.Init();
 		// 詳細画面
 		$DetailFrame.Init();
 		$DetailContent.Init();
 		// 地図
 		$Map.Init();
 	},
-    // 画面モード変更時
-    ChangeScreenMode(){
+    // 画面モード変更時（Base：データに依存しないもの）
+    ChangeScreenModeBase(){
 		const mode = $App.AppData.Context.ScreenMode;
         // 通知バー
-        switch (mode) {
-            case $Const.SCREEN_MODE.CREATE:
-                $UI.UpdateNoticeBarText("「＋」ボタンで地点メモを作成することができます");
-                break;
-            case $Const.SCREEN_MODE.ARCHIVE:
-                $UI.UpdateNoticeBarText("画面下部の「操作ボタン」で各メモを移動できます");
-                break;
-            case $Const.SCREEN_MODE.ARCHIVE_PUB:
-                $UI.UpdateNoticeBarText("公開データは「Open」にしないと公開されません");
-                break;
-            case $Const.SCREEN_MODE.SEARCH:
-                $UI.UpdateNoticeBarText("画面範囲内のメモを検索できます");
-                break;
-            default:
-				$Dialog.ShowLoginDialog();
-                return;
+        const text = _UI_Core.getNoticeTextByMode(mode);
+        if (text) {
+            $UI.UpdateNoticeBarText(text);
+        } else {
+			$Dialog.ShowLoginDialog();
+            return;
         }
 		// アイコンバー
 		$Bar.ChangeScreenMode();
-		$Bar.ChangeScreenMode();
 		// 詳細画面
 		$DetailFrame.ChangeScreenMode();
+    },
+    // 画面モード変更時（BaseWithData：データに依存するもの）
+    ChangeScreenModeBaseWithData(){
+		const mode = $App.AppData.Context.ScreenMode;
+		// 詳細画面
 		$DetailContent.ChangeScreenMode();
 		// 地図
 		// $Marker.Clear();
-		if (mode != $Const.SCREEN_MODE.SEARCH) {$Marker.RefreshPointMarker();}
+		if (mode!= $Const.SCREEN_MODE.SEARCH) {$Marker.RefreshPointMarker();}
+    },
+    // 画面モード変更時（互換用：全部）
+    ChangeScreenMode(){
+        // Base（データ不要）
+        this.ChangeScreenModeBase();
+        // BaseWithData（データ必要）
+        this.ChangeScreenModeBaseWithData();
 	},
 	// カラーテーマの変更
 	ChangeTheme(theme){
@@ -248,17 +263,17 @@ const UI_Manager = {
             // ONのスタイル（発光する緑）
             btn.classList.remove('bg-slate-700', 'text-slate-600', 'border-slate-600', 'shadow-md');
             btn.classList.add(
-                'bg-emerald-500', 
-                'text-white', 
-                'border-emerald-400', 
+                'bg-emerald-500',
+                'text-white',
+                'border-emerald-400',
                 'shadow-[0_0_20px_rgba(16,185,129,0.8)]'
             );
         } else {
             // OFFのスタイル（沈んだダークグレー）
             btn.classList.remove(
-                'bg-emerald-500', 
-                'text-white', 
-                'border-emerald-400', 
+                'bg-emerald-500',
+                'text-white',
+                'border-emerald-400',
                 'shadow-[0_0_20px_rgba(16,185,129,0.8)]'
             );
             btn.classList.add('bg-slate-700', 'text-slate-600', 'border-slate-600', 'shadow-md');

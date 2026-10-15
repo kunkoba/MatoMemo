@@ -59,6 +59,7 @@ public class PublishArchiveService(
                 memo = archive.memo,
                 link_url = archive.link_url,
                 currency_unit = archive.currency_unit,
+                category = archive.category,
             };
             await archivePubRepo.RestoreArchiveAsync(pubArchive);
 

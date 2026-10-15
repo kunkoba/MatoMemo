@@ -84,9 +84,9 @@ public class ArchivePubRepository : _BaseRepository
     {
         const string sql = @"
             INSERT INTO t_memo_archive_pub (
-                archive_id, user_id, title, memo, link_url, currency_unit
+                archive_id, user_id, title, memo, link_url, currency_unit, closed_flg, category
             ) VALUES (
-                @archive_id, @user_id, @title, @memo, @link_url, @currency_unit
+                @archive_id, @user_id, @title, @memo, @link_url, @currency_unit, TRUE, @category
             )
             ON CONFLICT (archive_id) DO UPDATE SET
                 del_flg = false, 

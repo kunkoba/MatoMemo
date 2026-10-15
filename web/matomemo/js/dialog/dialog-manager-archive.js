@@ -2,14 +2,12 @@ export default {
     // 状態変更の定型処理ヘルパー
     async _execStatusChange(methodName, params, confirmTitle, 
         confirmMsg, successMsg, nextScreenMode = null, onUpdateStore = null) {
-        // Promiseで結果を待つ
         const isOk = await this.ShowConfirm({
             title: confirmTitle,
             help: "",
             message: confirmMsg
         });
-        if (!isOk) return; // キャンセルならここで終了
-        // OKだった場合のAPI実行処理
+        if (!isOk) return;
         await $Warn.CatchAsync(async () => {
             const isSuccess = await $Data.Access[methodName](params);
             if (!isSuccess) return;
@@ -19,6 +17,8 @@ export default {
             if (nextScreenMode) {
                 $App.AppData.Context.ScreenMode = nextScreenMode;
                 await $App.RefreshScreen();
+                // ★ Refreshで潰されるのでもう一回
+                if (onUpdateStore) onUpdateStore();
             } else {
                 const archive = $Data.Store.GetArchive();
                 if (archive) $Bar.ChangeTitle(archive.title);
@@ -609,10 +609,10 @@ export default {
         }
         const statusItems = [
             { id: 1, label: "✖ まとめ解体" },
-            { id: 2, label: "🔒 非公開中" },
-            { id: 3, label: "－ 公開準備中" },
-            { id: 4, label: "〇 限定公開中" },
-            { id: 5, label: "◎ 完全公開中" }
+            { id: 2, label: "🔒 非公開" },
+            { id: 3, label: "－ 公開準備" },
+            { id: 4, label: "〇 限定公開" },
+            { id: 5, label: "◎ 完全公開" }
         ];
         const transitionMap = {
             2: [1, 3],
@@ -643,7 +643,7 @@ export default {
                             this._execStatusChange('UnpublishArchive', p, 'PRIVATE', 
                                 '公開データを削除しますか？', 
                                 '削除しました', $Const.SCREEN_MODE.ARCHIVE, 
-                                () => $Data.Store.UpdateArchive({ is_public: false, closed_flg: false })
+                                () => $Data.Store.UpdateArchive({ is_public: false, closed_flg: false, limited_open_flg: false })
                             );
                             break;
                         case 3:
@@ -653,16 +653,13 @@ export default {
                                 this._execStatusChange('CloseArchive', p, 'CLOSE', 
                                     '公開を一時停止し、準備中に戻しますか？', 
                                     '変更しました', null, 
-                                    () => $Data.Store.UpdateArchive({ closed_flg: true })
+                                    () => $Data.Store.UpdateArchive({ closed_flg: true, limited_open_flg: false })
                                 );
                             } else {
                                 // B. 新たに「公開化」する場合の判定
                                 const status = arc.has_public_status;
                                 const PDS = $Const.PUBLIC_DATA_STATUS;
                                 // ① 有効な公開データが既にある場合は遮断
-                                // if (status === PDS.OPEN || status === PDS.CLOSE) {
-                                //     return $Notice.Warn("既に有効な公開データが存在するため、公開データは作れません。");
-                                // }
                                 if (status === PDS.OPEN || status === PDS.CLOSE) {
                                     // 警告の代わりに確認ダイアログを表示
                                     const isJump = await this.ShowConfirm({
@@ -696,7 +693,7 @@ export default {
                                 this._execStatusChange('PublishArchive', params, 'PUBLISH', 
                                     confirmMsg, 
                                     '完了', $Const.SCREEN_MODE.ARCHIVE_PUB, 
-                                    () => $Data.Store.UpdateArchive({ is_public: true, closed_flg: true })
+                                    () => $Data.Store.UpdateArchive({ is_public: true, closed_flg: true, limited_open_flg: false })
                                 );
                             }
                             break;
@@ -704,8 +701,7 @@ export default {
                             this._execStatusChange('OpenLimitedArchive', p, 'LIMITED', 
                                 '限定公開に設定しますか？', 
                                 '設定しました', null, () => {
-                                    if(arc.closed_flg) $Data.Store.UpdateArchive({ closed_flg: false });
-                                    $Data.Store.UpdateArchive({ is_public: true, limited_open_flg: true });
+                                    $Data.Store.UpdateArchive({ is_public: true, closed_flg: false, limited_open_flg: true });
                                 }
                             );
                             break;
@@ -720,13 +716,13 @@ export default {
                                 this._execStatusChange('OpenArchive', p, 'OPEN', 
                                     '限定公開を解除し、全体公開にしますか？', 
                                     '公開しました', null, 
-                                    () => $Data.Store.UpdateArchive({ limited_open_flg: false })
+                                    () => $Data.Store.UpdateArchive({ is_public: true, closed_flg: false, limited_open_flg: false })
                                 );
                             } else {
                                 this._execStatusChange('OpenArchive', p, 'OPEN', 
                                     '全体に公開しますか？', 
                                     '公開しました', null, 
-                                    () => $Data.Store.UpdateArchive({ closed_flg: false, limited_open_flg: false })
+                                    () => $Data.Store.UpdateArchive({ is_public: true, closed_flg: false, limited_open_flg: false })
                                 );
                             }
                             break;
