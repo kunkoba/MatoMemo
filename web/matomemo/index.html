@@ -71,18 +71,17 @@
             <div class="h-8 bg-black/20 flex items-center justify-center w-full">
                 <div id="notice-bar-text" class="text-[0.9rem] font-bold text-white"></div>
             </div>
-            <!-- マーカー切替スイッチ -->
-            <div class="pointer-events-none w-full flex p-2 justify-between">
-                <!-- マーカー切替 -->
+            <!-- バージョン、アイコン切替 -->
+            <div class="pointer-events-none w-full flex p-2 justify-between items-start">
+                <!-- 左：バージョン -->
+                <div id="app-version-label" class="pointer-events-none bg-white/50 backdrop-blur-sm px-2.5 py-1 rounded-full text-[10px] font-bold leading-none shadow-sm">
+                    AppVer: X.X.X
+                </div>
+
+                <!-- 右：アイコン切替 -->
                 <div id="ui-marker-mode-switch" class="pointer-events-auto shadow-md w-fit h-8 flex overflow-hidden bg-white/90 backdrop-blur-sm rounded-full">
-                    <button id="btn-marker-mode-emoji" data-mode="emoji" 
-                        class="px-4 transition-colors bg-brand-3 text-[0.8rem] flex items-center justify-center font-bold">
-                        シンボル
-                    </button>
-                    <button id="btn-marker-mode-feel" data-mode="feel" 
-                        class="px-4 transition-colors bg-brand-0 text-[0.8rem] flex items-center justify-center font-bold">
-                        表情
-                    </button>
+                    <button id="btn-marker-mode-emoji" data-mode="emoji" class="px-4 transition-colors bg-brand-3 text-[0.8rem] flex items-center justify-center font-bold">シンボル</button>
+                    <button id="btn-marker-mode-feel" data-mode="feel" class="px-4 transition-colors bg-brand-0 text-[0.8rem] flex items-center justify-center font-bold">表情</button>
                 </div>
             </div>
         </div>
@@ -469,10 +468,6 @@
                     class="p-4 pb-10 leading-[1.8] text-[0.9rem] text-slate-900 whitespace-pre-wrap max-h-[70vh] min-h-[20vh] overflow-y-auto bg-slate-50">
                 </div>
             </div>
-        </div>
-        <!-- アプリバージョン -->
-        <div id="app-version-label" style="background: rgba(255,255,255,0.85); padding: 2px 6px; font-size: 10px; line-height: 1.4; position: absolute; bottom: 0; left: 0; z-index: 800; pointer-events: none;">
-            AppVer: X.X.X
         </div>
     </div>
 </div>

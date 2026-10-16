@@ -1,13 +1,4 @@
 /* 画面・アプリ共通設定 */
-#app-root{
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: env(safe-area-inset-bottom, 0px) !important;
-  /* iOS 16+ならこっちの方が安定 */
-  /* height: calc(100dvh - env(safe-area-inset-bottom, 0px)); */
-}
 
 /* テーマ定義：レベル間の差を抑えた配色 */
 :root[data-theme='blue'] {
