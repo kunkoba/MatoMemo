@@ -103,6 +103,7 @@ const _AppCore = {
                 $Notice.Offline.Show("インターネットに接続できません");
             } else if (!$App.AppData.Context.IsNetOnline && isNowNetOnline) {
                 $App.AppData.Context.IsNetOnline = true;
+                $Notice.Offline.Hide();
             }
         }, checkSec);
         $Polling.Add($Polling.TASKS.GPS_FOLLOW, () => $Marker.RefreshCurrentLocation(), $App.AppData.Owner.GpsTrackingSec || 60);

@@ -77,7 +77,7 @@ const _MapCore = {
     _generateMap(){
         this._map = L.map(this.root, {
             zoomControl: false,
-            attributionControl: false,
+            attributionControl: true,
             minZoom: $Const.MAP_CONFIG.MIN_ZOOM,
             maxZoom: $Const.MAP_CONFIG.MAX_ZOOM,
         }).setView(this.currentPoint, $Const.MAP_CONFIG.DEFAULT_ZOOM);
@@ -96,7 +96,13 @@ const _MapCore = {
     setMapStyle(style, isGray) {
         if (!style?.url) return;
         if (this.currentTileLayer) this._map.removeLayer(this.currentTileLayer);
-        this.currentTileLayer = L.tileLayer(style.url, { maxZoom: 18 }).addTo(this._map);
+        // this.currentTileLayer = L.tileLayer(style.url, { maxZoom: 18 }).addTo(this._map);
+        this.currentTileLayer = L.tileLayer(style.url, 
+            { 
+                maxZoom: style.maxZoom ?? 18, 
+                attribution: style.attribution ?? '' 
+            }
+        ).addTo(this._map);
         this.root.classList.toggle('map-grayscale', isGray);
     },
     // 視点移動の実体
@@ -184,18 +190,22 @@ const MapController = {
             key: 'STANDARD',
             name: '標準（OSM）',
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            maxZoom: 18
+            maxZoom: 18,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         },
         LIGHT: {
             key: 'LIGHT',
             name: '白地図（Stadia Alidade Smooth）',
             url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
+            maxZoom: 18,
+            attribution: '&copy; Stadia Maps &copy; OpenMapTiles &copy; OpenStreetMap contributors'
         },
         PHOTO: {
             key: 'PHOTO',
             name: '航空写真（Esri）',
             url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            maxZoom: 18
+            maxZoom: 18,
+            attribution: 'Tiles &copy; Esri'
         },
         // 世界地形図（Esri）
         WORLD_TOPO: {
@@ -203,7 +213,7 @@ const MapController = {
             name: '世界地形図',
             url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
             maxZoom: 18,
-            attribution: 'Esri'
+            attribution: 'Tiles &copy; Esri'
         },
         GSI_PHOTO: {
             key: 'GSI_PHOTO',

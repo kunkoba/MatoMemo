@@ -279,8 +279,8 @@ const _BarCore = {
         const unreadN = $App.AppData.Context.UnreadNoticeCount || 0;
         const unreadM = $App.AppData.Context.UnreadMailCount || 0;
         const hasL = !!$App.AppData.Context.HasLegalUpdate;
-        // $UI.Generator.ApplyNewBadge(this.btnSysMenu, (unreadN + (hasL ? 1 : 0)) > 0, 'dot');
-        // $UI.Generator.ApplyNewBadge(this.btnUserMenu, unreadM > 0, 'dot');
+        const hasAny = (unreadN + unreadM + (hasL ? 1 : 0)) > 0;
+        $UI.Generator.ApplyNewBadge(this.btnMainToggle, hasAny, 'dot');
     },
     // ユーザアイコン更新
     updateUserIcon() {

@@ -416,7 +416,7 @@ window.$Util = {
         window.open(url, '_blank', 'noopener,noreferrer');
     },
     // 移動音を再生する
-    PlayMoveSound(typeId) {
+    PlayMoveSound_2(typeId) {
         const sound = Object.values($Const.MOVE_SOUND_TYPE).find(s => s.id === Number(typeId));
         if (!sound) return;
         // 再生中の音があれば停止してリセット
@@ -428,6 +428,44 @@ window.$Util = {
         audio.volume = $App.AppData.Owner.SoundVolume;
         this._currentAudio = audio; // インスタンスを保持
         audio.play().catch(e => console.warn("再生ブロック:", e));
+    },
+        // 移動音を再生する
+    PlayMoveSound(typeId, durationSec = null) {
+        const sound = Object.values($Const.MOVE_SOUND_TYPE).find(s => s.id === Number(typeId));
+        if (!sound) return;
+        // 再生中の音があれば停止してリセット
+        if (this._currentAudio) {
+            this._currentAudio.pause();
+            this._currentAudio.currentTime = 0;
+        }
+        const audio = new Audio(sound.file);
+        audio.volume = $App.AppData.Owner.SoundVolume;
+        this._currentAudio = audio; // インスタンスを保持
+        audio.play().catch(e => console.warn("再生ブロック:", e));
+        // 絵文字オーバーレイ表示
+        this.ShowMoveEmoji(sound.emoji, durationSec?? $Const.MAP_CONFIG.MOVE_ANIMATION_SEC);
+    },
+    // 移動絵文字を画面中央に表示
+    ShowMoveEmoji(emoji, durationSec = 2) {
+        if (!emoji) return;
+        let el = document.getElementById('move-emoji-overlay');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'move-emoji-overlay';
+            el.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] pointer-events-none select-none z-[9999] transition-opacity duration-300';
+            el.style.opacity = '0.5';
+            document.body.appendChild(el);
+        }
+        // 前回のタイマーをクリア
+        if (this._emojiTimer) clearTimeout(this._emojiTimer);
+        el.textContent = emoji;
+        el.style.opacity = '0.5';
+        el.classList.remove('hidden');
+        this._emojiTimer = setTimeout(() => {
+            el.style.opacity = '0';
+            // フェードアウト後に非表示
+            setTimeout(() => el.classList.add('hidden'), 300);
+        }, durationSec * 1000);
     },
     // アイコンファイル取得
     GetFeelIconPath(val) {

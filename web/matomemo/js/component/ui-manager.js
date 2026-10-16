@@ -15,21 +15,55 @@ const _UI_Core = {
 			this.noticeText.textContent = word;
 		}
 	},
-    // 通知バーの文言取得（Base用に分離）
-    getNoticeTextByMode(mode){
-        switch (mode) {
-            case $Const.SCREEN_MODE.CREATE:
-                return "「＋」ボタンで地点メモを作成することができます";
-            case $Const.SCREEN_MODE.ARCHIVE:
-                return "画面下部の「操作ボタン」で各メモを移動できます";
-            case $Const.SCREEN_MODE.ARCHIVE_PUB:
-                return "公開データは「Open」にしないと公開されません";
-            case $Const.SCREEN_MODE.SEARCH:
-                return "画面範囲内のメモを検索できます";
-            default:
-                return "";
-        }
-    }
+    // 通知バーの文言候補取得
+	getNoticeTextsByMode(mode){
+		switch (mode) {
+			case $Const.SCREEN_MODE.CREATE:
+				return [
+					"「地点メモをまとめる」でメモをまとめよう",
+					"左のバーとボタンで、地図の倍率を変更できます",
+					"右のボタンでメモのリストを表示できます",
+					"右のボタンでまとめのリストを表示できます",
+					"左上のボタンでアイコン切り替えられます",
+					"「＋」ボタンで新しいメモを作成できます",
+					"「利用端末の設定」でちょっと使いやすくなります",
+					"画面外クリックでも画面を閉じることができます",
+				];
+			case $Const.SCREEN_MODE.ARCHIVE:
+				// return [
+				// 	"下段の操作ボタンで各メモを移動できます",
+				// 	"「公開ステータス」を変えることで",
+				// ];
+			case $Const.SCREEN_MODE.ARCHIVE_PUB:
+				return [
+					"タイトルバーをクリックすると、まとめを編集できます",
+					"下段の操作ボタンで各メモを移動できます",
+					"リアクションを登録できます",
+					"「完全公開」にすると、範囲検索でヒットします",
+					"「公開準備」にすると、範囲検索でヒットしません",
+					"「限定公開」にすると、URLからしかアクセスできません",
+					"「ユーザ情報」からでも、まとめにアクセスできます",
+					"「QRコード」を発行することでシェアできます",
+				];
+			case $Const.SCREEN_MODE.SEARCH:
+				return [
+					"この画面の範囲内からメモを検索します",
+					"倍率を変えると広範囲から検索できます",
+					"指定した並び順の上位20件を取得します",
+					"「ワードで地点移動」から目的の場所に移動できます",
+					"「完全公開」のまとめだけがヒットします"
+				];
+			default:
+				return [];
+		}
+	},
+    // 通知バーの文言ランダム取得
+	getNoticeTextByMode(mode){
+		const list = this.getNoticeTextsByMode(mode);
+		if (list.length === 0) return "";
+		const idx = Math.floor(Math.random() * list.length);
+		return list[idx];
+	},
 };
 
 // 窓口

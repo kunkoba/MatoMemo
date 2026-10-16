@@ -24,10 +24,7 @@
     animation: dots 10s steps(1) infinite;
 }
 
-/* 著作権表記は非表示 */
-.leaflet-control-attribution {
-    display: none !important;
-}
+
 /* ポップアップ */
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
