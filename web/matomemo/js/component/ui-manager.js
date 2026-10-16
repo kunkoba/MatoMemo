@@ -2,9 +2,20 @@
 const _UI_Core = {
     // 初期化
     init() {
-		// 要素取得
 		this.noticeText = $Dom.GetElementById('notice-bar-text');
-    },
+		this.versionLabel = $Dom.GetElementById('app-version-label');
+		if (!this.versionLabel) {
+			const root = $Dom.GetElementById('app-root') || document.body;
+			this.versionLabel = document.createElement('div');
+			this.versionLabel.id = 'app-version-label';
+			this.versionLabel.style.cssText = 'background: rgba(255,255,255,0.85); padding: 2px 6px; font-size: 10px; line-height: 1.4; position: absolute; bottom: 0; left: 0; z-index: 800; pointer-events: none;';
+			root.appendChild(this.versionLabel);
+		}
+		this.versionLabel.textContent = `AppVer: ${$Const.APP_INFO.VERSION}`;
+	},
+	setAppVersion(v){ if(this.versionLabel) this.versionLabel.textContent = `AppVer: ${v}`; },
+	showAppVersion(){ if(this.versionLabel) this.versionLabel.style.display='block'; },
+	hideAppVersion(){ if(this.versionLabel) this.versionLabel.style.display='none'; },
 	// カラーテーマの変更
 	setTheme(theme){
         document.documentElement.setAttribute('data-theme', theme);
@@ -232,6 +243,9 @@ const UI_Manager = {
 		// 地図
 		$Map.Init();
 	},
+	SetAppVersion(v){ _UI_Core.setAppVersion(v); },
+	ShowAppVersion(){ _UI_Core.showAppVersion(); },
+	HideAppVersion(){ _UI_Core.hideAppVersion(); },
     // 画面モード変更時（Base：データに依存しないもの）
     ChangeScreenModeBase(){
 		const mode = $App.AppData.Context.ScreenMode;

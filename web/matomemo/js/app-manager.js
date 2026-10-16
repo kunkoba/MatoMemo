@@ -21,6 +21,8 @@ const _AppCore = {
         }
         // UI基盤初期化とテンプレート読込待機
         $UI.Init();
+        $UI.SetAppVersion($Const.APP_INFO.VERSION);
+        $UI.ShowAppVersion();
         await new Promise(resolve => {
             const check = () => document.getElementById('tpl-dialog-error') ? resolve() : setTimeout(check, 30);
             check();
