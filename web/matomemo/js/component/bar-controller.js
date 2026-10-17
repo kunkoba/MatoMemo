@@ -322,6 +322,33 @@ const BarController = {
             }
         });
     },
+    // 明細の参照/編集モードに応じたナビ切替（PC版の要望対応）
+    ToggleNavUIByDetailMode(isEdit) {
+        const mode = $App.AppData.Context.ScreenMode;
+        const isArchiveMode = (mode === $Const.SCREEN_MODE.ARCHIVE || mode === $Const.SCREEN_MODE.ARCHIVE_PUB);
+        const switchIds = ['ui-map-zoom-slider-root', 'ui-marker-mode-switch', 'ui-side-action-group'];
+        const navIds = ['ui-archive-title', 'bot-group-move'];
+        if (isEdit) {
+            // 編集モード：地図側は全て隠す
+            switchIds.forEach(id => { const el = document.getElementById(id); if (el) $Dom.ToggleShow(el, false); });
+            navIds.forEach(id => { const el = document.getElementById(id); if (el) $Dom.ToggleShow(el, false); });
+        } else {
+            // 参照モード：地図側を復活
+            switchIds.forEach(id => { const el = document.getElementById(id); if (el) $Dom.ToggleShow(el, true); });
+            navIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (id === 'bot-group-move' || id === 'ui-archive-title') {
+                    $Dom.ToggleShow(el, isArchiveMode);
+                } else {
+                    $Dom.ToggleShow(el, true);
+                }
+            });
+            if (isArchiveMode) {
+                $Dom.ToggleShow(document.getElementById('bot-group-move'), true);
+            }
+        }
+    },
     // Aグループ（スライダー・切替・アクション）の制御
     ToggleSwitches(isShow) {
         const targetIds = ['ui-map-zoom-slider-root', 'ui-marker-mode-switch', 'ui-side-action-group'];

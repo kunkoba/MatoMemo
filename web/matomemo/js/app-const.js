@@ -6,7 +6,7 @@ window.$Const = {
         DESCRIPTION: "「その日、その時、その場所の思い出」をひとまとめに！　旅の記録や日常の気づきを、地図と一緒に残せるアプリです。",
         DEVELOPER: "kunkoba",
         OFFICIAL_SITE: "https://hinekulemonstudio.web.app/",
-        VERSION: "1.4.3",
+        VERSION: "1.4.4",
         VERSION_DESCRIPTION: `
 メジャー.マイナー.パッチの形式で表されます。
 
@@ -39,7 +39,7 @@ window.$Const = {
     MAP_CONFIG: {
         MIN_ZOOM: 4,
         MAX_ZOOM: 18,
-        DEFAULT_ZOOM: 15,
+        DEFAULT_ZOOM: 16,
         MOVE_DEFAULT_SEC: 0.5,
         MOVE_ANIMATION_SEC: 2,
     },

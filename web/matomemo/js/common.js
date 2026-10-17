@@ -452,9 +452,13 @@ window.$Util = {
         if (!el) {
             el = document.createElement('div');
             el.id = 'move-emoji-overlay';
-            el.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] pointer-events-none select-none z-[9999] transition-opacity duration-300';
+            // el.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] pointer-events-none select-none z-[9999] transition-opacity duration-300';
+            // el.style.opacity = '0.5';
+            // document.body.appendChild(el);
+            el.className = 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] pointer-events-none select-none z-[9999] transition-opacity duration-300';
             el.style.opacity = '0.5';
-            document.body.appendChild(el);
+            const mapRoot = document.getElementById('app-root') || document.getElementById('ui-map-id');
+            mapRoot.appendChild(el);
         }
         // 前回のタイマーをクリア
         if (this._emojiTimer) clearTimeout(this._emojiTimer);

@@ -240,16 +240,26 @@ const _DetailFrameCore = {
         const isNew = (!data || !data.seq || data.seq == 0);
         const isEditMode = !this.btnSave.classList.contains("hidden");
         if (isNew) {
+            // 新規作成をキャンセル → 完全に閉じる → 地図側を復活
             this.toggleDetailPanel(false);
         } else if (isEditMode) {
+            // 編集キャンセル → 参照モードに戻る → 明細側を復活、地図側は出さない
             const currentData = $Data.Store.GetDetailByKey(data.archive_id, data.seq);
-            $DetailFrame.Open(currentData); 
+            $DetailFrame.Open(currentData);
+            // Open後に明細側移動を確実に表示、地図側は隠す
+            setTimeout(() => {
+                $Dom.ToggleShow(this.groupMove, true); // 明細側 |＜ ＜ ✕ ＞ ＞|
+                const botMove = document.getElementById('bot-group-move');
+                if (botMove) $Dom.ToggleShow(botMove, false); // 地図側 |＜ ＜ ● ＞ ＞| は隠す
+                // $Bar.ToggleSwitches(true);
+                $Bar.ToggleSwitches(false); // スライドバーは隠したまま
+                $Bar.ToggleNavUI(false);    // 地図側移動も隠したまま
+            }, 50);
+            return; // ← 追加。無条件のToggleNavUI(true)を実行させない
         } else {
+            // 参照モードの✕で閉じる → 完全に閉じる → 地図側を復活
             this.toggleDetailPanel(false);
         }
-        // UI表示切替
-        $Bar.ToggleSwitches(true);
-        $Bar.ToggleNavUI(true);
     },
     // 画面モード変更時
     changeScreenMode(){
@@ -276,20 +286,6 @@ const _DetailFrameCore = {
             default:
                 // どれにも当てはまらないとき
                 break;
-        }
-    },
-    // 移動して詳細画面表示
-    _moveAndRender_2(callback) {
-        // 1. マーカーのインデックス更新と地図移動
-        callback();
-        // 2. 新しいインデックスのデータを取得
-        const detail = $Marker.GetDataWithCurrentIndex();
-        // 3. コンテンツとリアクションを更新
-        $DetailContent.RenderDetail(detail);
-        this.renderReactions(detail);
-        // ★ SEARCHモードの場合、ジャンプボタンのタイトルも更新する
-        if ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH && this.txtJumpArchiveTitle) {
-            this.txtJumpArchiveTitle.textContent = detail.a_title || "まとめへ移動";
         }
     },
     // 移動して詳細画面表示（演出・待機秒数の指定対応版）

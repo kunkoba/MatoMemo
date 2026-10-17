@@ -85,6 +85,8 @@
                 </div>
             </div>
         </div>
+        <!-- トースト -->
+        <div id="toast-container" class="fixed top-14 left-0 right-0 z-[5000] flex flex-col gap-2 px-3 pointer-events-none items-center"></div>
         <!-- メイン画面：地図＋明細パネル -->
         <div class="absolute bottom-0 flex h-full w-full overflow-hidden flex-col md:flex-row">
             <!-- 右：アクションボタン関連 -->
@@ -123,8 +125,6 @@
             </div>
             <!-- 地図エリア -->
             <div id="ui-map-id" class="w-full h-full relative overflow-hidden isolate">
-                <!-- 地図内トースト：地図幅にのみ表示、明細パネルには被らない -->
-                <div id="toast-container" class="absolute top-14 left-0 right-0 z-[9999] flex flex-col gap-2 px-3 pointer-events-none items-center"></div>
                 <!-- 地図内ローディング：ここに tpl-loading が挿入される -->
                 <div id="ui-map-loading-root" class="absolute inset-0 z-[1002] pointer-events-none"></div>
                 <!-- 左：ズーム関連 -->
