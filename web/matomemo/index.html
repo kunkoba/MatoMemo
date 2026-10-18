@@ -86,7 +86,7 @@
             </div>
         </div>
         <!-- トースト -->
-        <div id="toast-container" class="fixed top-14 left-0 right-0 z-[5000] flex flex-col gap-2 px-3 pointer-events-none items-center"></div>
+        <div id="toast-container" class="fixed top-14 left-0 right-0 z-[9900] flex flex-col gap-2 px-3 pointer-events-none items-center"></div>
         <!-- メイン画面：地図＋明細パネル -->
         <div class="absolute bottom-0 flex h-full w-full overflow-hidden flex-col md:flex-row">
             <!-- 右：アクションボタン関連 -->
@@ -141,6 +141,12 @@
                         <button id="btn-zoom-out" class="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-[1.5rem] font-black text-slate-800 active:scale-90 transition-transform">▲</button>
                         <button id="btn-zoom-in" class="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-[1.5rem] font-black text-slate-800 active:scale-90 transition-transform">▼</button>
                     </div>
+                </div>
+                <!-- 未ログイン用ログインボタン（地図中央下） -->
+                <div id="ui-map-login-btn-root" class="absolute bottom-24 left-1/2 -translate-x-1/2 z-[1001] hidden_">
+                    <button id="btn-map-login" class="bg-black text-white px-8 py-3 rounded-full shadow-md font-bold text-[1.1rem] active:scale-95 transition-transform pointer-events-auto">
+                        未ログイン中
+                    </button>
                 </div>
                 <!-- 明細閉じる用パネル -->
                 <div id="ui-map-barrier" class="fixed inset-0 z-[750] hidden bg-transparent"></div>

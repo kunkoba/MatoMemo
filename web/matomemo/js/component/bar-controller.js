@@ -166,32 +166,41 @@ const _BarCore = {
         // $Dom.ToggleShow(this.sliderRoot, isOn);
     },
     // 画面モード変更：上下バーのレイアウト一括更新
-    changeScreenMode() {
+        changeScreenMode() {
         const mode = $App.AppData.Context.ScreenMode;
         // 上部状態リセット
         $Dom.ToggleShow(this.btnArchiveTitle, false);
         $Dom.ToggleShow(this.uiSortGroup, false);
         // 下部状態リセット
         $Dom.ToggleShow(this.groupMove, false);
-        // $Dom.ToggleShow(this.groupAction, false);
         const actOn = ["w-14", "h-14", "text-[1.5rem]", "active:scale-95", "z-10"];
-        const actOff = ["w-10", "h-10", "text-[1rem]", "opacity-70", "z-0"];
-        // モード別分岐
-		if (mode === $Const.SCREEN_MODE.CREATE) {
-            // 作法：複数クラスは remove/add を使用する
-            this.btnCreate.classList.remove(...actOff);
-            this.btnCreate.classList.add(...actOn);
-            this.btnSearch.classList.remove(...actOn);
-            this.btnSearch.classList.add(...actOff);
-        } else if (mode === $Const.SCREEN_MODE.SEARCH) {
-            $Dom.ToggleShow(this.uiSortGroup, true);
-            this.btnSearch.classList.remove(...actOff);
-            this.btnSearch.classList.add(...actOn);
-            this.btnCreate.classList.remove(...actOn);
-            this.btnCreate.classList.add(...actOff);
-        } else if (mode === $Const.SCREEN_MODE.ARCHIVE || mode === $Const.SCREEN_MODE.ARCHIVE_PUB) {
-            $Dom.ToggleShow(this.btnArchiveTitle, true);
-            $Dom.ToggleShow(this.groupMove, true);
+        const actOff = ["w-10", "h-10", "text-", "opacity-70", "z-0"];
+        switch (mode) {
+            case $Const.SCREEN_MODE.CREATE:
+                this.btnCreate.classList.remove(...actOff);
+                this.btnCreate.classList.add(...actOn);
+                this.btnSearch.classList.remove(...actOn);
+                this.btnSearch.classList.add(...actOff);
+                break;
+            case $Const.SCREEN_MODE.SEARCH:
+                $Dom.ToggleShow(this.uiSortGroup, true);
+                this.btnSearch.classList.remove(...actOff);
+                this.btnSearch.classList.add(...actOn);
+                this.btnCreate.classList.remove(...actOn);
+                this.btnCreate.classList.add(...actOff);
+                break;
+            case $Const.SCREEN_MODE.ARCHIVE:
+            case $Const.SCREEN_MODE.ARCHIVE_PUB:
+                $Dom.ToggleShow(this.btnArchiveTitle, true);
+                $Dom.ToggleShow(this.groupMove, true);
+                // まとめモード時はいずれも半透明（未選択状態）
+                this.btnCreate.classList.remove(...actOn);
+                this.btnCreate.classList.add(...actOff);
+                this.btnSearch.classList.remove(...actOn);
+                this.btnSearch.classList.add(...actOff);
+                break;
+            default:
+                break;
         }
     },
     // マーカー表示モード更新

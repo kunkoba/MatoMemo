@@ -6,7 +6,7 @@ window.$Const = {
         DESCRIPTION: "「その日、その時、その場所の思い出」をひとまとめに！　旅の記録や日常の気づきを、地図と一緒に残せるアプリです。",
         DEVELOPER: "kunkoba",
         OFFICIAL_SITE: "https://hinekulemonstudio.web.app/",
-        VERSION: "1.4.4",
+        VERSION: "1.4.5",
         VERSION_DESCRIPTION: `
 メジャー.マイナー.パッチの形式で表されます。
 
@@ -83,7 +83,6 @@ window.$Const = {
     },
     // 移動手段と音源の定義
     MOVE_SOUND_TYPE: {
-        // CLOCK:   { id: 0, emoji: '🕐', file: 'audio/clock.wav' },
         NOTHING: { id: 0, emoji: '', file: '' },
         WALK:    { id: 1, emoji: '🚶', file: 'audio/walk.wav' },
         BICYCLE: { id: 2, emoji: '🚲', file: 'audio/bicycle.wav' },
@@ -93,6 +92,7 @@ window.$Const = {
         TRAIN:   { id: 6, emoji: '🚃', file: 'audio/train.wav' },
         PLANE:   { id: 7, emoji: '✈️', file: 'audio/plane.wav' },
         SHIP:    { id: 8, emoji: '🚢', file: 'audio/ship.wav' },
+        CLOCK:   { id: 9, emoji: '🕐', file: 'audio/clock.wav' },
     },
     // 明細の評価種別
     FEEL_TYPE3: {

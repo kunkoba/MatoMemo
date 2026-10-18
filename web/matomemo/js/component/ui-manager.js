@@ -11,9 +11,9 @@ const _UI_Core = {
 			this.versionLabel.style.cssText = 'background: rgba(255,255,255,0.85); padding: 2px 6px; font-size: 10px; line-height: 1.4; position: absolute; bottom: 0; left: 0; z-index: 800; pointer-events: none;';
 			root.appendChild(this.versionLabel);
 		}
-		this.versionLabel.textContent = `AppVer: ${$Const.APP_INFO.VERSION}`;
+		this.versionLabel.textContent = `Ver: ${$Const.APP_INFO.VERSION}`;
 	},
-	setAppVersion(v){ if(this.versionLabel) this.versionLabel.textContent = `AppVer: ${v}`; },
+	setAppVersion(v){ if(this.versionLabel) this.versionLabel.textContent = `Ver: ${v}`; },
 	showAppVersion(){ if(this.versionLabel) this.versionLabel.style.display='block'; },
 	hideAppVersion(){ if(this.versionLabel) this.versionLabel.style.display='none'; },
 	// カラーテーマの変更
@@ -249,6 +249,17 @@ const UI_Manager = {
     // 画面モード変更時（Base：データに依存しないもの）
     ChangeScreenModeBase(){
 		const mode = $App.AppData.Context.ScreenMode;
+		// 未ログイン時のログインボタン表示制御
+		if (_UI_Core.loginOverlay) {
+			const isLoggedIn = $App.AppData.Context.IsLoggedIn;
+			if (!isLoggedIn) {
+				_UI_Core.loginOverlay.classList.remove('hidden');
+				_UI_Core.loginOverlay.classList.add('flex');
+			} else {
+				_UI_Core.loginOverlay.classList.add('hidden');
+				_UI_Core.loginOverlay.classList.remove('flex');
+			}
+		}
         // 通知バー
         const text = _UI_Core.getNoticeTextByMode(mode);
         if (text) {
