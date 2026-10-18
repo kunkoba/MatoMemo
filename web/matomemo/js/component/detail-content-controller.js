@@ -124,16 +124,6 @@ const _DetailContentCore = {
                     this.editUrl.value = "";
                     this.countUrl.textContent = "0"; // 文字数カウントもリセット
                 });
-                // // ▼ 評価ボタンのクリックイベント
-                // if (this.evalBtns) {
-                //     this.evalBtns.forEach(btn => {
-                //         btn.addEventListener('click', () => {
-                //             const val = btn.dataset.val;
-                //             this.editEvalInput.value = val;
-                //             this._updateEvalUI(val); // UIを更新
-                //         });
-                //     });
-                // }
                 // 本文入力欄をクリックした時にエディタを開く
                 this.editBody.addEventListener('click', async () => {
                     const result = await $Dialog.ShowTextEditor({
@@ -173,45 +163,6 @@ const _DetailContentCore = {
             }
         }
     },
-    // // ▼ 評価UIの更新（未選択はグレー、選択時は色・枠線で強調）
-    // _updateEvalUI(val) {
-    //     if (!this.evalBtns) return;
-    //     // 定数を参照
-    //     const EV = $Const.FEEL_TYPE;
-    //     const config = {
-    //         [EV.GOOD.val]:   { bg: "bg-emerald-50", border: "border-emerald-400", text: "text-emerald-500" },
-    //         [EV.NORMAL.val]: { bg: "bg-slate-100",  border: "border-slate-400",   text: "text-slate-600" },
-    //         [EV.BAD.val]:    { bg: "bg-red-50",     border: "border-red-400",     text: "text-red-500" }
-    //     };
-    //     this.evalBtns.forEach(btn => {
-    //         const bVal = Number(btn.dataset.val);
-    //         const icon = $Dom.QuerySelector(".eval-icon", btn);
-    //         const label = $Dom.QuerySelector(".eval-label", btn);
-    //         // 状態によって切り替わる可能性のあるクラスを一旦すべて remove
-    //         btn.classList.remove(
-    //             "bg-emerald-50", "border-emerald-400", "shadow-md",
-    //             "bg-slate-100", "border-slate-400",
-    //             "bg-red-50", "border-red-400",
-    //             "bg-slate-50", "border-transparent", "shadow-sm"
-    //         );
-    //         icon.classList.remove("grayscale", "opacity-30", "grayscale-0", "opacity-100");
-    //         label.classList.remove("text-emerald-500", "text-slate-600", "text-red-500", "text-slate-400");
-    //         // ターゲットの値と一致するかどうかで add するクラスを変える
-    //         if (bVal === Number(val)) {
-    //             const c = config[bVal];
-    //             if (c) {
-    //                 btn.classList.add(c.bg, c.border, "shadow-md");
-    //                 icon.classList.add("grayscale-0", "opacity-100");
-    //                 label.classList.add(c.text);
-    //             }
-    //         } else {
-    //             // 未選択の場合
-    //             btn.classList.add("bg-slate-50", "border-transparent", "shadow-sm");
-    //             icon.classList.add("grayscale", "opacity-30");
-    //             label.classList.add("text-slate-400");
-    //         }
-    //     });
-    // },
     // 画面モード変更時
     changeScreenMode(){
         switch ($App.AppData.Context.ScreenMode) {
@@ -370,7 +321,7 @@ const _DetailContentCore = {
             this._updateFeel2UI(feelVal);
         }
         // 音源の反映
-        const soundId = detail.move_sound_id ?? 1;
+        const soundId = detail.move_sound_id ?? 0;
         this.editSoundInput.value = soundId;
         this._updateSoundUI(soundId);
         // 文字数カウンターの同期
@@ -407,8 +358,8 @@ const _DetailContentCore = {
         // this.editWeatherEmoji.value = 'はれ'; // 新規時は「はれ」を選択
         this.editWeatherEmoji.value = '0000';
         this.spanAtmospherePreview.textContent = '0000';
-        // 音源の初期値をWALK(1)にリセット
-        this.editSoundInput.value = 1;
+        // 音源の初期値をNOTHING(0)にリセット
+        this.editSoundInput.value = 0;
         this._updateSoundUI(this.editSoundInput.value);
         // 表情アイコン
         this.editFeel2Input.value = 21;
@@ -449,7 +400,7 @@ const _DetailContentCore = {
         data.longitude = Number(data.longitude || 0);
         data.memo_price = Number(data.memo_price || 0);
         data.feel_type = Number(data.feel_type?? data.feel?? 0);
-        data.move_sound_id = Number(data.move_sound_id || 1);
+        data.move_sound_id = Number(data.move_sound_id || 0);
         // データストアから元の明細データを取得（新規作成時(seq=0)は空オブジェクト）
         let originalData = {};
         // seq または dbid を使って元データを特定する

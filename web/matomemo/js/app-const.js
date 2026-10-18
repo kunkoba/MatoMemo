@@ -83,14 +83,16 @@ window.$Const = {
     },
     // 移動手段と音源の定義
     MOVE_SOUND_TYPE: {
-        CLOCK:   { id: 0, emoji: '🕐', file: 'audio/clock.wav' },
+        // CLOCK:   { id: 0, emoji: '🕐', file: 'audio/clock.wav' },
+        NOTHING: { id: 0, emoji: '', file: '' },
         WALK:    { id: 1, emoji: '🚶', file: 'audio/walk.wav' },
         BICYCLE: { id: 2, emoji: '🚲', file: 'audio/bicycle.wav' },
         BIKE:    { id: 3, emoji: '🏍️', file: 'audio/bike.wav' },
         CAR:     { id: 4, emoji: '🚗', file: 'audio/car.wav' },
-        TRAIN:   { id: 5, emoji: '🚃', file: 'audio/train.wav' },
-        PLANE:   { id: 6, emoji: '✈️', file: 'audio/plane.wav' },
-        SHIP:    { id: 7, emoji: '🚢', file: 'audio/ship.wav' },
+        BUS:     { id: 5, emoji: '🚌', file: 'audio/car.wav' },
+        TRAIN:   { id: 6, emoji: '🚃', file: 'audio/train.wav' },
+        PLANE:   { id: 7, emoji: '✈️', file: 'audio/plane.wav' },
+        SHIP:    { id: 8, emoji: '🚢', file: 'audio/ship.wav' },
     },
     // 明細の評価種別
     FEEL_TYPE3: {

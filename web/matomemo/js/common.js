@@ -416,23 +416,9 @@ window.$Util = {
         window.open(url, '_blank', 'noopener,noreferrer');
     },
     // 移動音を再生する
-    PlayMoveSound_2(typeId) {
-        const sound = Object.values($Const.MOVE_SOUND_TYPE).find(s => s.id === Number(typeId));
-        if (!sound) return;
-        // 再生中の音があれば停止してリセット
-        if (this._currentAudio) {
-            this._currentAudio.pause();
-            this._currentAudio.currentTime = 0;
-        }
-        const audio = new Audio(sound.file);
-        audio.volume = $App.AppData.Owner.SoundVolume;
-        this._currentAudio = audio; // インスタンスを保持
-        audio.play().catch(e => console.warn("再生ブロック:", e));
-    },
-        // 移動音を再生する
     PlayMoveSound(typeId, durationSec = null) {
         const sound = Object.values($Const.MOVE_SOUND_TYPE).find(s => s.id === Number(typeId));
-        if (!sound) return;
+        if (!sound || !sound.file) return; // fileが''なら再生しない
         // 再生中の音があれば停止してリセット
         if (this._currentAudio) {
             this._currentAudio.pause();

@@ -116,7 +116,7 @@ const _BarCore = {
             } else {
                 // 次の地点のデータを取得して音源IDを特定
                 const nextDetail = $Data.Store.GetDetails()[$Marker._currentIndex];
-                const soundId = nextDetail?.move_sound_id ?? 1;
+                const soundId = nextDetail?.move_sound_id ?? 0;
                 $Util.PlayMoveSound(soundId);
                 $Marker.FocusNext(true);
                 return $Const.MAP_CONFIG.MOVE_ANIMATION_SEC;

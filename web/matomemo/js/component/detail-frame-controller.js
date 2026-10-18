@@ -215,7 +215,7 @@ const _DetailFrameCore = {
                     } else {
                         // 次の地点の音源IDを取得（WALK:1 をデフォルトとする）
                         const nextDetail = $Data.Store.GetDetails()[$Marker._currentIndex];
-                        const soundId = nextDetail?.move_sound_id ?? 1;
+                        const soundId = nextDetail?.move_sound_id ?? 0;
                         $Util.PlayMoveSound(soundId);
                         await this._moveAndRender(
                             () => $Marker.FocusNext(),
