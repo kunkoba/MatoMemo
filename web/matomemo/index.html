@@ -77,7 +77,6 @@
                 <div id="app-version-label" class="pointer-events-none bg-white/50 backdrop-blur-sm px-2.5 py-1 rounded-full text-[10px] font-bold leading-none shadow-sm">
                     AppVer: X.X.X
                 </div>
-
                 <!-- 右：アイコン切替 -->
                 <div id="ui-marker-mode-switch" class="pointer-events-auto shadow-md w-fit h-8 flex overflow-hidden bg-white/90 backdrop-blur-sm rounded-full">
                     <button id="btn-marker-mode-emoji" data-mode="emoji" class="px-4 transition-colors bg-brand-3 text-[0.8rem] flex items-center justify-center font-bold">シンボル</button>
@@ -87,42 +86,42 @@
         </div>
         <!-- メイン画面：地図＋明細パネル -->
         <div class="absolute bottom-0 flex h-full w-full overflow-hidden flex-col md:flex-row">
-            <!-- 右：アクションボタン関連 -->
-            <div id="ui-side-action-group" class="absolute right-4 top-1/2 -translate-y-1/2 z-[1001] pointer-events-none">
-                <!-- 2. アクションボタン（新規・検索：縦並び） -->
-                <div id="bot-group-action" class="flex flex-col items-end gap-3 pointer-events-none">
-                    <!-- メインメニュー -->
-                    <button id="btn-menu" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">🌟</button>
-                    <!-- まとめリスト -->
-                    <button id="btn-app-archive-list2" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">📚</button>
-                    <!-- データリスト -->
-                    <button id="point-list-btn" class="_hidden w-10 h-10 bg-white text-slate-700 rounded-full shadow-md flex justify-center items-center active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">☰</button>
-                    <!-- 地点検索フィルタ（右寄せ） -->
-                    <div id="ui-sort-group" class="hidden flex flex-col items-end gap-2">
-                        <!-- 各種フィルタ行 -->
-                        <div id="sort-reaction" class="hidden shadow-md w-fit h-10 flex text-[1.5rem] rounded-full overflow-hidden bg-white/90 pointer-events-auto"></div>
-                        <div id="sort-feel" class="hidden shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto"></div>
-                        <div id="sort-word" class="hidden shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto">
-                            <input type="text" id="input-sort-word" class="h-full px-3 text-[1rem] text-slate-900 outline-none bg-transparent w-40 placeholder-slate-400" placeholder="Keyword...">
-                        </div>
-                        <div id="sort-field" class="shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto px-2">
-                            <!-- select要素に変更。デザインを合わせるため背景透明、枠線なしに設定 -->
-                            <select id="select-sort-field" class="bg-transparent h-full text-[0.9rem] font-bold text-slate-700 outline-none cursor-pointer px-2">
-                                <option value="1">作成順で表示</option>
-                                <option value="2">更新順で表示</option>
-                                <option value="3">リアクション別</option>
-                                <option value="4">キーワード検索</option>
-                            </select>
-                        </div>
-                    </div>
-                    <!-- 検索ボタン -->
-                    <button id="btn-search" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">🔎</button>
-                    <!-- 新規生成ボタン -->
-                    <button id="btn-create" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">➕</button>
-                </div>
-            </div>
             <!-- 地図エリア -->
             <div id="ui-map-id" class="w-full h-full relative overflow-hidden isolate">
+                <!-- 右：アクションボタン関連 -->
+                <div id="ui-side-action-group" class="absolute right-4 top-1/2 -translate-y-1/2 z-[1001] pointer-events-none">
+                    <!-- 2. アクションボタン（新規・検索：縦並び） -->
+                    <div id="bot-group-action" class="flex flex-col items-end gap-3 pointer-events-none">
+                        <!-- メインメニュー -->
+                        <button id="btn-menu" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">🌟</button>
+                        <!-- まとめリスト -->
+                        <button id="btn-app-archive-list2" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">📚</button>
+                        <!-- データリスト -->
+                        <button id="point-list-btn" class="w-10 h-10 bg-white text-slate-700 rounded-full shadow-md flex justify-center items-center active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">☰</button>
+                        <!-- 地点検索フィルタ（右寄せ） -->
+                        <div id="ui-sort-group" class="hidden flex flex-col items-end gap-2">
+                            <!-- 各種フィルタ行 -->
+                            <div id="sort-reaction" class="hidden shadow-md w-fit h-10 flex text-[1.5rem] rounded-full overflow-hidden bg-white/90 pointer-events-auto"></div>
+                            <div id="sort-feel" class="hidden shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto"></div>
+                            <div id="sort-word" class="hidden shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto">
+                                <input type="text" id="input-sort-word" class="h-full px-3 text-[1rem] text-slate-900 outline-none bg-transparent w-40 placeholder-slate-400" placeholder="Keyword...">
+                            </div>
+                            <div id="sort-field" class="shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto px-2">
+                                <!-- select要素に変更。デザインを合わせるため背景透明、枠線なしに設定 -->
+                                <select id="select-sort-field" class="bg-transparent h-full text-[0.9rem] font-bold text-slate-700 outline-none cursor-pointer px-2">
+                                    <option value="1">作成順で表示</option>
+                                    <option value="2">更新順で表示</option>
+                                    <option value="3">リアクション別</option>
+                                    <option value="4">キーワード検索</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- 検索ボタン -->
+                        <button id="btn-search" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.2rem]">🔎</button>
+                        <!-- 新規作成ボタン -->
+                        <button id="btn-create" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.2rem]">➕</button>
+                    </div>
+                </div>
                 <!-- 地図内ローディング：ここに tpl-loading が挿入される -->
                 <div id="ui-map-loading-root" class="absolute inset-0 z-[1002] pointer-events-none"></div>
                 <!-- トースト：地図エリア中心に表示 -->

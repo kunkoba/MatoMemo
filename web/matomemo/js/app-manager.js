@@ -324,6 +324,14 @@ const AppManager = {
                 if (ok && this.AppData.Context.IsLoggedIn) {
                     await $Data.Access.GetSystemInfo();
                     _AppCore.ensureUserInfo(this.AppData);
+                    // ログイン状態が確定したのでUIを再反映
+                    if ($UI.ChangeScreenModeBase) {
+                        $UI.ChangeScreenModeBase();
+                    }
+                    if ($UI.ChangeScreenModeBaseWithData) {
+                        $UI.ChangeScreenModeBaseWithData();
+                    }
+                    $Bar.ChangeScreenMode();
                 }
             });
             this.RefreshScreenBaseWithData();

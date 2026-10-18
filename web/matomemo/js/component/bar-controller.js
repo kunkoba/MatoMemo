@@ -173,8 +173,8 @@ const _BarCore = {
         $Dom.ToggleShow(this.uiSortGroup, false);
         // 下部状態リセット
         $Dom.ToggleShow(this.groupMove, false);
-        const actOn = ["w-14", "h-14", "text-[1.5rem]", "active:scale-95", "z-10"];
-        const actOff = ["w-10", "h-10", "text-", "opacity-70", "z-0"];
+        const actOn =  ["w-14", "h-14", "text-[1.7rem]", "active:scale-95", "z-10"];
+        const actOff = ["w-10", "h-10", "text-[1.2rem]", "opacity-70", "z-0"];
         switch (mode) {
             case $Const.SCREEN_MODE.CREATE:
                 this.btnCreate.classList.remove(...actOff);
