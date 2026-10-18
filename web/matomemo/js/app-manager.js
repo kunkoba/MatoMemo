@@ -440,6 +440,7 @@ const AppManager = {
             localStorage.removeItem(this.jwtKey || _AppCore.jwtKey || 'matomemo_jwt');
             _AppCore.save(this.AppData.Owner);
             $Notice.Warn("引き続き利用される際は、ログインをしてください。");
+            $Dialog.ShowLoginDialog();
             return false;
         }
         // 接続失敗時は論理オフラインへ移行

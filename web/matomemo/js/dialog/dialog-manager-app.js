@@ -281,7 +281,7 @@ export default {
         };
         btn.onclick = async () => {
             if (!targetId) return;
-            if (!await this.ShowConfirm({ title: "JUMP", message: "このまとめへ移動しますか？" })) return;
+            // if (!await this.ShowConfirm({ title: "JUMP", message: "このまとめへ移動しますか？" })) return;
             this._core.closeAll();
             $App.AppData.Context.ScreenMode = $Const.SCREEN_MODE.ARCHIVE_PUB;
             $App.AppData.Context.TargetArchiveId = targetId;

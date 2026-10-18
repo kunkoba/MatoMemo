@@ -52,19 +52,41 @@ export default {
             $Notice.Info("ログインに成功しました");
         };
         // google認証
-        $Dom.QuerySelector("#btn-login-google", el).onclick = async () => {
-            // if (await $App.ExecuteLoginFlow()) await onAuthSuccess();
-            const ok = await $App.ExecuteLoginFlow();
-            if (ok) await onAuthSuccess();
+        const btnGoogle = $Dom.QuerySelector("#btn-login-google", el);
+        btnGoogle.onclick = async () => {
+            if (btnGoogle.disabled) return;
+            btnGoogle.disabled = true;
+            btnEmail.disabled = true;
+            btnGoogle.classList.add('opacity-50', 'pointer-events-none');
+            this._core.closeAll(); // 押下タイミングで閉じる
+            // $Notice.Loading.Show();
+            try {
+                const ok = await $App.ExecuteLoginFlow();
+                if (ok) await onAuthSuccess();
+                else $Dialog.ShowLoginDialog(); // 失敗時のみ再表示
+            } finally {
+                $Notice.Loading.Hide();
+            }
         };
         // メルパス認証
         btnEmail.onclick = async () => {
+            if (btnEmail.disabled) return;
             const email = inEmail.value.trim();
             const pass = inPass.value;
-            if (!email || !pass) return $Notice.Warn("メールアドレスとパスワードを入力してください");
-            const ok = await $App.ExecuteEmailAuthFlow(email, pass);
-            if (ok) await onAuthSuccess();
-            // 新規登録時は ExecuteEmailAuthFlow 内で確認メール送信まで完了し false を返すのでここでは閉じません
+            if (!email || !pass) return $Notice.Warn("...");
+            btnEmail.disabled = true;
+            btnGoogle.disabled = true;
+            btnGoogle.classList.add('opacity-50', 'pointer-events-none');
+            btnEmail.classList.add('opacity-50', 'pointer-events-none');
+            this._core.closeAll(); // 押下タイミングで閉じる
+            // $Notice.Loading.Show();
+            try {
+                const ok = await $App.ExecuteEmailAuthFlow(email, pass);
+                if (ok) await onAuthSuccess();
+                // false時は確認メール送信 or エラーでトースト済みなので再表示しない
+            } finally {
+                $Notice.Loading.Hide();
+            }
         };
         $Dom.QuerySelector("#btn-forgot-password", el).onclick = async () => {
             const email = inEmail.value.trim();

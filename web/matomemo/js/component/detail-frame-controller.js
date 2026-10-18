@@ -449,8 +449,17 @@ const DetailFrameController = {
 	},
     // 開く
     Open(detail) {
-        // $Bar.UpdateMainSwitchUI(false);
-        $App.PauseGpsTracking(); // ★パネルを開く際にGPSを止める
+        // 未ログイン時は明細を開かずログイン要求
+        const isLoggedIn = $App.AppData.Context.IsLoggedIn;
+        const mode = $App.AppData.Context.ScreenMode;
+        const isAnonymousPub = (mode === $Const.SCREEN_MODE.ARCHIVE_PUB);
+        if (!isLoggedIn && !isAnonymousPub) {
+            $Notice.Warn("引き続き利用される際は、ログインをしてください。");
+            $Dialog.ShowLoginDialog();
+            return;
+        }
+        // ★パネルを開く際にGPSを止める
+        $App.PauseGpsTracking(); 
         // ▼ 画面を開く前にポップアップを閉じる
         $Marker.ClosePopup();
         const isNew = !detail;

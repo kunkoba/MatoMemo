@@ -162,7 +162,6 @@ window.$Data = {
             $App.AppData.Owner.Plan = result.plan;
             if (result.login_user_id) {
                 $App.AppData.Owner.LoginUserId = result.login_user_id;
-                // $App.AppData.Context.IsLoggedIn = true;
             }
             // 取得データを内部に保持
             this._setData(data);

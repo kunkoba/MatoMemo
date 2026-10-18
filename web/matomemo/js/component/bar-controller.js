@@ -202,6 +202,15 @@ const _BarCore = {
             default:
                 break;
         }
+        // 未ログイン時は新規アイコン、地図検索アイコンを非表示
+        var isLoggedIn = $App.AppData.Context.IsLoggedIn;
+        if (!isLoggedIn) {
+            $Dom.ToggleShow(this.btnCreate, false);
+            $Dom.ToggleShow(this.btnSearch, false);
+        } else {
+            $Dom.ToggleShow(this.btnCreate, true);
+            $Dom.ToggleShow(this.btnSearch, true);
+        }
     },
     // マーカー表示モード更新
     updateMarkerMode(mode) {
