@@ -70,7 +70,7 @@ const _DialogCore = {
             },
             user: { // デフォルト
                 frame:  ['bg-brand-0'],
-                header: ['bg-brand-0'],
+                header: ['bg-brand-1'],
                 title:  ['text-brand-5'],
                 footer: ['bg-brand-1', 'border-t', 'border-brand-2']
             }

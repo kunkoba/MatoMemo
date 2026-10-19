@@ -72,8 +72,10 @@ const _BarCore = {
         // 8. イベント登録：下部バー
         this.btnMainToggle.onclick = () => $Dialog.ShowMainMenu();
         if (this.btnListBtn) {
-            this.btnListBtn.onclick = () => ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH) 
-                ? $Dialog.ShowDetailsSearchResult() : $Dialog.ShowDetailsTimeLine();
+            this.btnListBtn.onclick = () => 
+                ($App.AppData.Context.ScreenMode === $Const.SCREEN_MODE.SEARCH) 
+                ? $Dialog.ShowDetailsSearchResult() 
+                : $Dialog.ShowDetailsTimeLine();
         }
         // 移動ボタン制御
         const moveWithLock = async (callback) => {

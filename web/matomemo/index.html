@@ -124,8 +124,6 @@
                 </div>
                 <!-- 地図内ローディング：ここに tpl-loading が挿入される -->
                 <div id="ui-map-loading-root" class="absolute inset-0 z-[1002] pointer-events-none"></div>
-                <!-- トースト：地図エリア中心に表示 -->
-                <div id="toast-container" class="absolute top-12 left-1/2 -translate-x-1/2 z-[9900] flex flex-col gap-2 px-3 pointer-events-none items-center w-[90%] max-w-"></div>
                 <!-- 左：ズーム関連 -->
                 <div id="ui-side-map-group" class="absolute left-4 top-1/2 -translate-y-1/2 z-[1000] flex flex-col items-center gap-4 pointer-events-none">
                     <!-- ① 縦ズームスライダー -->
@@ -467,6 +465,9 @@
                     class="p-4 pb-10 leading-[1.8] text-[0.9rem] text-slate-900 whitespace-pre-wrap max-h-[70vh] min-h-[20vh] overflow-y-auto bg-slate-50">
                 </div>
             </div>
+        </div>
+        <!-- トースト -->
+        <div id="toast-container" class="absolute top-12 left-1/2 -translate-x-1/2 z-[9900] flex flex-col gap-2 px-3 pointer-events-none items-center w-[90%] max-w-">
         </div>
     </div>
 </div>

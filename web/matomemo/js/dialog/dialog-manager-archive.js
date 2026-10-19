@@ -27,6 +27,7 @@ export default {
     },
     // タイムライン用リスト
     ShowDetailsTimeLine() {
+        console.log("XXX")
         const rawDetails = $Data.Store.GetDetails();
         if (!rawDetails || rawDetails.length === 0) return $Notice.Warn("データはありません。");
         // 公開まとめモードかどうかを判定（エラー解消のための変数定義）
@@ -692,7 +693,7 @@ export default {
                                 const confirmMsg = resetFlg ? "公開データを作成します。\n続行しますか？" : "過去の公開データを復活させますか？";
                                 this._execStatusChange('PublishArchive', params, 'PUBLISH', 
                                     confirmMsg, 
-                                    '完了', $Const.SCREEN_MODE.ARCHIVE_PUB, 
+                                    '準備ができました', $Const.SCREEN_MODE.ARCHIVE_PUB, 
                                     () => $Data.Store.UpdateArchive({ is_public: true, closed_flg: true, limited_open_flg: false })
                                 );
                             }

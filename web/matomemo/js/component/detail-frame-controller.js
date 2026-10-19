@@ -175,8 +175,9 @@ const _DetailFrameCore = {
                         await $Data.Store.UpdateDetail(detail);
                         // 描画更新
                         $Marker.RefreshPointMarker();
-                        // パネルを閉じる
-                        this.handleCloseOrCancel();
+                        // 参照モードで開く
+                        const latest = $Data.Store.GetDetailByKey(detail.archive_id, detail.seq, detail.dbid) || detail;
+                        $DetailFrame.Open(latest);
                         // 通知
                         $Notice.Info("保存しました。");
                     })();
