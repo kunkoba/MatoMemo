@@ -3,15 +3,20 @@ const Notice = {
     _toast(message, type = "info") {
         const root = $Dom.GenerateTemplate("tpl-toast", "toast-container");
         const el = $Dom.QuerySelector("div", root);
+        // const config = {
+        //     info:  { bg: "rgb(165, 243, 163)" }, // 緑
+        //     warn:  { bg: "rgb(255, 220, 156)" }, // オレンジ
+        //     error: { bg: "rgb(255, 174, 174)" }, // 赤
+        // };
         const config = {
-            info:  { bg: "rgb(165, 243, 163)" }, // 緑
-            warn:  { bg: "rgb(255, 220, 156)" }, // オレンジ
-            error: { bg: "rgb(255, 174, 174)" }, // 赤
+            info:  { bg: "rgb(0, 0, 0)" }, // 緑
+            warn:  { bg: "rgb(0, 0, 0)" }, // オレンジ
+            error: { bg: "rgb(255, 26, 26)" }, // 赤
         };
         const c = config[type] || config.info;
         el.style.background = c.bg;
-        // el.style.color = "#fff";
-        el.style.color = "#000";
+        // el.style.color = "#000";
+        el.style.color = "#fff";
         $Dom.QuerySelector(".message", el).textContent = message;
         setTimeout(() => {
             el.classList.remove("opacity-0", "-translate-y-2");
@@ -37,8 +42,6 @@ const Notice = {
         Show() {
             if (!this.el) {
                 // 地図内の専用ルートに生成して地図に内包
-                // const mapLoadingRoot = document.getElementById('ui-map-loading-root') || document.getElementById('ui-map-id');
-                // this.el = $Dom.GenerateTemplate("tpl-loading", mapLoadingRoot? mapLoadingRoot.id : "ui-template-root");
                 const topRoot = document.getElementById('app-root') || document.getElementById('ui-template-root');
                 this.el = $Dom.GenerateTemplate("tpl-loading", topRoot? topRoot.id : "ui-template-root");
             }
@@ -65,7 +68,6 @@ const Notice = {
                 textEl.textContent = msg;
             }
             this.el.style.opacity = "1";
-            // this.el.style.pointerEvents = "auto"; // 表示中は背後を触らせない
         },
         Hide() {
             if (!this.el) return;
