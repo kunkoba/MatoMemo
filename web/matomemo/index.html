@@ -100,25 +100,28 @@
                         <button id="point-list-btn" class="w-10 h-10 bg-white text-slate-700 rounded-full shadow-md flex justify-center items-center active:scale-95 transition-transform pointer-events-auto text-[1.5rem]">☰</button>
                         <!-- 新規作成ボタン -->
                         <button id="btn-create" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.2rem]">➕</button>
-                        <!-- 検索ボタン -->
-                        <button id="btn-search" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.2rem]">🔎</button>
-                        <!-- 地点検索フィルタ（右寄せ） -->
-                        <div id="ui-sort-group" class="hidden flex flex-col items-end gap-2">
-                            <!-- 各種フィルタ行 -->
-                            <div id="sort-reaction" class="hidden shadow-md w-fit h-10 flex text-[1.5rem] rounded-full overflow-hidden bg-white/90 pointer-events-auto"></div>
-                            <div id="sort-feel" class="hidden shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto"></div>
-                            <div id="sort-word" class="hidden shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto">
-                                <input type="text" id="input-sort-word" class="h-full px-3 text-[1rem] text-slate-900 outline-none bg-transparent w-40 placeholder-slate-400" placeholder="Keyword...">
+                        <!-- ▼横並び化：sort と検索を1行に -->
+                        <div id="ui-sort-search-row" class="flex flex-row items-center justify-end gap-2 w-full pointer-events-none">
+                            <!-- 地点検索フィルタ（右寄せ） -->
+                            <div id="ui-sort-group" class="hidden flex flex-col items-end gap-2">
+                                <!-- 各種フィルタ行 -->
+                                <div id="sort-reaction" class="hidden shadow-md w-fit h-10 flex text-[1.5rem] rounded-full overflow-hidden bg-white/90 pointer-events-auto"></div>
+                                <div id="sort-feel" class="hidden shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto"></div>
+                                <div id="sort-word" class="hidden shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto">
+                                    <input type="text" id="input-sort-word" class="h-full px-3 text-[1rem] text-slate-900 outline-none bg-transparent w-40 placeholder-slate-400" placeholder="Keyword...">
+                                </div>
+                                <div id="sort-field" class="shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto px-2">
+                                    <!-- select要素に変更。デザインを合わせるため背景透明、枠線なしに設定 -->
+                                    <select id="select-sort-field" class="bg-transparent h-full text-[0.9rem] font-bold text-slate-700 outline-none cursor-pointer px-2">
+                                        <option value="1">作成順で表示</option>
+                                        <option value="2">更新順で表示</option>
+                                        <option value="3">リアクション別</option>
+                                        <option value="4">キーワード検索</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div id="sort-field" class="shadow-md w-fit h-10 flex rounded-full overflow-hidden bg-white/90 pointer-events-auto px-2">
-                                <!-- select要素に変更。デザインを合わせるため背景透明、枠線なしに設定 -->
-                                <select id="select-sort-field" class="bg-transparent h-full text-[0.9rem] font-bold text-slate-700 outline-none cursor-pointer px-2">
-                                    <option value="1">作成順で表示</option>
-                                    <option value="2">更新順で表示</option>
-                                    <option value="3">リアクション別</option>
-                                    <option value="4">キーワード検索</option>
-                                </select>
-                            </div>
+                            <!-- 検索ボタン -->
+                            <button id="btn-search" class="w-10 h-10 bg-white flex items-center justify-center shadow-md rounded-full active:scale-95 transition-transform pointer-events-auto text-[1.2rem]">🔎</button>
                         </div>
                     </div>
                 </div>
