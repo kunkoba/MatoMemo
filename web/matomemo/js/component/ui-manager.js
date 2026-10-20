@@ -169,7 +169,7 @@ const UI_Manager = {
 				badge = document.createElement('span');
 				badge.className = 'js-unread-badge absolute bg-red-500 text-white font-bold flex items-center justify-center pointer-events-none whitespace-nowrap ';
 				if (type === 'dot') {
-					badge.className += 'w-3 h-3 rounded-full top-0 right-0 border-2 border-brand-1';
+					badge.className += 'w-4 h-4 rounded-full top-0 right-0 border-2 border-brand-1';
 				} else {
 					badge.className += 'text-[0.9rem] px-2 py-0.5 rounded-full top-1/2 -translate-y-1/2 right-4';
 					badge.textContent = 'NEW';
