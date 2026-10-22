@@ -211,15 +211,4 @@ public class TableStatisticsTaskRepository : _BaseRepository
         await ExecuteAsync(sql);
     }
 
-    /// <summary>
-    /// データベースの物理メンテナンス（不要領域の整理と索引の再構築）を実行する
-    /// </summary>
-    public async Task ExecuteDbMaintenanceAsync()
-    {
-        // PostgreSQLのVACUUM/REINDEXは長時間かかる可能性があるため、タイムアウトを無効(0)に設定
-        // 内部で _transaction が null であることを前提に実行（VACUUMはトランザクション内不可のため）
-        await ExecuteAsync("VACUUM ANALYZE");
-        await ExecuteAsync("REINDEX DATABASE db_little_trip_memo");
-    }
-
 }

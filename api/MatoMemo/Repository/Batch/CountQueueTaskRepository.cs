@@ -56,4 +56,13 @@ public class CountQueueTaskRepository : _BaseRepository
         await ExecuteAsync(sql, new { upTo });
     }
 
+    /// <summary>
+    /// クリック・閲覧数集計プロシージャを実行する
+    /// tmp_count_queue の集計と削除をDB内で完結させる
+    /// </summary>
+    public async Task ExecuteClickStatsProcedureAsync()
+    {
+        // pg_cronは使わず、WorkerからのCALLに統一（Supabase/Neon共通）
+        await ExecuteAsync("CALL compute_click_stats();");
+    }
 }

@@ -41,6 +41,7 @@ public class PublishArchiveService(
             // 2. 元データの取得
             var archive = await archiveRepo.GetByKeyAsync(req.archive_id);
             BusinessException.ThrowIf(archive == null, "対象のアーカイブが見つかりません。");
+            if (archive == null) throw new BusinessException("対象のアーカイブが見つかりません。"); // コンパイラ対策で1行追加
 
             // 3. リセット処理
             if (req.reset_flg)

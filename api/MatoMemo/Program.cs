@@ -43,7 +43,7 @@ if(FirebaseApp.DefaultInstance == null)
 
     FirebaseApp.Create(new AppOptions()
     {
-        Credential = GoogleCredential.FromJson(firebaseJson)
+        Credential = CredentialFactory.FromJson<ServiceAccountCredential>(firebaseJson).ToGoogleCredential()
     });
 }
 
@@ -89,7 +89,7 @@ builder.Services.Configure<MyAppSettings>(builder.Configuration.GetSection(MyApp
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 
 // 8. API / CORS / Swagger 設定
-builder.Services.AddControllers(options => options.Filters.Add<UserValidationFilter>());
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

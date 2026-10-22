@@ -109,7 +109,8 @@ public class RegistrationUserService(
             var isVerified = false;
             if (decoded.Claims.TryGetValue("email_verified", out var v))
             {
-                bool.TryParse(v?.ToString(), out isVerified);
+                // 戻り値は不要ってことを明示する
+                _ = bool.TryParse(v?.ToString(), out isVerified);
             }
 
             if (!isVerified)

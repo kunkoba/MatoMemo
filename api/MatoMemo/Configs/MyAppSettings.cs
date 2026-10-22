@@ -13,14 +13,16 @@ public class MyAppSettings
     public int MaxTableNum { get; set; } = -1;   // テーブル分散の最大数
 
     // バッチの実行間隔（分）
-    public int ReactionCountUpdateIntervalMinutes { get; set; } = -1; // リアクション集計
-    public int TableStatsUpdateIntervalMinutes { get; set; } = -1;   // テーブル件数集計
+    public int ReactionCountUpdateIntervalMinutes { get; set; } = -1;   // リアクション集計
+    public int TableStatsUpdateIntervalMinutes { get; set; } = -1;      // テーブル件数集計
     public int GarbageCleanupIntervalMinutes { get; set; } = -1;    // 明細のゴミ掃除
     public int ClickAggregateIntervalMinutes { get; set; } = -1;    // クリック数の集計
     public int UserSummaryUpdateIntervalMinutes { get; set; } = -1;     // ユーザー関連情報の集計の更新
     public int ReportStatsUpdateIntervalMinutes { get; set; } = -1;     // レポート関連情報の集計の更新
     public int AppInfoUpdateIntervalMinutes { get; set; } = -1;     // アプリ情報の集計の更新
-    public string DailyMaintenanceTime { get; set; } = "00:00";     // 日次メンテナンスの実行時刻（HH:mm形式）
+    public int VacuumMinutes { get; set; } = -1;    // （日次）データベースのバキューム処理の実行間隔
+    public int ReindexMinutes { get; set; } = -1;   // （日次）データベースの再インデックス処理の実行間隔
+    public int ClickAggregateMinutes { get; set; } = -1;    // （日次）クリック数の集計の実行間隔
 
 
 }
