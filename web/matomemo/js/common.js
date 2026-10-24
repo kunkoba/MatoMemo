@@ -209,7 +209,7 @@ window.$Util = {
         } catch (err) {
             console.error("err:", err);
             // ネットワーク断（オフライン）などの物理エラー
-            await $App.HandleServerFailure();
+            await $Data.Access.HandleServerFailure();
             return null;
         }
         const data = await res.json();

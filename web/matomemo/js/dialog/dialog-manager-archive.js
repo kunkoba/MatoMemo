@@ -269,7 +269,7 @@ export default {
                     const params = { seqs: seqs, archive_id: item.archive_id };
                     const isAddSuccess = await $Data.Access.AddDetails(params);
                     if (!isAddSuccess) return;
-                    $Notice.Info("追加しました。");
+                    $Notice.Info("メモを追加しました。");
                     this._core.closeAll();
                     // ARCHIVEモードに切り替えて対象のまとめを開く
                     $App.AppData.Context.ScreenMode = $Const.SCREEN_MODE.ARCHIVE;
@@ -402,7 +402,7 @@ export default {
                             currency_unit: $App.AppData.Owner.Currency_unit || 'JPY'
                         });
                         if (!isSuccess) return;
-                        $Notice.Info("作成しました");
+                        $Notice.Info("まとめを作成しました");
                         this._core.closeAll();
                         $App.AppData.Context.ScreenMode = $Const.SCREEN_MODE.ARCHIVE;
                         await $App.RefreshScreen();
@@ -693,7 +693,7 @@ export default {
                                 const confirmMsg = resetFlg ? "公開データを作成します。\n続行しますか？" : "過去の公開データを復活させますか？";
                                 this._execStatusChange('PublishArchive', params, 'PUBLISH', 
                                     confirmMsg, 
-                                    '準備ができました', $Const.SCREEN_MODE.ARCHIVE_PUB, 
+                                    '公開する準備ができました', $Const.SCREEN_MODE.ARCHIVE_PUB, 
                                     () => $Data.Store.UpdateArchive({ is_public: true, closed_flg: true, limited_open_flg: false })
                                 );
                             }

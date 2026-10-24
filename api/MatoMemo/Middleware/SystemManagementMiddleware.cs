@@ -20,7 +20,7 @@ public class SystemManagementMiddleware(
         {
             if (IsVersionOlder(appVersion, systemStatus.MinAppVersion))
             {
-                await ReturnErrorResponse(context, HttpStatusCode.UpgradeRequired, "新しいバージョンのアプリが利用可能です。更新してください。", "VERSION_UP_REQUIRED");
+                await ReturnErrorResponse(context, HttpStatusCode.UpgradeRequired, "新しいバージョンのアプリが利用可能です。", "VERSION_UP_REQUIRED");
                 return;
             }
         }

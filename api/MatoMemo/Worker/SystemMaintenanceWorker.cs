@@ -165,6 +165,7 @@ public class SystemMaintenanceWorker : BackgroundService
                     case "MaintenanceMode": systemStatus.IsMaintenanceMode = (value.ToLower() == "true"); break;
                     case "MaintenanceMsg": systemStatus.MaintenanceMessage = value; break;
                     case "MinAppVersion": systemStatus.MinAppVersion = value; break;
+                    case "LatestAppVersion": systemStatus.LatestAppVersion = value; break;
                 }
             }
         });

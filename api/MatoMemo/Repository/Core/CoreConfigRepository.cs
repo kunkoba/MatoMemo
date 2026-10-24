@@ -34,11 +34,12 @@ public class CoreConfigRepository : _BaseRepository
     public async Task<int> UpdateConfigAsync(string category, string key, string value)
     {
         const string sql = @"
-            UPDATE mgr_sys_config SET
-                value      = @value,
-                update_tim = CURRENT_TIMESTAMP
-            WHERE category = @category 
-              AND key      = @key";
+            INSERT INTO mgr_sys_config (category, key, value, description, update_tim)
+            VALUES (@category, @key, @value, '', CURRENT_TIMESTAMP)
+            ON CONFLICT (category, key) 
+            DO UPDATE SET 
+                value = @value, 
+                update_tim = CURRENT_TIMESTAMP";
 
         return await ExecuteAsync(sql, new { category, key, value });
     }

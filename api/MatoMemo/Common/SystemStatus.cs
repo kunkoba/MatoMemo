@@ -14,7 +14,7 @@ public class SystemStatus
     /// <summary>
     /// メンテナンス中に画面に表示するメッセージ
     /// </summary>
-    public string MaintenanceMessage { get; set; } = string.Empty;
+    public string MaintenanceMessage { get; set; } = "ただいまメンテナンス中です。しばらくお待ちください。";
 
     /// <summary>
     /// 動作を許可する最小アプリバージョン（例: "1.0.0"）
@@ -29,6 +29,6 @@ public class SystemStatus
     /// <summary>
     /// DBから最後に同期した時刻（生存確認用）
     /// </summary>
-    public DateTime LastSyncTime { get; set; } = DateTime.MinValue;
+    public DateTime LastSyncTime { get; set; } = DateTime.UtcNow;
 
 }

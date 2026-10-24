@@ -93,6 +93,18 @@ window.$Data = {
             archiveList:[],
             userProfile: null,
         },
+        // --- 追加: 一か所集約 ---
+        _extractErrorCode(headerCode, bodyJson) {
+            // ① bodyにjsonがあれば apiまで到達
+            if (bodyJson && bodyJson.errorCode) {
+                return { errorCode: bodyJson.errorCode, message: bodyJson.message, source: 'api' };
+            }
+            // ② bodyにjsonが無ければ手前の機器 -> header
+            if (headerCode) {
+                return { errorCode: headerCode, message: null, source: 'gateway' };
+            }
+            return { errorCode: null, message: null, source: null };
+        },
         // サーバー通信の基礎
         async _fetchData(method, url, params) {// 設定ファイルから取得
             const BaseUrl = window.ENV_CONFIG.BASE_URL;
@@ -102,7 +114,7 @@ window.$Data = {
             // オフライン時はヘルスチェック以外、即遮断
             if (!$App.AppData.Context.IsNetOnline && !isHealthCheck) {
                 // $Notice.Warn("ネットワーク未接続のため通信をスキップしました");
-                await $App.HandleServerFailure(); // 共通のエラー処理へ
+                await this.HandleServerFailure(); // 共通のエラー処理へ
                 return false;
             }
             // タイムアウト制御の準備
@@ -136,20 +148,37 @@ window.$Data = {
                 // 中断（AbortError）だった場合はタイムアウトフラグを true にする
                 const isTimeout = (err.name === 'AbortError');
                 // 判定会議へタイムアウト情報を渡す
-                await $App.HandleServerFailure(null, isTimeout);
+                await this.HandleServerFailure(null, isTimeout);
                 return false;
             } finally {
                 clearTimeout(timeoutId); // 成功・失敗に関わらずタイマーを解除
             }
             if (!response.ok) {
+                // ①②対応: header X-Error-Code と body.errorCode の両方を見る
+                let headerCode = null;
+                let bodyJson = null;
+                try {
+                    headerCode = response.headers.get('X-Error-Code') || response.headers.get('x-error-code');
+                } catch {}
+                try {
+                    bodyJson = await response.clone().json();
+                } catch {
+                    bodyJson = null;
+                }
+                const errInfo = this._extractErrorCode(headerCode, bodyJson);
+                response._errorInfo = errInfo;
                 // 401, 500 などのステータスエラーを判定会議へ投げる
-                await $App.HandleServerFailure(response);
+                await this.HandleServerFailure(response);
                 return false; // 以降の処理（json解析など）を中止
             }
             // 
             $Notice.Loading.Hide();
             const result = await response.json();
             console.log("■ Result:", url, result);
+            // メンテ解消時、帯を消す
+            $App.AppData.Context.IsServerOnline = true;
+            $App.AppData.Context.IsNetOnline = true;
+            $Notice.Offline.Hide();
             // ③ new_token保存
             const newToken = result.new_token || result.data?.token;
             if (newToken) {
@@ -231,6 +260,54 @@ window.$Data = {
             if (data.userMailList) $App.AppData.Admin.UserMailList = data.userMailList;
             console.log("- $App.AppData:", $App.AppData);
         },
+        // 公開: サーバ通信エラー処理はここに集約
+        async HandleServerFailure(response, isTimeout = false) {
+            $Notice.Loading.Hide();
+            if (isTimeout) {
+                $Notice.Error("通信がタイムアウトしました。");
+                return false;
+            }
+            const errInfo = response?._errorInfo;
+            const errorCode = errInfo?.errorCode;
+            const message = errInfo?.message;
+            console.log("HandleServerFailure:", errInfo);
+            // サーバ: メンテ
+            if (errorCode === 'MAINTENANCE_MODE' || errorCode === 'MAINTENANCE') {
+                $App.AppData.Context.IsServerOnline = false;
+                // ① 帯だけ出す
+                $Notice.Offline.Show("メンテナンス中です");
+                // ② toast で表示
+                $Notice.Warn(message || "現在メンテナンス中です。しばらくしてから再度お試しください。");
+                return false;
+            }
+            // サーバ: バージョン古い (SystemManagementMiddleware)
+            if (errorCode === 'VERSION_UP_REQUIRED') {
+                $App.AppData.Context.IsServerOnline = true;
+                $Notice.Offline.Hide();
+                // 更新は Dialog で促す
+                if (window.$Dialog?.ShowErrorDialog) {
+                    $Dialog.ShowErrorDialog(message || "新しいバージョンのアプリが利用可能です。更新してください。");
+                } else {
+                    $Notice.Error(message || "新しいバージョンのアプリが利用可能です。更新してください。");
+                }
+                return false;
+            }
+            if (response && response.status === 401) {
+                $App.AppData.Owner.LoginUserId = '';
+                $App.AppData.Context.IsLoggedIn = false;
+                $App.AppData.Owner.Token = null;
+                localStorage.removeItem('matomemo_jwt');
+                $Data.Store.Restore();
+                $Bar.UpdateUserIcon();
+                $Notice.Warn("引き続き利用される際は、ログインをしてください。");
+                $Dialog.ShowLoginDialog();
+                return false;
+            }
+            $App.AppData.Context.IsNetOnline = false;
+            $Notice.Offline.Show("サーバーに接続できません");
+            $Notice.Error(message || "サーバ接続が失敗しました。");
+            return false;
+        },
         // 定形APIの展開（自動生成モジュールのマージ）
         ...ApiModule,
         // ユーザーアカウント確認（UI非干渉・完全非同期）
@@ -250,14 +327,28 @@ window.$Data = {
             };
             try {
                 const response = await fetch(url, options);
-                if (response.status === 401) {
-                    await $App.HandleServerFailure(response);
-                    return false;
-                }
                 if (!response.ok) {
+                    // ①②対応: 二重実装を解消し、共通ハンドラへ委譲
+                    let headerCode = null;
+                    let bodyJson = null;
+                    try {
+                        headerCode = response.headers.get('X-Error-Code') || response.headers.get('x-error-code');
+                    } catch {}
+                    try {
+                        bodyJson = await response.clone().json();
+                    } catch {
+                        bodyJson = null;
+                    }
+                    const errInfo = this._extractErrorCode(headerCode, bodyJson);
+                    response._errorInfo = errInfo;
+                    await this.HandleServerFailure(response);
                     return false;
                 }
                 const result = await response.json();
+                // サーバ到達成功 = オンライン復帰、帯を消す
+                $App.AppData.Context.IsServerOnline = true;
+                $App.AppData.Context.IsNetOnline = true;
+                $Notice.Offline.Hide();
                 // ③ new_token保存
                 const newToken = result.new_token || result.data?.token;
                 if (newToken) {
